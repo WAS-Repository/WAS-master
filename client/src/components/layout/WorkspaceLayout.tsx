@@ -613,33 +613,44 @@ export default function WorkspaceLayout() {
           
           {/* Terminal section */}
           {showTerminal && (
-            <div className="border-t border-[#22dd22] bg-black">
-              <div className="flex items-center justify-between border-b border-[#22dd22] p-1 bg-black">
+            <div className="border-t" style={{ 
+              borderColor: colorScheme.borderColor,
+              backgroundColor: colorScheme.bgColor
+            }}>
+              <div className="flex items-center justify-between border-b p-1" style={{ 
+                borderColor: colorScheme.borderColor,
+                backgroundColor: colorScheme.bgColor
+              }}>
                 <div className="flex items-center">
-                  <Terminal className="h-4 w-4 mr-2 text-[#33ff33]" />
-                  <span className="text-xs font-medium text-[#33ff33]">Terminal</span>
+                  <Terminal className="h-4 w-4 mr-2" style={{ color: colorScheme.mainColor }} />
+                  <span className="text-xs font-medium" style={{ color: colorScheme.mainColor }}>Terminal</span>
                 </div>
                 
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="h-6 px-2 py-0 text-[#33ff33] hover:bg-[#001800] text-xs border border-[#33ff33]"
+                  className="h-6 px-2 py-0 text-xs border hover:bg-opacity-20"
+                  style={{ 
+                    color: colorScheme.mainColor,
+                    borderColor: colorScheme.mainColor
+                  }}
                   onClick={toggleTerminal}
                 >
                   Hide Terminal
                 </Button>
               </div>
               
-              <div className="p-2 h-20 overflow-y-auto font-mono text-xs text-[#33ff33]">
-                <div className="text-[#33ff33]">{'>'} Initialized Hampton Roads document visualization</div>
-                <div className="text-[#33ff33]">{'>'} Loaded 7 localities and 15 document references</div>
-                <div className="text-[#33ff33]">{'>'} Network graph initialized with 11 nodes and 13 connections</div>
-                <div className="text-[#ffff33]">{'>'} Warning: Some document metadata is incomplete</div>
-                <div className="text-[#33ff33]">{'>'} System ready</div>
+              <div className="p-2 h-20 overflow-y-auto font-mono text-xs" style={{ color: colorScheme.mainColor }}>
+                <div style={{ color: colorScheme.mainColor }}>{'>'} Initialized Hampton Roads document visualization</div>
+                <div style={{ color: colorScheme.mainColor }}>{'>'} Loaded 7 localities and 15 document references</div>
+                <div style={{ color: colorScheme.mainColor }}>{'>'} Network graph initialized with 11 nodes and 13 connections</div>
+                <div style={{ color: '#ffff33' }}>{'>'} Warning: Some document metadata is incomplete</div>
+                <div style={{ color: colorScheme.mainColor }}>{'>'} System ready</div>
                 <div className="flex items-center mt-2">
-                  <span className="text-[#33ff33] mr-1">{'>'}</span>
+                  <span style={{ color: colorScheme.mainColor }} className="mr-1">{'>'}</span>
                   <Input 
-                    className="h-6 py-1 px-2 bg-transparent border-none text-xs text-[#33ff33] focus-visible:ring-0 focus-visible:ring-offset-0"
+                    className="h-6 py-1 px-2 bg-transparent border-none text-xs focus-visible:ring-0 focus-visible:ring-offset-0"
+                    style={{ color: colorScheme.mainColor }}
                     placeholder="Enter command..."
                   />
                 </div>
@@ -648,7 +659,13 @@ export default function WorkspaceLayout() {
           )}
           
           {/* Footer status bar */}
-          <div className="bg-black border-t border-[#22dd22] py-1 px-2 text-[10px] text-[#33ff33] flex items-center justify-between">
+          <div className="border-t py-1 px-2 text-[10px] flex items-center justify-between" 
+            style={{ 
+              backgroundColor: colorScheme.bgColor,
+              borderColor: colorScheme.borderColor,
+              color: colorScheme.mainColor 
+            }}
+          >
             <div className="flex items-center space-x-3">
               <div>APR 30 20:45 linux wired</div>
               <div>MANUFACTURER: SEACORE CHASSIS</div>
@@ -656,55 +673,55 @@ export default function WorkspaceLayout() {
             </div>
             
             <div className="flex items-center">
-              <div className="mr-3 uppercase text-[#33ff33]">Back</div>
+              <div className="mr-3 uppercase" style={{ color: colorScheme.mainColor }}>Back</div>
               {/* Virtual keyboard indicator - On Mobile Keyboard main system */}
               <div id="keyboard" className="flex flex-col">
                 <div className="flex mb-1 justify-center">
-                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">ESC</div>
+                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>ESC</div>
                   <div className="flex space-x-1">
                     {['Z', '&', 'É', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].map((key, i) => (
-                      <div key={i} className="border border-[#33ff33] w-6 h-6 flex items-center justify-center">{key}</div>
+                      <div key={i} className="border w-6 h-6 flex items-center justify-center" style={{ borderColor: colorScheme.mainColor }}>{key}</div>
                     ))}
                   </div>
                 </div>
                 
                 <div className="flex mb-1 justify-center">
-                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">TAB</div>
+                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>TAB</div>
                   <div className="flex space-x-1">
                     {['A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].map((key, i) => (
-                      <div key={i} className="border border-[#33ff33] w-6 h-6 flex items-center justify-center">{key}</div>
+                      <div key={i} className="border w-6 h-6 flex items-center justify-center" style={{ borderColor: colorScheme.mainColor }}>{key}</div>
                     ))}
                   </div>
                 </div>
                 
                 <div className="flex mb-1 justify-center">
-                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">CAPS</div>
+                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>CAPS</div>
                   <div className="flex space-x-1">
                     {['Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'].map((key, i) => (
-                      <div key={i} className="border border-[#33ff33] w-6 h-6 flex items-center justify-center">{key}</div>
+                      <div key={i} className="border w-6 h-6 flex items-center justify-center" style={{ borderColor: colorScheme.mainColor }}>{key}</div>
                     ))}
                   </div>
                 </div>
                 
                 <div className="flex mb-1 justify-center">
-                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">SHIFT</div>
+                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>SHIFT</div>
                   <div className="flex space-x-1">
                     {['<', 'W', 'X', 'C', 'V', 'B', 'N', ',', '.', '/'].map((key, i) => (
-                      <div key={i} className="border border-[#33ff33] w-6 h-6 flex items-center justify-center">{key}</div>
+                      <div key={i} className="border w-6 h-6 flex items-center justify-center" style={{ borderColor: colorScheme.mainColor }}>{key}</div>
                     ))}
                   </div>
-                  <div className="border border-[#33ff33] px-2 py-0.5 ml-1 text-center">SHIFT</div>
+                  <div className="border px-2 py-0.5 ml-1 text-center" style={{ borderColor: colorScheme.mainColor }}>SHIFT</div>
                 </div>
                 
                 <div className="flex justify-center">
-                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">CTRL</div>
-                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">FN</div>
-                  <div className="border border-[#33ff33] px-16 py-0.5 text-center">keyboard trigger event</div>
-                  <div className="border border-[#33ff33] px-2 py-0.5 ml-1 text-center">ALT GR</div>
-                  <div className="border border-[#33ff33] px-2 py-0.5 ml-1 text-center">CTRL</div>
+                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>CTRL</div>
+                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>FN</div>
+                  <div className="border px-16 py-0.5 text-center" style={{ borderColor: colorScheme.mainColor }}>keyboard trigger event</div>
+                  <div className="border px-2 py-0.5 ml-1 text-center" style={{ borderColor: colorScheme.mainColor }}>ALT GR</div>
+                  <div className="border px-2 py-0.5 ml-1 text-center" style={{ borderColor: colorScheme.mainColor }}>CTRL</div>
                 </div>
                 
-                <div className="text-center text-[8px] mt-1 text-[#33ff33]">
+                <div className="text-center text-[8px] mt-1" style={{ color: colorScheme.mainColor }}>
                   On desktop mode this is the terminal. Keyboard leaves when bluetooth or wired keyboard is enabled
                 </div>
               </div>
