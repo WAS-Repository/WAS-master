@@ -302,7 +302,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
       {/* Terminal */}
       {!isTerminalCollapsed && (
         <div className={focusMode ? 'opacity-30 hover:opacity-100 transition-opacity duration-300' : ''}>
-          <Terminal height={terminalHeight} />
+          <Terminal 
+            height={terminalHeight} 
+            focusMode={focusMode}
+            onToggleFocusMode={() => setFocusMode(!focusMode)}
+          />
         </div>
       )}
     </div>

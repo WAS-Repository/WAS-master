@@ -657,6 +657,23 @@ export default function Terminal({ height, focusMode, onToggleFocusMode }: Termi
             <HelpCircle size={12} className="mr-1" />
             Help
           </Button>
+          
+          {/* Focus Mode Button */}
+          {onToggleFocusMode && (
+            <Button 
+              variant={focusMode ? "default" : "ghost"}
+              size="sm" 
+              className="h-5 px-2 py-0 text-xs" 
+              onClick={onToggleFocusMode}
+              title={focusMode ? "Exit Focus Mode (Alt+F)" : "Enter Focus Mode (Alt+F)"}
+            >
+              {focusMode ? 
+                <Minimize size={12} className="mr-1" /> : 
+                <Maximize size={12} className="mr-1" />
+              }
+              {focusMode ? 'Exit Focus' : 'Focus'}
+            </Button>
+          )}
           <Button variant="ghost" size="sm" className="h-5 px-2 py-0 text-xs" onClick={() => setCurrentCommand('search ')}>
             <Search size={12} className="mr-1" />
             Search
