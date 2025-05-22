@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronLeft, ChevronRight, File, Database, Shield, Wrench, FolderOpen, Search, PlusCircle, Filter } from "lucide-react";
+import { ChevronLeft, ChevronRight, File, Database, Shield, Wrench, FolderOpen, Search, PlusCircle, Filter, Terminal as TerminalIcon, MessageSquare, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface SidebarProps {
