@@ -74,6 +74,23 @@ export default function TronLayout() {
       date.getDate().toString().padStart(2, '0')
     ].join('-');
   };
+  
+  // Handle workspace selection
+  const handleWorkspaceChange = (workspace: ResearchWorkspace) => {
+    setCurrentWorkspace(workspace);
+    
+    // Update the active view based on the workspace's preferred layout
+    if (workspace.layout.activePanel === 'map') {
+      setActiveView('map');
+    } else if (workspace.layout.activePanel === 'graph') {
+      setActiveView('graph');
+    } else {
+      setActiveView('document');
+    }
+    
+    // In a real implementation, we would also update terminal colors, 
+    // theme settings, and other configuration based on the workspace
+  };
 
   return (
     <div className="h-full font-mono bg-black text-green-500 border border-green-900 rounded-md overflow-hidden">
@@ -128,28 +145,37 @@ export default function TronLayout() {
           <ResizablePanel defaultSize={70}>
             <div className="h-full flex flex-col">
               {/* Panel header */}
-              <div className="flex bg-black text-green-500 border-b border-green-900 p-1 text-xs">
-                <button 
-                  className={`px-3 py-1 mr-1 ${activeView === 'document' ? 'bg-green-900 text-black' : ''}`}
-                  onClick={() => setActiveView('document')}
-                >
-                  <FileText size={12} className="inline mr-1" />
-                  DOCUMENT
-                </button>
-                <button 
-                  className={`px-3 py-1 mr-1 ${activeView === 'map' ? 'bg-green-900 text-black' : ''}`}
-                  onClick={() => setActiveView('map')}
-                >
-                  <Map size={12} className="inline mr-1" />
-                  MAP
-                </button>
-                <button 
-                  className={`px-3 py-1 ${activeView === 'graph' ? 'bg-green-900 text-black' : ''}`}
-                  onClick={() => setActiveView('graph')}
-                >
-                  <Network size={12} className="inline mr-1" />
-                  GRAPH
-                </button>
+              <div className="flex justify-between bg-black text-green-500 border-b border-green-900 p-1 text-xs">
+                <div className="flex">
+                  <button 
+                    className={`px-3 py-1 mr-1 ${activeView === 'document' ? 'bg-green-900 text-black' : ''}`}
+                    onClick={() => setActiveView('document')}
+                  >
+                    <FileText size={12} className="inline mr-1" />
+                    DOCUMENT
+                  </button>
+                  <button 
+                    className={`px-3 py-1 mr-1 ${activeView === 'map' ? 'bg-green-900 text-black' : ''}`}
+                    onClick={() => setActiveView('map')}
+                  >
+                    <Map size={12} className="inline mr-1" />
+                    MAP
+                  </button>
+                  <button 
+                    className={`px-3 py-1 ${activeView === 'graph' ? 'bg-green-900 text-black' : ''}`}
+                    onClick={() => setActiveView('graph')}
+                  >
+                    <Network size={12} className="inline mr-1" />
+                    GRAPH
+                  </button>
+                </div>
+                
+                <div>
+                  <ResearchWorkspacesMenu 
+                    onSelectWorkspace={handleWorkspaceChange}
+                    currentWorkspaceId={currentWorkspace.id}
+                  />
+                </div>
               </div>
               
               {/* Panel content */}
