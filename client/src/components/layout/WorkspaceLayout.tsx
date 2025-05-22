@@ -109,13 +109,13 @@ export default function WorkspaceLayout() {
             <Globe className="h-5 w-5 text-[#33ff33] mr-1" />
             <span className="text-[#33ff33] font-bold text-sm">Hampton Roads Research Graph</span>
           </div>
-          
-          <div className="flex space-x-4 mx-4">
-            <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">File</div>
-            <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">Edit</div>
-            <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">View</div>
-            <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">Help</div>
-          </div>
+        </div>
+        
+        <div className="flex space-x-4 mx-4">
+          <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">File</div>
+          <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">Edit</div>
+          <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">View</div>
+          <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">Help</div>
         </div>
         
         <div className="flex items-center space-x-3">
