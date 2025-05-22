@@ -3,83 +3,84 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
 import { 
   FileText, 
-  Folder, 
   ChevronDown, 
   ChevronRight, 
-  Terminal, 
-  Settings,
-  Code,
-  Command,
+  Terminal,
+  Maximize2,
   Search,
-  HelpCircle,
+  MessageSquare,
   FolderOpen,
-  MessageSquare, 
-  Map,
-  Maximize2
+  HelpCircle,
+  Map
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
-// File/Directory Type
-type FileSystemItem = {
+// File system types
+type FileType = 'file' | 'folder';
+
+interface FileSystemItem {
   name: string;
-  type: 'file' | 'directory';
+  type: FileType;
   children?: FileSystemItem[];
   expanded?: boolean;
   active?: boolean;
-};
+  path: string;
+}
 
-// Simulated file structure
-const fileSystemData: FileSystemItem[] = [
-  {
-    name: 'OPEN EDITORS',
-    type: 'directory',
-    expanded: true,
-    children: [
-      { name: 'Settings', type: 'file', active: false },
-      { name: 'User Settings', type: 'file', active: false },
-      { name: 'vCodeOpenFolder.reg', type: 'file', active: true }
-    ]
-  },
-  {
-    name: 'WORKSPACE',
-    type: 'directory',
-    expanded: true,
-    children: [
-      { name: 'vscode.bat', type: 'file', active: false },
-      { name: 'vscode-setup.sh', type: 'file', active: false },
-      {
-        name: 'HELLO-WORLD-REACT-APP',
-        type: 'directory',
-        expanded: false,
-        children: [
-          { name: 'README.md', type: 'file', active: false },
-          { name: 'package.json', type: 'file', active: false },
-          { name: 'index.js', type: 'file', active: false }
-        ]
-      }
-    ]
-  },
-  {
-    name: 'RECENT PROJECTS',
-    type: 'directory',
-    expanded: false,
-    children: [
-      { name: 'coastal-research', type: 'file', active: false },
-      { name: 'flood-analysis', type: 'file', active: false },
-      { name: 'sea-level-metrics', type: 'file', active: false }
-    ]
-  }
-];
-
-// Terminal entry type, matching Terminal.tsx
+// Terminal entry type
 type TerminalEntry = {
   type: 'input' | 'output' | 'info' | 'error' | 'success' | 'command';
   content: string;
   timestamp: Date;
 };
 
-const VSCodeLayout: React.FC = () => {
-  const isMobile = useIsMobile();
+// Terminal mode type
+type TerminalMode = 'shell' | 'agent' | 'explorer';
+
+// Sample file structure for explorer
+const fileSystemData: FileSystemItem[] = [
+  {
+    name: 'DOCUMENTS',
+    type: 'folder',
+    expanded: true,
+    path: '/documents',
+    children: [
+      { name: 'Coastal Erosion Impact Study.pdf', type: 'file', path: '/documents/coastal-erosion.pdf', active: false },
+      { name: 'Tidal Pattern Analysis.pdf', type: 'file', path: '/documents/tidal-patterns.pdf', active: false },
+      { name: 'Sea Level Rise Projections.pdf', type: 'file', path: '/documents/sea-level.pdf', active: false }
+    ]
+  },
+  {
+    name: 'MAPS',
+    type: 'folder',
+    expanded: true,
+    path: '/maps',
+    children: [
+      { name: 'Norfolk Flood Zones.map', type: 'file', path: '/maps/norfolk-flood.map', active: false },
+      { name: 'Virginia Beach Coastal.map', type: 'file', path: '/maps/virginia-beach.map', active: false },
+      { name: 'Hampton Roads Region.map', type: 'file', path: '/maps/hampton-roads.map', active: false }
+    ]
+  },
+  {
+    name: 'RESEARCH DATA',
+    type: 'folder',
+    expanded: false,
+    path: '/research-data',
+    children: [
+      { name: 'Tide Measurements.csv', type: 'file', path: '/research-data/tide-measurements.csv', active: false },
+      { name: 'Erosion Rates.csv', type: 'file', path: '/research-data/erosion-rates.csv', active: false },
+      { name: 'Impact Analysis.xlsx', type: 'file', path: '/research-data/impact-analysis.xlsx', active: false }
+    ]
+  }
+];
+
+const CodeTerminal: React.FC = () => {
+  // File explorer state
   const [fileSystem, setFileSystem] = useState<FileSystemItem[]>(fileSystemData);
+  const [openFiles, setOpenFiles] = useState<{path: string, name: string}[]>([]);
+  const [activeFile, setActiveFile] = useState<string | null>(null);
+  
+  // Terminal state
   const [entries, setEntries] = useState<TerminalEntry[]>([
     { 
       type: 'info', 
@@ -90,50 +91,15 @@ const VSCodeLayout: React.FC = () => {
       type: 'info', 
       content: 'Type \'help\' for a list of available commands.', 
       timestamp: new Date() 
-    },
-    {
-      type: 'info',
-      content: 'Type \'mode <shell|agent|explorer>\' to switch terminal modes.',
-      timestamp: new Date()
     }
   ]);
   const [currentCommand, setCurrentCommand] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [currentPath, setCurrentPath] = useState('/home/user');
-  const [terminalMode, setTerminalMode] = useState<'shell' | 'agent' | 'explorer'>('shell');
-
-  // Handle file/directory toggle
-  const toggleItem = (itemPath: string[], isExpand?: boolean) => {
-    const updateFileSystem = (items: FileSystemItem[], path: string[], depth: number): FileSystemItem[] => {
-      return items.map(item => {
-        if (depth === path.length - 1 && item.name === path[depth]) {
-          if (item.type === 'directory') {
-            return { 
-              ...item, 
-              expanded: isExpand !== undefined ? isExpand : !item.expanded 
-            };
-          } else {
-            // Set this file as active and deactivate others
-            return { ...item, active: true };
-          }
-        } else if (depth < path.length && item.name === path[depth] && item.children) {
-          return {
-            ...item,
-            children: updateFileSystem(item.children, path, depth + 1)
-          };
-        } else if (item.type === 'file') {
-          // Deactivate all other files
-          return { ...item, active: false };
-        }
-        return item;
-      });
-    };
-
-    setFileSystem(updateFileSystem(fileSystem, itemPath, 0));
-  };
-
-  // Add refs for terminal input and display
+  const [terminalMode, setTerminalMode] = useState<TerminalMode>('shell');
+  
+  // References for terminal
   const inputRef = useRef<HTMLInputElement>(null);
   const terminalRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
@@ -147,7 +113,7 @@ const VSCodeLayout: React.FC = () => {
     { id: 5, title: "Flood Mitigation Techniques", year: 2023, type: "policy" }
   ];
   
-  // Focus the input on render and after clicking
+  // Focus the terminal input on render and after clicking
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
@@ -156,7 +122,61 @@ const VSCodeLayout: React.FC = () => {
     inputRef.current?.focus();
   };
   
-  // Process terminal command
+  // Toggle file system items
+  const toggleItem = (path: string[]) => {
+    const updateFileSystem = (items: FileSystemItem[], itemPath: string[], depth: number): FileSystemItem[] => {
+      return items.map(item => {
+        // Current item is target
+        if (depth === itemPath.length - 1 && item.name === itemPath[depth]) {
+          if (item.type === 'folder') {
+            return { ...item, expanded: !item.expanded };
+          } else {
+            // Add/activate file tab when clicking a file
+            const filePath = item.path;
+            
+            if (!openFiles.some(f => f.path === filePath)) {
+              setOpenFiles([...openFiles, { path: filePath, name: item.name }]);
+            }
+            
+            setActiveFile(filePath);
+            
+            // Mark this file as active, deactivate others
+            return { ...item, active: true };
+          }
+        } 
+        // Current item is in the path to target
+        else if (depth < itemPath.length && item.name === itemPath[depth] && item.children) {
+          return {
+            ...item,
+            children: updateFileSystem(item.children, itemPath, depth + 1)
+          };
+        } 
+        // Deactivate all other files
+        else if (item.type === 'file' && item.active) {
+          return { ...item, active: false };
+        }
+        
+        return item;
+      });
+    };
+
+    setFileSystem(updateFileSystem(fileSystem, path, 0));
+  };
+  
+  // Close a file tab
+  const closeFile = (path: string) => {
+    setOpenFiles(openFiles.filter(f => f.path !== path));
+    
+    // If active file is closed, activate the first remaining file
+    if (activeFile === path && openFiles.length > 1) {
+      const remainingFiles = openFiles.filter(f => f.path !== path);
+      setActiveFile(remainingFiles.length > 0 ? remainingFiles[0].path : null);
+    } else if (openFiles.length <= 1) {
+      setActiveFile(null);
+    }
+  };
+  
+  // Terminal commands
   const handleCommand = async () => {
     if (!currentCommand.trim()) return;
     
@@ -196,17 +216,11 @@ const VSCodeLayout: React.FC = () => {
         case 'cd':
           changeDirectory(args[0]);
           break;
-        case 'echo':
-          echoMessage(args.join(' '));
-          break;
         case 'search':
           searchDocuments(args.join(' '));
           break;
         case 'view':
           viewDocument(args[0]);
-          break;
-        case 'map':
-          handleMapCommand(args);
           break;
         case 'mode':
           if (args.length === 0) {
@@ -215,7 +229,7 @@ const VSCodeLayout: React.FC = () => {
               { type: 'info', content: `Current mode: ${terminalMode}`, timestamp: new Date() }
             ]);
           } else if (['shell', 'agent', 'explorer'].includes(args[0])) {
-            switchMode(args[0] as 'shell' | 'agent' | 'explorer');
+            switchMode(args[0] as TerminalMode);
           } else {
             setEntries(prev => [
               ...prev,
@@ -249,7 +263,7 @@ const VSCodeLayout: React.FC = () => {
     }
   };
   
-  // Handle keyboard input
+  // Handle keyboard input in terminal
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       handleCommand();
@@ -288,12 +302,10 @@ const VSCodeLayout: React.FC = () => {
       { type: 'info', content: '  pwd               - Print working directory', timestamp: new Date() },
       { type: 'info', content: '  ls                - List directory contents', timestamp: new Date() },
       { type: 'info', content: '  cd <path>         - Change directory', timestamp: new Date() },
-      { type: 'info', content: '  echo <message>    - Display a message', timestamp: new Date() },
       { type: 'info', content: '  date              - Show current date and time', timestamp: new Date() },
       { type: 'info', content: '\nResearch commands:', timestamp: new Date() },
       { type: 'info', content: '  search <query>    - Search for documents', timestamp: new Date() },
       { type: 'info', content: '  view <id>         - View document details', timestamp: new Date() },
-      { type: 'info', content: '  map show-docs     - Show documents on map', timestamp: new Date() },
       { type: 'info', content: '  mode <type>       - Switch terminal mode (shell, agent, explorer)', timestamp: new Date() }
     ]);
   };
@@ -374,13 +386,6 @@ const VSCodeLayout: React.FC = () => {
     }
   };
 
-  const echoMessage = (message: string) => {
-    setEntries(prev => [
-      ...prev,
-      { type: 'output', content: message, timestamp: new Date() }
-    ]);
-  };
-
   const searchDocuments = (query: string) => {
     if (!query) {
       setEntries(prev => [
@@ -456,64 +461,56 @@ const VSCodeLayout: React.FC = () => {
       ]);
     }
   };
-
-  const handleMapCommand = (args: string[]) => {
-    if (!args.length) {
-      setEntries(prev => [
-        ...prev,
-        { type: 'error', content: 'map: missing argument', timestamp: new Date() }
-      ]);
-      return;
-    }
-    
-    const subCommand = args[0];
-    
-    if (subCommand === 'show-docs') {
-      setEntries(prev => [
-        ...prev,
-        { type: 'info', content: 'Showing documents on map view...', timestamp: new Date() },
-        { type: 'success', content: 'Map view activated with document overlay.', timestamp: new Date() }
-      ]);
-    } else if (subCommand === 'focus') {
-      const locality = args[1];
-      if (!locality) {
-        setEntries(prev => [
-          ...prev,
-          { type: 'error', content: 'map focus: missing locality name', timestamp: new Date() }
-        ]);
-        return;
-      }
-      
-      setEntries(prev => [
-        ...prev,
-        { type: 'info', content: `Focusing map on locality: ${locality}`, timestamp: new Date() },
-        { type: 'success', content: `Map centered on ${locality}.`, timestamp: new Date() }
-      ]);
-    } else {
-      setEntries(prev => [
-        ...prev,
-        { type: 'error', content: `Unknown map subcommand: ${subCommand}`, timestamp: new Date() }
-      ]);
-    }
-  };
   
-  const switchMode = (mode: 'shell' | 'agent' | 'explorer') => {
+  const switchMode = (mode: TerminalMode) => {
     setTerminalMode(mode);
     setEntries(prev => [
       ...prev,
       { type: 'info', content: `Switched to ${mode} mode.`, timestamp: new Date() }
     ]);
   };
+  
+  // File content for document viewer
+  const getFileContent = (path: string) => {
+    if (path === '/documents/coastal-erosion.pdf') {
+      return `# Coastal Erosion Impact Study
 
-  // File/Directory Icon Component
-  const FileIcon: React.FC<{ item: FileSystemItem, className?: string }> = ({ item, className }) => {
-    if (item.type === 'directory') {
-      return item.expanded ? <ChevronDown size={16} className={className} /> : <ChevronRight size={16} className={className} />;
+## Executive Summary
+This study examines the impact of coastal erosion on Hampton Roads communities over the past decade.
+
+## Key Findings
+- Erosion rates have increased 32% in vulnerable shoreline areas
+- Property damage estimated at $45M annually
+- Natural barriers reduced by 18% since 2010
+
+## Recommendations
+1. Implement enhanced shoreline protection measures
+2. Develop long-term coastal management strategy
+3. Invest in natural barrier restoration projects`;
+    } else if (path === '/maps/norfolk-flood.map') {
+      return `[MAP VISUALIZATION: Norfolk Flood Zones]
+
+This map displays the current flood risk zones for Norfolk based on the latest FEMA assessments and local monitoring data.
+
+Legend:
+- Red: High risk (annual flood probability >20%)
+- Orange: Moderate risk (annual flood probability 5-20%) 
+- Yellow: Low risk (annual flood probability <5%)
+
+Key vulnerable areas include:
+- Ghent
+- Ocean View
+- Downtown waterfront`;
+    } else {
+      return `# File: ${path}
+
+This document is part of the Hampton Roads Research Platform collection.
+
+Select files from the file explorer or use the terminal below to execute research queries.`;
     }
-    return <FileText size={16} className={className} />;
   };
-
-  // File Explorer Renderer
+  
+  // Render the file explorer recursive component
   const renderFileExplorer = (items: FileSystemItem[], path: string[] = []) => {
     return items.map((item, index) => (
       <div key={index}>
@@ -522,16 +519,16 @@ const VSCodeLayout: React.FC = () => {
           style={{ paddingLeft: `${(path.length) * 12 + 4}px` }}
           onClick={() => toggleItem([...path, item.name])}
         >
-          <span className="mr-1">
-            {item.type === 'directory' 
+          <span className="mr-2">
+            {item.type === 'folder' 
               ? (item.expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />)
               : <FileText size={16} />
             }
           </span>
-          <span className="ml-1">{item.name}</span>
+          <span>{item.name}</span>
         </div>
         
-        {item.type === 'directory' && item.expanded && item.children && 
+        {item.type === 'folder' && item.expanded && item.children && 
           renderFileExplorer(item.children, [...path, item.name])}
       </div>
     ));
@@ -540,14 +537,13 @@ const VSCodeLayout: React.FC = () => {
   return (
     <div className="h-full flex flex-col text-white bg-[#1e1e1e] font-sans overflow-hidden">
       {/* Top Menu Bar */}
-      <div className="flex items-center h-8 bg-[#252526] px-2 text-xs">
+      <div className="flex items-center h-7 bg-[#252526] px-2 text-xs">
         <div className="flex items-center space-x-3">
           <span>File</span>
           <span>Edit</span>
           <span>Selection</span>
           <span>View</span>
           <span>Go</span>
-          <span>Debug</span>
           <span>Terminal</span>
           <span>Help</span>
         </div>
@@ -555,19 +551,6 @@ const VSCodeLayout: React.FC = () => {
       
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Sidebar */}
-        <div className="w-10 bg-[#333333] flex flex-col items-center py-2">
-          <button className="p-2 text-white opacity-80 hover:opacity-100">
-            <FileText size={20} />
-          </button>
-          <button className="p-2 text-white opacity-80 hover:opacity-100">
-            <Folder size={20} />
-          </button>
-          <button className="p-2 text-white opacity-80 hover:opacity-100">
-            <Settings size={20} />
-          </button>
-        </div>
-        
         {/* File Explorer */}
         <div className="w-60 bg-[#252526] border-r border-[#3e3e3e] flex flex-col">
           <div className="text-xs px-4 py-2 text-gray-400 font-semibold border-b border-[#3e3e3e]">EXPLORER</div>
@@ -579,76 +562,131 @@ const VSCodeLayout: React.FC = () => {
         {/* Main Editor Area */}
         <div className="flex-1 flex flex-col">
           {/* Editor Tabs */}
-          <div className="h-9 bg-[#252526] flex border-b border-[#3e3e3e]">
-            <div className="px-3 py-2 bg-[#1e1e1e] text-white text-xs flex items-center border-r border-[#3e3e3e]">
-              <FileText size={14} className="mr-2" />
-              vCodeOpenFolder.reg
-            </div>
+          <div className="h-9 bg-[#252526] flex border-b border-[#3e3e3e] overflow-auto">
+            {openFiles.length > 0 ? (
+              openFiles.map((file) => (
+                <div 
+                  key={file.path}
+                  className={`px-3 py-2 text-white text-xs flex items-center border-r border-[#3e3e3e] cursor-pointer ${activeFile === file.path ? 'bg-[#1e1e1e]' : 'bg-[#2d2d2d]'}`}
+                  onClick={() => setActiveFile(file.path)}
+                >
+                  <FileText size={14} className="mr-2" />
+                  {file.name}
+                  <span 
+                    className="ml-2 text-gray-400 hover:text-white" 
+                    onClick={(e) => { e.stopPropagation(); closeFile(file.path); }}
+                  >
+                    ×
+                  </span>
+                </div>
+              ))
+            ) : (
+              <div className="px-3 py-2 text-gray-400 text-xs">No files open</div>
+            )}
           </div>
           
           {/* Editor Content */}
           <div className="flex-1 overflow-auto bg-[#1e1e1e]">
-            <div className="flex">
-              {/* Line Numbers */}
-              <div className="text-gray-500 text-xs text-right pr-2 select-none bg-[#1e1e1e]">
-                {Array.from({ length: 22 }).map((_, i) => (
-                  <div key={i} className="px-2 leading-6">{i+1}</div>
-                ))}
+            {activeFile ? (
+              <div className="flex h-full">
+                {/* Line Numbers */}
+                <div className="text-gray-500 text-xs text-right pr-2 select-none bg-[#1e1e1e]">
+                  {Array.from({ length: 20 }).map((_, i) => (
+                    <div key={i} className="px-2 leading-6">{i+1}</div>
+                  ))}
+                </div>
+                
+                {/* Code Content */}
+                <pre className="text-white text-xs leading-6 flex-1 whitespace-pre-wrap p-2">
+                  {getFileContent(activeFile)}
+                </pre>
               </div>
-              
-              {/* Code Content */}
-              <pre className="text-white text-xs leading-6 flex-1">
-{`Windows Registry Editor Version 5.00
-
-; Open files
-[HKEY_CLASSES_ROOT\\*\\shell\\Open with VS Code]
-@="Edit with VS Code"
-"Icon"="E:\\VSCode\\Code.exe,0"
-[HKEY_CLASSES_ROOT\\*\\shell\\Open with VS Code\\command]
-@="\\"E:\\VSCode\\Code.exe\\" \\"%1\\""
-
-; This will make it appear when you right click on a folder
-; If you don't want the icon to appear, remove the "Icon" line
-[HKEY_CLASSES_ROOT\\Directory\\shell\\vscode]
-@="Open Folder as VS Code Project"
-"Icon"="E:\\VSCode\\Code.exe,0"
-[HKEY_CLASSES_ROOT\\Directory\\shell\\vscode\\command]
-@="\\"E:\\VSCode\\Code.exe\\" \\"%1\\""
-
-; This will make it appear when you right click INSIDE a folder
-; If you don't want the icon to appear, remove the "Icon" line
-[HKEY_CLASSES_ROOT\\Directory\\Background\\shell\\vscode]
-@="Open Folder as VS Code Project"
-"Icon"="E:\\VSCode\\Code.exe,0"
-[HKEY_CLASSES_ROOT\\Directory\\Background\\shell\\vscode\\command]
-@="\\"E:\\VSCode\\Code.exe\\" \\"%V\\""
-`}</pre>
-            </div>
+            ) : (
+              <div className="flex items-center justify-center h-full text-center">
+                <div>
+                  <h2 className="text-lg mb-4">Hampton Roads Research Platform</h2>
+                  <p className="text-sm text-gray-400 mb-8">
+                    Select a file from the explorer or use the terminal below.
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
           
           {/* Terminal */}
-          <div className="h-1/4 border-t border-[#3e3e3e]">
-            <div className="flex bg-[#252526] text-xs border-b border-[#3e3e3e]">
-              <div className="px-3 py-1 flex items-center">
-                <Terminal size={14} className="mr-1" />
-                TERMINAL
+          <div className="h-1/3 border-t border-[#3e3e3e]">
+            {/* Terminal Header */}
+            <div className="flex justify-between items-center bg-[#252526] px-3 py-1 border-b border-[#3e3e3e]">
+              <div className="flex items-center">
+                <Terminal size={14} className="mr-2" />
+                <span className="text-xs font-semibold">Hampton Roads Terminal</span>
+                <span className="text-xs ml-2 text-gray-400">v1.0.0</span>
+              </div>
+              
+              <div className="flex items-center space-x-3">
+                <div className="flex space-x-1">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'shell' ? 'bg-[#2d2d2d]' : 'hover:bg-[#2d2d2d]'}`} 
+                    onClick={() => switchMode('shell')}
+                  >
+                    <Terminal size={12} className="mr-1" />
+                    Shell
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'agent' ? 'bg-[#2d2d2d]' : 'hover:bg-[#2d2d2d]'}`}
+                    onClick={() => switchMode('agent')}
+                  >
+                    <MessageSquare size={12} className="mr-1" />
+                    Agent
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'explorer' ? 'bg-[#2d2d2d]' : 'hover:bg-[#2d2d2d]'}`}
+                    onClick={() => switchMode('explorer')}
+                  >
+                    <FolderOpen size={12} className="mr-1" />
+                    Explorer
+                  </Button>
+                </div>
+                
+                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                  <Maximize2 size={12} />
+                </Button>
               </div>
             </div>
-            <div className="h-[calc(100%-25px)] bg-[#1e1e1e] text-white text-xs p-2 overflow-auto">
-              {terminalHistory.map((item, index) => (
-                <div key={index} className={`${item.type === 'error' ? 'text-red-400' : ''}`}>
-                  {item.type === 'command' && <span className="text-blue-400">λ </span>}
-                  {item.content}
+            
+            {/* Terminal Content */}
+            <div 
+              className="h-[calc(100%-28px)] bg-[#1e1e1e] text-white text-xs p-2 overflow-auto" 
+              onClick={focusInput}
+              ref={terminalRef}
+            >
+              {entries.map((entry, index) => (
+                <div key={index} className={`
+                  ${entry.type === 'error' ? 'text-red-400' : ''} 
+                  ${entry.type === 'info' ? 'text-yellow-400' : ''}
+                  ${entry.type === 'success' ? 'text-green-400' : ''}
+                  ${entry.type === 'command' ? 'text-cyan-400' : ''}
+                `}>
+                  {entry.type === 'command' && <span className="text-green-500 mr-1">$</span>}
+                  {entry.content}
                 </div>
               ))}
               <div className="flex items-center">
-                <span className="text-blue-400">λ </span>
+                <span className="text-green-500 mr-1">{currentPath}$</span>
                 <input
+                  ref={inputRef}
                   type="text"
                   value={currentCommand}
                   onChange={(e) => setCurrentCommand(e.target.value)}
-                  onKeyDown={handleCommandSubmit}
+                  onKeyDown={handleKeyDown}
                   className="flex-1 bg-transparent outline-none border-none text-white"
+                  autoFocus
                 />
               </div>
             </div>
@@ -657,18 +695,16 @@ const VSCodeLayout: React.FC = () => {
       </div>
       
       {/* Status Bar */}
-      <div className="h-6 bg-[#007acc] text-white text-xs flex justify-between items-center px-3">
-        <div>2: cmd</div>
-        <div className="flex items-center space-x-3">
-          <span>In 21, Col 40</span>
-          <span>Spaces: 4</span>
+      <div className="h-5 bg-[#007acc] text-white text-xs flex justify-between items-center px-3">
+        <div>terminal: hampton-research</div>
+        <div className="flex items-center gap-3">
+          <span>Line 1</span>
           <span>UTF-8</span>
-          <span>CRLF</span>
-          <span>REG</span>
+          <span>{new Date().toLocaleTimeString()}</span>
         </div>
       </div>
     </div>
   );
 };
 
-export default VSCodeLayout;
+export default CodeTerminal;
