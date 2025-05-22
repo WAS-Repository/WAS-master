@@ -35,11 +35,77 @@ import {
   Settings,
   HelpCircle,
   Edit,
-  Sun
+  Sun,
+  Palette,
+  Check
 } from 'lucide-react';
 import MapView from '../visualization/MapView';
 import KnowledgeGraph from '../visualization/KnowledgeGraph';
 import DocumentViewer from '../visualization/DocumentViewer';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+// Color scheme definitions - each theme has main colors that will be used
+type ColorScheme = {
+  name: string;
+  id: string;
+  mainColor: string;
+  accentColor: string;
+  bgColor: string;
+  bgAltColor: string;
+  borderColor: string;
+};
+
+const colorSchemes: ColorScheme[] = [
+  {
+    name: "Matrix Green",
+    id: "matrix",
+    mainColor: "#33ff33",
+    accentColor: "#ff00ff",
+    bgColor: "#000000",
+    bgAltColor: "#001100",
+    borderColor: "#22dd22"
+  },
+  {
+    name: "Cyberpunk Blue",
+    id: "cyberpunk",
+    mainColor: "#00ccff",
+    accentColor: "#ff3366",
+    bgColor: "#000022",
+    bgAltColor: "#000044",
+    borderColor: "#0077aa"
+  },
+  {
+    name: "Retro Amber",
+    id: "amber",
+    mainColor: "#ffb000",
+    accentColor: "#ff3300",
+    bgColor: "#1a1000",
+    bgAltColor: "#221500",
+    borderColor: "#cc7700"
+  },
+  {
+    name: "Tron Legacy",
+    id: "tron",
+    mainColor: "#aacfd1",
+    accentColor: "#ff9c00",
+    bgColor: "#05080d",
+    bgAltColor: "#0b131c",
+    borderColor: "#6fc3df"
+  },
+  {
+    name: "Blood Red",
+    id: "blood",
+    mainColor: "#ff0000",
+    accentColor: "#770000",
+    bgColor: "#0a0000",
+    bgAltColor: "#110000",
+    borderColor: "#aa0000"
+  }
+];
 
 /**
  * WorkspaceLayout component creates a sci-fi terminal-like interface based on the provided design
@@ -57,6 +123,8 @@ export default function WorkspaceLayout() {
   const [selectedLocality, setSelectedLocality] = useState<string | null>("Norfolk");
   const [documentViewMode, setDocumentViewMode] = useState<'map' | 'graph' | 'documents'>('map');
   const [navigationTab, setNavigationTab] = useState<number>(1);
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(colorSchemes[0]);
+  const [showColorPicker, setShowColorPicker] = useState(false);
   
   // Simulate real-time clock and changing metrics
   useEffect(() => {
@@ -100,8 +168,13 @@ export default function WorkspaceLayout() {
     ].join('/');
   };
 
+  // Apply the main container background color from the color scheme
   return (
-    <div className="h-full flex flex-col overflow-hidden bg-black text-[#00ff00] font-mono scanlines">
+    <div className="h-full flex flex-col overflow-hidden font-mono scanlines" 
+      style={{ 
+        backgroundColor: colorScheme.bgColor,
+        color: colorScheme.mainColor
+      }}>
       
       {/* Main content area with grid layout */}
       <div className="flex flex-grow overflow-hidden">
@@ -109,96 +182,180 @@ export default function WorkspaceLayout() {
         {/* Main content grid layout */}
         <div className="flex-1 flex flex-col">
           {/* Current time and info bar */}
-          <div className="flex bg-black border-b border-[#22dd22] p-2">
+          <div className="flex bg-black border-b border-[#22dd22] p-2" style={{ borderColor: colorScheme.borderColor, backgroundColor: colorScheme.bgColor }}>
             <div className="flex flex-col mr-6">
-              <div className="text-[#33ff33] font-bold text-xl">{formatTime(currentTime)}</div>
-              <div className="text-[#33ff33] opacity-70 text-[10px]">Current time in user time zone</div>
+              <div className="font-bold text-xl" style={{ color: colorScheme.mainColor }}>{formatTime(currentTime)}</div>
+              <div className="opacity-70 text-[10px]" style={{ color: colorScheme.mainColor }}>Current time in user time zone</div>
             </div>
             
             <div className="flex-1 flex justify-between items-center">
-              <div className="flex items-center bg-black border border-[#33ff33] px-2 py-1">
-                <span className="text-[#ff00ff] uppercase mr-2">NETWORK STATUS</span>
-                <span className={networkPing < 30 ? "text-[#33ff33]" : networkPing < 60 ? "text-[#ffff33]" : "text-[#ff3333]"}>
+              <div className="flex items-center bg-black border px-2 py-1" style={{ borderColor: colorScheme.mainColor, backgroundColor: colorScheme.bgColor }}>
+                <span className="uppercase mr-2" style={{ color: colorScheme.accentColor }}>NETWORK STATUS</span>
+                <span className={networkPing < 30 
+                  ? `text-[${colorScheme.mainColor}]` 
+                  : networkPing < 60 
+                    ? "text-[#ffff33]" 
+                    : "text-[#ff3333]"
+                }>
                   {networkPing}ms latency
                 </span>
               </div>
               
-              <div className="uppercase text-[#33ff33]">EMPTY</div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="hover:bg-opacity-20" 
+                    style={{ color: colorScheme.mainColor }}
+                  >
+                    <Palette className="h-5 w-5" />
+                    <span className="sr-only">Change theme</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-0" style={{ backgroundColor: colorScheme.bgAltColor, borderColor: colorScheme.borderColor }}>
+                  <div className="p-2 border-b" style={{ borderColor: colorScheme.borderColor }}>
+                    <h4 className="text-sm font-medium" style={{ color: colorScheme.mainColor }}>Choose a color scheme</h4>
+                  </div>
+                  <div className="p-2">
+                    <div className="grid gap-2">
+                      {colorSchemes.map((scheme) => (
+                        <Button
+                          key={scheme.id}
+                          variant="ghost"
+                          className="w-full justify-start flex items-center gap-2"
+                          style={{ 
+                            color: scheme.mainColor,
+                            backgroundColor: scheme.id === colorScheme.id ? scheme.bgAltColor : 'transparent'
+                          }}
+                          onClick={() => setColorScheme(scheme)}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: scheme.mainColor }}></div>
+                            <span>{scheme.name}</span>
+                          </div>
+                          {scheme.id === colorScheme.id && (
+                            <Check className="h-4 w-4 ml-auto" />
+                          )}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+                </PopoverContent>
+              </Popover>
               
-              <div className="uppercase text-[#33ff33] text-right">MAIN SHELL</div>
+              <div className="uppercase text-right" style={{ color: colorScheme.mainColor }}>MAIN SHELL</div>
             </div>
           </div>
           
           {/* Location and coordinate information */}
-          <div className="flex bg-black border-b border-[#22dd22] p-2">
+          <div className="flex p-2 border-b" style={{ 
+            backgroundColor: colorScheme.bgColor,
+            borderColor: colorScheme.borderColor
+          }}>
             <div className="w-1/3">
-              <div className="text-[#ff00ff] uppercase text-xs">Primary Location of Impact</div>
-              <div className="text-[#33ff33]">Hampton Roads, VA</div>
+              <div className="uppercase text-xs" style={{ color: colorScheme.accentColor }}>Primary Location of Impact</div>
+              <div style={{ color: colorScheme.mainColor }}>Hampton Roads, VA</div>
             </div>
             
             <div className="w-1/3 text-center">
-              <div className="text-[#33ff33] uppercase text-xs">WORLD VIEW</div>
-              <div className="text-[#33ff33] text-xs">GLOBAL NETWORK MAP</div>
+              <div className="uppercase text-xs" style={{ color: colorScheme.mainColor }}>WORLD VIEW</div>
+              <div className="text-xs" style={{ color: colorScheme.mainColor }}>GLOBAL NETWORK MAP</div>
             </div>
             
             <div className="w-1/3 text-right">
-              <div className="text-[#33ff33] uppercase text-xs">ENDPOINT LOCATION</div>
-              <div className="text-[#33ff33] text-xs">LAT/LON 36.9081°, -76.1911°</div>
+              <div className="uppercase text-xs" style={{ color: colorScheme.mainColor }}>ENDPOINT LOCATION</div>
+              <div className="text-xs" style={{ color: colorScheme.mainColor }}>LAT/LON 36.9081°, -76.1911°</div>
             </div>
           </div>
           
           {/* Main visualization area */}
           <div className="flex flex-1">
             {/* Left column - document navigation */}
-            <div className="w-56 border-r border-[#22dd22] bg-black p-2 flex flex-col">
+            <div className="w-56 p-2 flex flex-col border-r" 
+              style={{ 
+                backgroundColor: colorScheme.bgColor, 
+                borderColor: colorScheme.borderColor
+              }}
+            >
               <div className="mb-3">
-                <div className="text-[#33ff33] font-semibold mb-1">Hampton Roads Localities</div>
-                <div className="text-xs text-[#33ff33] mb-2">Select a locality to view</div>
+                <div className="font-semibold mb-1" style={{ color: colorScheme.mainColor }}>Hampton Roads Localities</div>
+                <div className="text-xs mb-2" style={{ color: colorScheme.mainColor }}>Select a locality to view</div>
                 <div className="space-y-1">
                   {['Norfolk', 'Hampton', 'Portsmouth', 'Virginia Beach', 'Newport News', 'Suffolk', 'Chesapeake'].map(locality => (
                     <div 
                       key={locality}
-                      className={`cursor-pointer p-1 rounded flex items-center ${selectedLocality === locality ? 'bg-[#001800]' : 'hover:bg-[#001800]'}`}
+                      className={`cursor-pointer p-1 rounded flex items-center hover:bg-opacity-20`}
+                      style={{ 
+                        backgroundColor: selectedLocality === locality ? colorScheme.bgAltColor : 'transparent'
+                      }}
                       onClick={() => setSelectedLocality(locality)}
                     >
-                      <div className={`w-2 h-2 rounded-full ${selectedLocality === locality ? 'bg-[#33ff33]' : 'bg-[#33ff33] opacity-50'} mr-2`}></div>
-                      <span className="text-[#33ff33] text-sm">{locality}</span>
+                      <div className="w-2 h-2 rounded-full mr-2" 
+                        style={{ 
+                          backgroundColor: colorScheme.mainColor,
+                          opacity: selectedLocality === locality ? 1 : 0.5
+                        }}
+                      ></div>
+                      <span className="text-sm" style={{ color: colorScheme.mainColor }}>{locality}</span>
                     </div>
                   ))}
                 </div>
               </div>
               
               <div className="mt-2 mb-auto">
-                <div className="text-[#ff00ff] font-semibold text-xs mb-1">Documents Selection Tabs</div>
-                <div className="border border-[#33ff33] p-1 flex space-x-1 bg-black">
+                <div className="font-semibold text-xs mb-1" style={{ color: colorScheme.accentColor }}>Documents Selection Tabs</div>
+                <div className="p-1 flex space-x-1 border" style={{ 
+                  backgroundColor: colorScheme.bgColor,
+                  borderColor: colorScheme.mainColor
+                }}>
                   <button 
-                    className={`px-2 py-0.5 text-xs ${activeDocTab === 'all' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    className="px-2 py-0.5 text-xs"
+                    style={{ 
+                      backgroundColor: activeDocTab === 'all' ? colorScheme.bgAltColor : 'transparent',
+                      color: colorScheme.mainColor
+                    }}
                     onClick={() => setActiveDocTab('all')}
                   >
                     All
                   </button>
                   <button 
-                    className={`px-2 py-0.5 text-xs ${activeDocTab === 'research' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    className="px-2 py-0.5 text-xs"
+                    style={{ 
+                      backgroundColor: activeDocTab === 'research' ? colorScheme.bgAltColor : 'transparent',
+                      color: colorScheme.mainColor
+                    }}
                     onClick={() => setActiveDocTab('research')}
                   >
                     Research
                   </button>
                   <button 
-                    className={`px-2 py-0.5 text-xs ${activeDocTab === 'patents' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    className="px-2 py-0.5 text-xs"
+                    style={{ 
+                      backgroundColor: activeDocTab === 'patents' ? colorScheme.bgAltColor : 'transparent',
+                      color: colorScheme.mainColor
+                    }}
                     onClick={() => setActiveDocTab('patents')}
                   >
                     Patents
                   </button>
                   <button 
-                    className={`px-2 py-0.5 text-xs ${activeDocTab === 'drawings' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    className="px-2 py-0.5 text-xs"
+                    style={{ 
+                      backgroundColor: activeDocTab === 'drawings' ? colorScheme.bgAltColor : 'transparent',
+                      color: colorScheme.mainColor
+                    }}
                     onClick={() => setActiveDocTab('drawings')}
                   >
                     Drawings
                   </button>
                 </div>
                 
-                <div className="border-l border-r border-b border-[#33ff33] bg-black p-2">
-                  <div className="text-[#33ff33] text-xs mb-1">
+                <div className="p-2 border-l border-r border-b" style={{ 
+                  backgroundColor: colorScheme.bgColor,
+                  borderColor: colorScheme.mainColor
+                }}>
+                  <div className="text-xs mb-1" style={{ color: colorScheme.mainColor }}>
                     {selectedLocality}: {activeDocTab === 'all' ? '3 types' : ''}
                   </div>
                 </div>
@@ -222,22 +379,39 @@ export default function WorkspaceLayout() {
               </div>
               
               {/* Control overlay */}
-              <div className="absolute top-2 right-2 z-30 bg-black bg-opacity-70 border border-[#33ff33] rounded p-1">
+              <div className="absolute top-2 right-2 z-30 bg-opacity-70 rounded p-1 border" 
+                style={{ 
+                  backgroundColor: colorScheme.bgColor,
+                  borderColor: colorScheme.mainColor 
+                }}
+              >
                 <div className="flex items-center space-x-2">
                   <button 
-                    className={`p-1 ${documentViewMode === 'map' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    className="p-1"
+                    style={{ 
+                      backgroundColor: documentViewMode === 'map' ? colorScheme.bgAltColor : 'transparent',
+                      color: colorScheme.mainColor 
+                    }}
                     onClick={() => setDocumentViewMode('map')}
                   >
                     <Map className="h-4 w-4" />
                   </button>
                   <button 
-                    className={`p-1 ${documentViewMode === 'graph' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    className="p-1"
+                    style={{ 
+                      backgroundColor: documentViewMode === 'graph' ? colorScheme.bgAltColor : 'transparent',
+                      color: colorScheme.mainColor 
+                    }}
                     onClick={() => setDocumentViewMode('graph')}
                   >
                     <Network className="h-4 w-4" />
                   </button>
                   <button 
-                    className={`p-1 ${documentViewMode === 'documents' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    className="p-1"
+                    style={{ 
+                      backgroundColor: documentViewMode === 'documents' ? colorScheme.bgAltColor : 'transparent',
+                      color: colorScheme.mainColor 
+                    }}
                     onClick={() => setDocumentViewMode('documents')}
                   >
                     <FileText className="h-4 w-4" />
@@ -246,12 +420,17 @@ export default function WorkspaceLayout() {
               </div>
               
               {/* Map zoom controls */}
-              <div className="absolute top-2 left-2 z-30 bg-black bg-opacity-70 border border-[#33ff33] rounded p-1">
+              <div className="absolute top-2 left-2 z-30 bg-opacity-70 rounded p-1 border"
+                style={{ 
+                  backgroundColor: colorScheme.bgColor,
+                  borderColor: colorScheme.mainColor 
+                }}
+              >
                 <div className="flex flex-col">
-                  <button className="p-1 text-[#33ff33]">
+                  <button className="p-1" style={{ color: colorScheme.mainColor }}>
                     <Plus className="h-4 w-4" />
                   </button>
-                  <button className="p-1 text-[#33ff33]">
+                  <button className="p-1" style={{ color: colorScheme.mainColor }}>
                     <Minus className="h-4 w-4" />
                   </button>
                 </div>
@@ -259,15 +438,22 @@ export default function WorkspaceLayout() {
             </div>
             
             {/* Right column - system monitors */}
-            <div className="w-64 border-l border-[#22dd22] bg-black flex flex-col">
+            <div className="w-64 border-l flex flex-col" style={{ 
+              borderColor: colorScheme.borderColor,
+              backgroundColor: colorScheme.bgColor
+            }}>
               {/* Process table */}
-              <div className="p-2 border-b border-[#22dd22]">
-                <div className="text-xs text-[#33ff33] flex items-center justify-between mb-1">
-                  <span className="text-xs text-[#33ff33] font-bold uppercase">PID TABLE</span>
-                  <span className="text-[10px] text-[#33ff33]">Active: 7/12</span>
+              <div className="p-2 border-b" style={{ borderColor: colorScheme.borderColor }}>
+                <div className="text-xs flex items-center justify-between mb-1" style={{ color: colorScheme.mainColor }}>
+                  <span className="text-xs font-bold uppercase" style={{ color: colorScheme.mainColor }}>PID TABLE</span>
+                  <span className="text-[10px]" style={{ color: colorScheme.mainColor }}>Active: 7/12</span>
                 </div>
-                <div className="bg-black border border-[#33ff33] text-[10px]">
-                  <div className="grid grid-cols-5 border-b border-[#33ff33] p-1">
+                <div className="text-[10px] border" style={{ 
+                  backgroundColor: colorScheme.bgColor,
+                  borderColor: colorScheme.mainColor,
+                  color: colorScheme.mainColor
+                }}>
+                  <div className="grid grid-cols-5 border-b p-1" style={{ borderColor: colorScheme.mainColor }}>
                     <div>PID</div>
                     <div>Name</div>
                     <div className="text-right">CPU</div>
@@ -281,7 +467,9 @@ export default function WorkspaceLayout() {
                     { pid: '15617', name: 'edge-db', cpu: '3.3%', mem: '1.6%', time: '0:31.71' },
                     { pid: '15631', name: 'node', cpu: '2.0%', mem: '3.3%', time: '0:12.46' }
                   ].map((process, i) => (
-                    <div key={i} className="grid grid-cols-5 p-1 hover:bg-[#001800]">
+                    <div key={i} className="grid grid-cols-5 p-1 hover:bg-opacity-20" style={{ 
+                      color: colorScheme.mainColor
+                    }}>
                       <div>{process.pid}</div>
                       <div>{process.name}</div>
                       <div className="text-right">{process.cpu}</div>
@@ -293,23 +481,26 @@ export default function WorkspaceLayout() {
               </div>
               
               {/* Key players graph */}
-              <div className="p-2 border-b border-[#22dd22]">
-                <div className="text-xs text-[#33ff33] font-bold uppercase mb-1">Key Role Players</div>
-                <div className="h-32 bg-[#001000] border border-[#33ff33] relative p-1">
+              <div className="p-2 border-b" style={{ borderColor: colorScheme.borderColor }}>
+                <div className="text-xs font-bold uppercase mb-1" style={{ color: colorScheme.mainColor }}>Key Role Players</div>
+                <div className="h-32 relative p-1 border" style={{ 
+                  backgroundColor: colorScheme.bgAltColor,
+                  borderColor: colorScheme.mainColor
+                }}>
                   {/* Simple knowledge graph visualization */}
                   <svg className="w-full h-full">
-                    <circle cx="50%" cy="30%" r="5" fill="#33ff33" />
-                    <circle cx="30%" cy="60%" r="5" fill="#33ff33" />
-                    <circle cx="70%" cy="70%" r="5" fill="#33ff33" />
-                    <circle cx="80%" cy="40%" r="5" fill="#33ff33" />
-                    <circle cx="20%" cy="40%" r="5" fill="#33ff33" />
+                    <circle cx="50%" cy="30%" r="5" fill={colorScheme.mainColor} />
+                    <circle cx="30%" cy="60%" r="5" fill={colorScheme.mainColor} />
+                    <circle cx="70%" cy="70%" r="5" fill={colorScheme.mainColor} />
+                    <circle cx="80%" cy="40%" r="5" fill={colorScheme.mainColor} />
+                    <circle cx="20%" cy="40%" r="5" fill={colorScheme.mainColor} />
                     
-                    <line x1="50%" y1="30%" x2="30%" y2="60%" stroke="#33ff33" strokeWidth="1" />
-                    <line x1="50%" y1="30%" x2="70%" y2="70%" stroke="#33ff33" strokeWidth="1" />
-                    <line x1="50%" y1="30%" x2="80%" y2="40%" stroke="#33ff33" strokeWidth="1" />
-                    <line x1="50%" y1="30%" x2="20%" y2="40%" stroke="#33ff33" strokeWidth="1" />
-                    <line x1="30%" y1="60%" x2="70%" y2="70%" stroke="#33ff33" strokeWidth="1" />
-                    <line x1="80%" y1="40%" x2="70%" y2="70%" stroke="#33ff33" strokeWidth="1" />
+                    <line x1="50%" y1="30%" x2="30%" y2="60%" stroke={colorScheme.mainColor} strokeWidth="1" />
+                    <line x1="50%" y1="30%" x2="70%" y2="70%" stroke={colorScheme.mainColor} strokeWidth="1" />
+                    <line x1="50%" y1="30%" x2="80%" y2="40%" stroke={colorScheme.mainColor} strokeWidth="1" />
+                    <line x1="50%" y1="30%" x2="20%" y2="40%" stroke={colorScheme.mainColor} strokeWidth="1" />
+                    <line x1="30%" y1="60%" x2="70%" y2="70%" stroke={colorScheme.mainColor} strokeWidth="1" />
+                    <line x1="80%" y1="40%" x2="70%" y2="70%" stroke={colorScheme.mainColor} strokeWidth="1" />
                   </svg>
                 </div>
               </div>
@@ -317,35 +508,50 @@ export default function WorkspaceLayout() {
               {/* System metrics and Events Calendar */}
               <div className="flex-1 p-2 overflow-y-auto">
                 <div className="mb-3">
-                  <div className="text-xs text-[#33ff33] font-bold uppercase mb-1">Document Correlation Strength</div>
+                  <div className="text-xs font-bold uppercase mb-1" style={{ color: colorScheme.mainColor }}>Document Correlation Strength</div>
                   <div className="flex items-center space-x-1">
-                    <div className="h-3 flex-grow bg-[#001000] border border-[#33ff33]">
-                      <div className="h-full bg-[#33ff33]" style={{ width: `60%` }}></div>
+                    <div className="h-3 flex-grow border" style={{ 
+                      backgroundColor: colorScheme.bgAltColor,
+                      borderColor: colorScheme.mainColor 
+                    }}>
+                      <div className="h-full" style={{ 
+                        backgroundColor: colorScheme.mainColor,
+                        width: `60%` 
+                      }}></div>
                     </div>
-                    <span className="text-[#33ff33] text-xs">60%</span>
+                    <span className="text-xs" style={{ color: colorScheme.mainColor }}>60%</span>
                   </div>
                 </div>
                 
                 <div className="mb-3">
-                  <div className="text-xs text-[#33ff33] font-bold uppercase mb-1">CPU Usage</div>
+                  <div className="text-xs font-bold uppercase mb-1" style={{ color: colorScheme.mainColor }}>CPU Usage</div>
                   <div className="flex items-center space-x-1">
-                    <div className="h-3 flex-grow bg-[#001000] border border-[#33ff33]">
+                    <div className="h-3 flex-grow border" style={{ 
+                      backgroundColor: colorScheme.bgAltColor,
+                      borderColor: colorScheme.mainColor
+                    }}>
                       <div 
-                        className={`h-full ${cpuUsage < 20 ? 'bg-[#33ff33]' : cpuUsage < 60 ? 'bg-[#ffff33]' : 'bg-[#ff3333]'}`} 
-                        style={{ width: `${cpuUsage}%` }}
+                        className="h-full"
+                        style={{ 
+                          backgroundColor: cpuUsage < 20 ? colorScheme.mainColor : cpuUsage < 60 ? '#ffff33' : '#ff3333',
+                          width: `${cpuUsage}%` 
+                        }}
                       ></div>
                     </div>
-                    <span className="text-[#33ff33] text-xs">{cpuUsage}%</span>
+                    <span className="text-xs" style={{ color: colorScheme.mainColor }}>{cpuUsage}%</span>
                   </div>
                 </div>
                 
                 {/* Calendar of Events */}
                 <div className="mb-3">
-                  <div className="text-xs text-[#ff00ff] font-bold uppercase mb-1">Calendar of Events</div>
-                  <div className="bg-[#001000] border border-[#33ff33] p-1">
+                  <div className="text-xs font-bold uppercase mb-1" style={{ color: colorScheme.accentColor }}>Calendar of Events</div>
+                  <div className="p-1 border" style={{ 
+                    backgroundColor: colorScheme.bgAltColor,
+                    borderColor: colorScheme.mainColor 
+                  }}>
                     <div className="grid grid-cols-7 gap-px mb-1">
                       {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
-                        <div key={i} className="text-center text-[10px] text-[#33ff33] font-bold">
+                        <div key={i} className="text-center text-[10px] font-bold" style={{ color: colorScheme.mainColor }}>
                           {day}
                         </div>
                       ))}
@@ -357,26 +563,45 @@ export default function WorkspaceLayout() {
                         return (
                           <div 
                             key={i} 
-                            className={`text-center text-[10px] p-1 ${hasEvent ? 'bg-[#002200] border border-[#33ff33]' : ''}`}
+                            className={`text-center text-[10px] p-1 ${hasEvent ? 'border' : ''}`}
+                            style={{ 
+                              backgroundColor: hasEvent ? colorScheme.bgColor : 'transparent',
+                              borderColor: hasEvent ? colorScheme.mainColor : 'transparent',
+                              color: colorScheme.mainColor
+                            }}
                           >
                             {i + 1}
-                            {hasEvent && <div className="w-1 h-1 bg-[#33ff33] rounded-full mx-auto mt-0.5"></div>}
+                            {hasEvent && (
+                              <div 
+                                className="w-1 h-1 rounded-full mx-auto mt-0.5"
+                                style={{ backgroundColor: colorScheme.mainColor }}
+                              ></div>
+                            )}
                           </div>
                         );
                       })}
                     </div>
                     
-                    <div className="text-[10px] text-[#33ff33] mt-1">
+                    <div className="text-[10px] mt-1" style={{ color: colorScheme.mainColor }}>
                       <div className="flex items-center">
-                        <div className="w-2 h-2 bg-[#33ff33] mr-1"></div>
+                        <div 
+                          className="w-2 h-2 mr-1"
+                          style={{ backgroundColor: colorScheme.mainColor }}
+                        ></div>
                         <span>04/08: Research data upload</span>
                       </div>
                       <div className="flex items-center">
-                        <div className="w-2 h-2 bg-[#33ff33] mr-1"></div>
+                        <div 
+                          className="w-2 h-2 mr-1"
+                          style={{ backgroundColor: colorScheme.mainColor }}
+                        ></div>
                         <span>04/17: Coastal analysis report</span>
                       </div>
                       <div className="flex items-center">
-                        <div className="w-2 h-2 bg-[#33ff33] mr-1"></div>
+                        <div 
+                          className="w-2 h-2 mr-1"
+                          style={{ backgroundColor: colorScheme.mainColor }}
+                        ></div>
                         <span>04/25: Stakeholder meeting</span>
                       </div>
                     </div>
