@@ -136,57 +136,7 @@
     outline: 1px solid var(--tron-blue) !important;
   }
 
-  /* Sacred-inspired terminal effects */
-  @keyframes glowPulse {
-    0% {
-      text-shadow: 0 0 1px rgba(170, 207, 209, 0.5);
-      box-shadow: 0 0 1px rgba(111, 195, 223, 0.5);
-    }
-    50% {
-      text-shadow: 0 0 4px rgba(170, 207, 209, 0.8);
-      box-shadow: 0 0 4px rgba(111, 195, 223, 0.8);
-    }
-    100% {
-      text-shadow: 0 0 1px rgba(170, 207, 209, 0.5);
-      box-shadow: 0 0 1px rgba(111, 195, 223, 0.5);
-    }
-  }
-
-  .tron-text {
-    animation: glowPulse 3s infinite;
-  }
-
-  /* Tron-inspired scanline effect */
-  @keyframes scanline {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 0 100%;
-    }
-  }
-
-  .scanlines {
-    position: relative;
-  }
-
-  .scanlines::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-      to bottom,
-      transparent 50%,
-      rgba(5, 8, 13, 0.15) 51%
-    );
-    background-size: 100% 3px;
-    pointer-events: none;
-    z-index: 100;
-    animation: scanline 8s linear infinite;
-  }
+  /* Removed CRT/Terminal animations */
 }
 
 /* Custom component styles inspired by Sacred */
