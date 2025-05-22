@@ -24,7 +24,7 @@ import {
 import DocumentViewer from '../visualization/DocumentViewer';
 import MapView from '../visualization/MapView';
 import KnowledgeGraph from '../visualization/KnowledgeGraph';
-import TerminalInterface from './TerminalInterface';
+import VSCodeLayout from './VSCodeLayout';
 import ViewMenu, { ResearchWorkspace, researchWorkspaces } from './ViewMenu';
 
 export default function TronLayout() {
@@ -204,9 +204,11 @@ export default function TronLayout() {
           
           <ResizableHandle />
           
-          {/* Side panel - Terminal/Keyboard */}
+          {/* Side panel - VSCode-style Terminal Interface */}
           <ResizablePanel defaultSize={30}>
-            <TerminalInterface />
+            <div className="h-full">
+              <VSCodeLayout />
+            </div>
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

@@ -5,18 +5,15 @@ import { useToast } from '@/hooks/use-toast';
 import { 
   Terminal as TerminalIcon, 
   Monitor, 
-  Smartphone, 
-  ArrowUp,
-  ArrowLeft,
-  ArrowRight,
-  ArrowDown,
-  CheckSquare,
+  File as FileIcon,
+  Folder,
+  ChevronDown,
+  ChevronRight,
   FileText,
-  FolderOpen,
+  Settings,
+  Command,
   Search,
-  HelpCircle,
-  MessageSquare,
-  Maximize2
+  FolderOpen
 } from 'lucide-react';
 
 interface VirtualKeyboardProps {
