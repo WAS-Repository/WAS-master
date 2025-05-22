@@ -118,16 +118,7 @@ const colorSchemes: ColorScheme[] = [
  */
 export default function WorkspaceLayout() {
   const isMobile = useIsMobile();
-  const [terminalHeight, setTerminalHeight] = useState(100);
-  const [showTerminal, setShowTerminal] = useState(true);
-  const [activeDocTab, setActiveDocTab] = useState<'all' | 'research' | 'patents' | 'drawings'>('all');
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [cpuUsage, setCpuUsage] = useState(Math.floor(Math.random() * 20) + 5); // Random value between 5-25%
-  const [networkPing, setNetworkPing] = useState(Math.floor(Math.random() * 40) + 20); // Random value between 20-60ms
-  const [selectedLocality, setSelectedLocality] = useState<string | null>("Norfolk");
-  const [documentViewMode, setDocumentViewMode] = useState<'map' | 'graph' | 'documents'>('map');
-  const [navigationTab, setNavigationTab] = useState<number>(1);
   const [colorScheme, setColorScheme] = useState<ColorScheme>(colorSchemes[0]);
   const [showColorPicker, setColorPicker] = useState(false);
   const [showSearchDialog, setShowSearchDialog] = useState(false);
@@ -213,23 +204,11 @@ export default function WorkspaceLayout() {
             </div>
           </div>
           
-          {/* Main visualization area */}
+          {/* Multi-pane IDE-like Workspace */}
           <div className="flex flex-1">
-            {/* Center area - Map/Graph visualization */}
             <div className="flex-1 relative">
-              <div className="absolute inset-0">
-                <div className={`absolute inset-0 transition-opacity duration-300 ${documentViewMode === 'map' ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
-                  <MapView />
-                </div>
-                
-                <div className={`absolute inset-0 transition-opacity duration-300 ${documentViewMode === 'graph' ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
-                  <KnowledgeGraph />
-                </div>
-                
-                <div className={`absolute inset-0 transition-opacity duration-300 ${documentViewMode === 'documents' ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
-                  <DocumentViewer />
-                </div>
-              </div>
+              {/* Flexible multi-pane workspace with document-centric default view */}
+              <WorkspacePanels />
               
               {/* In Focus Mode, we add a simple indicator in the top-right */}
               {focusMode && (
@@ -238,8 +217,6 @@ export default function WorkspaceLayout() {
                 </div>
               )}
             </div>
-            
-            {/* Right column removed - now accessed through View menu */}
           </div>
         </div>
       </div>
