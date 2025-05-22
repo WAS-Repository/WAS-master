@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Terminal as TerminalIcon, 
   Monitor, 
@@ -10,7 +11,12 @@ import {
   ArrowRight,
   ArrowDown,
   CheckSquare,
-  FileText
+  FileText,
+  FolderOpen,
+  Search,
+  HelpCircle,
+  MessageSquare,
+  Maximize2
 } from 'lucide-react';
 
 interface VirtualKeyboardProps {
@@ -222,49 +228,39 @@ interface FileTreeItem {
   path: string;
 }
 
-// Sample file structure
-const sampleFileTree: FileTreeItem[] = [
+// Sample research data file structure
+const researchFileTree: FileTreeItem[] = [
   {
-    name: 'OPEN EDITORS',
+    name: 'DOCUMENTS',
     type: 'folder',
     expanded: true,
-    path: '/open-editors',
+    path: '/documents',
     children: [
-      { name: 'Settings', type: 'file', path: '/open-editors/settings' },
-      { name: 'User Settings', type: 'file', path: '/open-editors/user-settings' },
-      { name: 'vCodeOpenFolder.reg', type: 'file', path: '/open-editors/vCodeOpenFolder.reg' }
+      { name: 'Coastal Erosion Impact Study.pdf', type: 'file', path: '/documents/coastal-erosion' },
+      { name: 'Tidal Pattern Analysis.pdf', type: 'file', path: '/documents/tidal-patterns' },
+      { name: 'Sea Level Rise Projections.pdf', type: 'file', path: '/documents/sea-level' }
     ]
   },
   {
-    name: 'WORKSPACE',
+    name: 'MAPS',
     type: 'folder',
     expanded: true,
-    path: '/workspace',
+    path: '/maps',
     children: [
-      { name: 'vscode.bat', type: 'file', path: '/workspace/vscode.bat' },
-      { name: 'vscode-setup.sh', type: 'file', path: '/workspace/vscode-setup.sh' },
-      { 
-        name: 'HELLO-WORLD-REACT-APP', 
-        type: 'folder', 
-        expanded: false,
-        path: '/workspace/hello-world-react-app',
-        children: [
-          { name: 'README.md', type: 'file', path: '/workspace/hello-world-react-app/README.md' },
-          { name: 'package.json', type: 'file', path: '/workspace/hello-world-react-app/package.json' },
-          { name: 'index.js', type: 'file', path: '/workspace/hello-world-react-app/index.js' }
-        ]
-      }
+      { name: 'Norfolk Flood Zones.map', type: 'file', path: '/maps/norfolk-flood' },
+      { name: 'Virginia Beach Coastal.map', type: 'file', path: '/maps/virginia-beach' },
+      { name: 'Hampton Roads Region.map', type: 'file', path: '/maps/hampton-roads' }
     ]
   },
   {
-    name: 'RECENT PROJECTS',
+    name: 'RESEARCH DATA',
     type: 'folder',
     expanded: false,
-    path: '/recent-projects',
+    path: '/data',
     children: [
-      { name: 'coastal-research', type: 'file', path: '/recent-projects/coastal-research' },
-      { name: 'flood-analysis', type: 'file', path: '/recent-projects/flood-analysis' },
-      { name: 'sea-level-metrics', type: 'file', path: '/recent-projects/sea-level-metrics' }
+      { name: 'Tide Measurements.csv', type: 'file', path: '/data/tide-measurements' },
+      { name: 'Erosion Rates.csv', type: 'file', path: '/data/erosion-rates' },
+      { name: 'Impact Analysis.xlsx', type: 'file', path: '/data/impact-analysis' }
     ]
   }
 ];
@@ -366,81 +362,572 @@ const EditorTab: React.FC<{
 const DocumentContent: React.FC<{
   filePath: string;
 }> = ({ filePath }) => {
-  // In a real app, this would fetch the content based on the path
-  const getFileContent = (path: string) => {
-    if (path === '/open-editors/vCodeOpenFolder.reg') {
-      return `Windows Registry Editor Version 5.00
-      
-; Open files
-[HKEY_CLASSES_ROOT\\*\\shell\\Open with VS Code]
-@="Edit with VS Code"
-"Icon"="E:\\VSCode\\Code.exe,0"
-[HKEY_CLASSES_ROOT\\*\\shell\\Open with VS Code\\command]
-@="\\"E:\\VSCode\\Code.exe\\" \\"%1\\""
-      
-; This will make it appear when you right click on a folder
-; If you don't want the icon to appear, remove the "Icon" line
-[HKEY_CLASSES_ROOT\\Directory\\shell\\vscode]
-@="Open Folder as VS Code Project"
-"Icon"="E:\\VSCode\\Code.exe,0"
-[HKEY_CLASSES_ROOT\\Directory\\shell\\vscode\\command]
-@="\\"E:\\VSCode\\Code.exe\\" \\"%1\\""
+  // Show research document content based on the path
+  const getDocumentContent = (path: string) => {
+    if (path === '/documents/coastal-erosion') {
+      return `# Coastal Erosion Impact Study
 
-; This will make it appear when you right click INSIDE a folder
-; If you don't want the icon to appear, remove the "Icon" line
-[HKEY_CLASSES_ROOT\\Directory\\Background\\shell\\vscode]
-@="Open Folder as VS Code Project"
-"Icon"="E:\\VSCode\\Code.exe,0"
-[HKEY_CLASSES_ROOT\\Directory\\Background\\shell\\vscode\\command]
-@="\\"E:\\VSCode\\Code.exe\\" \\"%V\\""
+## Executive Summary
+This study examines the impact of coastal erosion on Hampton Roads communities over the past decade.
 
-; This will make it appear when you right click INSIDE a folder
-; If you don't want the icon to appear, remove the "Icon" line
-[HKEY_CLASSES_ROOT\\Directory\\Background\\shell\\vscode\\command]
-@="\\"E:\\VSCode\\Code.exe\\" \\"%V\\""`;
-    } else if (path === '/workspace/hello-world-react-app/README.md') {
-      return `# Hello World React App
-      
-This is a simple React application that demonstrates the basic concepts of React.
+## Key Findings
+- Erosion rates have increased 32% in vulnerable shoreline areas
+- Property damage estimated at $45M annually
+- Natural barriers reduced by 18% since 2010
 
-## Getting Started
+## Recommendations
+1. Implement enhanced shoreline protection measures
+2. Develop long-term coastal management strategy
+3. Invest in natural barrier restoration projects`;
+    } else if (path === '/documents/tidal-patterns') {
+      return `# Tidal Pattern Analysis for Hampton Roads
 
-1. Clone this repository
-2. Run \`npm install\`
-3. Run \`npm start\`
+## Overview
+This analysis documents changing tidal patterns in the Hampton Roads region and their implications for flood risk management.
 
-## Features
+## Methodology
+- 10-year measurement series from 8 monitoring stations
+- Statistical analysis of tidal cycles and anomalies
+- Correlation with storm surge events
 
-- React components
-- Hooks
-- State management
-- Props passing`;
+## Results
+Tidal ranges have increased by 0.8ft on average across all monitoring stations, with the most significant changes observed during spring tides.`;
+    } else if (path === '/maps/norfolk-flood') {
+      return `[MAP VISUALIZATION: Norfolk Flood Zones]
+
+This map displays the current flood risk zones for Norfolk based on the latest FEMA assessments and local monitoring data.
+
+Legend:
+- Red: High risk (annual flood probability >20%)
+- Orange: Moderate risk (annual flood probability 5-20%) 
+- Yellow: Low risk (annual flood probability <5%)
+
+Key vulnerable areas include:
+- Ghent
+- Ocean View
+- Downtown waterfront`;
     } else {
-      return `File content for ${path}\n\nThis is a placeholder content for the selected file.`;
+      return `# Document: ${path}
+
+This document is part of the Hampton Roads Research Platform collection.
+
+The content is being prepared for viewing. Select another document or use the terminal to execute research queries.`;
     }
   };
   
   return (
     <div className="h-full overflow-auto p-2 text-xs font-mono">
-      <pre>{getFileContent(filePath)}</pre>
+      <pre className="whitespace-pre-wrap">{getDocumentContent(filePath)}</pre>
+    </div>
+  );
+};
+
+// Full functional terminal component with command handling
+const TerminalContentFull = () => {
+  const [entries, setEntries] = useState<TerminalEntry[]>([
+    { 
+      type: 'info', 
+      content: 'Hampton Roads Research Terminal v1.0.0', 
+      timestamp: new Date() 
+    },
+    { 
+      type: 'info', 
+      content: 'Type \'help\' for a list of available commands.', 
+      timestamp: new Date() 
+    }
+  ]);
+  const [currentCommand, setCurrentCommand] = useState('');
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [currentPath, setCurrentPath] = useState('/home/researcher');
+  const [terminalMode, setTerminalMode] = useState<'shell' | 'agent' | 'explorer'>('shell');
+  
+  const inputRef = useRef<HTMLInputElement>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
+  
+  // Sample document data
+  const documents = [
+    { id: 1, title: "Coastal Erosion Impact Study", year: 2023, type: "research" },
+    { id: 2, title: "Tidal Pattern Analysis for Hampton Roads", year: 2023, type: "research" },
+    { id: 3, title: "Naval Base Protection Systems", year: 2022, type: "engineering" },
+    { id: 4, title: "Sea Level Rise Projections", year: 2024, type: "research" },
+    { id: 5, title: "Flood Mitigation Techniques", year: 2023, type: "policy" }
+  ];
+  
+  // Focus the input on render and after clicking
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+  
+  const focusInput = () => {
+    inputRef.current?.focus();
+  };
+  
+  // Process command submission
+  const handleCommand = async () => {
+    if (!currentCommand.trim()) return;
+    
+    // Add command to terminal output and history
+    setEntries(prev => [
+      ...prev, 
+      { type: 'command', content: `${currentPath}$ ${currentCommand}`, timestamp: new Date() }
+    ]);
+    
+    // Add to command history
+    setCommandHistory(prev => [currentCommand, ...prev]);
+    setHistoryIndex(-1);
+
+    try {
+      // Command parsing
+      const commandParts = currentCommand.trim().split(/\s+/);
+      const mainCommand = commandParts[0].toLowerCase();
+      const args = commandParts.slice(1);
+
+      // Process different command types
+      switch(mainCommand) {
+        case 'help':
+          showHelp();
+          break;
+        case 'clear':
+          clearTerminal();
+          break;
+        case 'date':
+          showDate();
+          break;
+        case 'pwd':
+          showCurrentPath();
+          break;
+        case 'ls':
+          listDirectory();
+          break;
+        case 'cd':
+          changeDirectory(args[0]);
+          break;
+        case 'echo':
+          echoMessage(args.join(' '));
+          break;
+        case 'search':
+          searchDocuments(args.join(' '));
+          break;
+        case 'view':
+          viewDocument(args[0]);
+          break;
+        case 'map':
+          handleMapCommand(args);
+          break;
+        case 'graph':
+          handleGraphCommand(args);
+          break;
+        case 'mode':
+          if (args.length === 0) {
+            setEntries(prev => [
+              ...prev,
+              { type: 'info', content: `Current mode: ${terminalMode}`, timestamp: new Date() }
+            ]);
+          } else if (['shell', 'agent', 'explorer'].includes(args[0])) {
+            switchMode(args[0] as 'shell' | 'agent' | 'explorer');
+          } else {
+            setEntries(prev => [
+              ...prev,
+              { type: 'error', content: `Unknown mode: ${args[0]}. Available modes: shell, agent, explorer`, timestamp: new Date() }
+            ]);
+          }
+          break;
+        default:
+          setEntries(prev => [
+            ...prev,
+            { type: 'error', content: `Command not found: ${mainCommand}`, timestamp: new Date() }
+          ]);
+      }
+    } catch (error) {
+      setEntries(prev => [
+        ...prev,
+        { type: 'error', content: `Error: ${(error as Error).message}`, timestamp: new Date() }
+      ]);
+    }
+
+    // Clear the input
+    setCurrentCommand('');
+    
+    // Scroll to bottom
+    if (terminalRef.current) {
+      setTimeout(() => {
+        if (terminalRef.current) {
+          terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+        }
+      }, 0);
+    }
+  };
+  
+  // Handle keyboard input
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleCommand();
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      
+      // Navigate up through command history
+      if (commandHistory.length > 0) {
+        const newIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
+        setHistoryIndex(newIndex);
+        setCurrentCommand(commandHistory[newIndex]);
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      
+      // Navigate down through command history
+      if (historyIndex > 0) {
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+        setCurrentCommand(commandHistory[newIndex]);
+      } else if (historyIndex === 0) {
+        setHistoryIndex(-1);
+        setCurrentCommand('');
+      }
+    }
+  };
+  
+  // Command implementations
+  const showHelp = () => {
+    setEntries(prev => [
+      ...prev,
+      { type: 'info', content: 'Available commands:', timestamp: new Date() },
+      { type: 'info', content: '\nTerminal commands:', timestamp: new Date() },
+      { type: 'info', content: '  help              - Display this help message', timestamp: new Date() },
+      { type: 'info', content: '  clear             - Clear terminal output', timestamp: new Date() },
+      { type: 'info', content: '  pwd               - Print working directory', timestamp: new Date() },
+      { type: 'info', content: '  ls                - List directory contents', timestamp: new Date() },
+      { type: 'info', content: '  cd <path>         - Change directory', timestamp: new Date() },
+      { type: 'info', content: '  echo <message>    - Display a message', timestamp: new Date() },
+      { type: 'info', content: '  date              - Show current date and time', timestamp: new Date() },
+      { type: 'info', content: '\nResearch commands:', timestamp: new Date() },
+      { type: 'info', content: '  search <query>    - Search for documents', timestamp: new Date() },
+      { type: 'info', content: '  view <id>         - View document details', timestamp: new Date() },
+      { type: 'info', content: '  map show-docs     - Show documents on map', timestamp: new Date() },
+      { type: 'info', content: '  graph add <id>    - Add document to knowledge graph', timestamp: new Date() },
+      { type: 'info', content: '  mode <type>       - Switch terminal mode (shell, agent, explorer)', timestamp: new Date() }
+    ]);
+  };
+
+  const clearTerminal = () => {
+    setEntries([
+      { type: 'info', content: 'Terminal cleared.', timestamp: new Date() }
+    ]);
+  };
+
+  const showDate = () => {
+    setEntries(prev => [
+      ...prev,
+      { type: 'output', content: new Date().toString(), timestamp: new Date() }
+    ]);
+  };
+
+  const showCurrentPath = () => {
+    setEntries(prev => [
+      ...prev,
+      { type: 'output', content: currentPath, timestamp: new Date() }
+    ]);
+  };
+
+  const listDirectory = () => {
+    // Simulate directory listing based on current path
+    let listing = '';
+    
+    if (currentPath === '/home/researcher') {
+      listing = 'Documents/  Maps/  Data/  Downloads/';
+    } else if (currentPath === '/home/researcher/Documents') {
+      listing = 'Research/  Reports/  Policy/';
+    } else if (currentPath === '/home/researcher/Maps') {
+      listing = 'norfolk_flood.map  virginia_beach_coastal.map  hampton_roads_region.map';
+    } else {
+      listing = 'No files found.';
+    }
+    
+    setEntries(prev => [
+      ...prev,
+      { type: 'output', content: listing, timestamp: new Date() }
+    ]);
+  };
+
+  const changeDirectory = (path: string = '') => {
+    if (!path) {
+      setCurrentPath('/home/researcher');
+      return;
+    }
+    
+    let newPath;
+    if (path.startsWith('/')) {
+      newPath = path;
+    } else if (path === '..') {
+      const parts = currentPath.split('/');
+      parts.pop();
+      newPath = parts.join('/') || '/';
+    } else {
+      newPath = currentPath === '/' ? `/${path}` : `${currentPath}/${path}`;
+    }
+    
+    // Validate path (in a real app, you'd check if the path exists)
+    const validPaths = [
+      '/home/researcher', 
+      '/home/researcher/Documents', 
+      '/home/researcher/Maps', 
+      '/home/researcher/Data',
+      '/home/researcher/Downloads'
+    ];
+    
+    if (validPaths.includes(newPath)) {
+      setCurrentPath(newPath);
+    } else {
+      setEntries(prev => [
+        ...prev,
+        { type: 'error', content: `cd: no such directory: ${path}`, timestamp: new Date() }
+      ]);
+    }
+  };
+
+  const echoMessage = (message: string) => {
+    setEntries(prev => [
+      ...prev,
+      { type: 'output', content: message, timestamp: new Date() }
+    ]);
+  };
+
+  const searchDocuments = (query: string) => {
+    if (!query) {
+      setEntries(prev => [
+        ...prev,
+        { type: 'error', content: 'search: missing search query', timestamp: new Date() }
+      ]);
+      return;
+    }
+    
+    setEntries(prev => [
+      ...prev,
+      { type: 'info', content: `Searching for "${query}"...`, timestamp: new Date() }
+    ]);
+    
+    // Simulate search results
+    setTimeout(() => {
+      const results = documents.filter(doc => 
+        doc.title.toLowerCase().includes(query.toLowerCase())
+      );
+      
+      if (results.length > 0) {
+        setEntries(prev => [
+          ...prev,
+          { type: 'success', content: `Found ${results.length} documents matching "${query}"`, timestamp: new Date() },
+          ...results.map(doc => ({
+            type: 'output' as const,
+            content: `${doc.id}. ${doc.title} (${doc.year}) [${doc.type}]`,
+            timestamp: new Date()
+          }))
+        ]);
+      } else {
+        setEntries(prev => [
+          ...prev,
+          { type: 'error', content: `No documents found matching "${query}"`, timestamp: new Date() }
+        ]);
+      }
+    }, 500);
+  };
+
+  const viewDocument = (idString: string) => {
+    if (!idString) {
+      setEntries(prev => [
+        ...prev,
+        { type: 'error', content: 'view: missing document ID', timestamp: new Date() }
+      ]);
+      return;
+    }
+    
+    const id = parseInt(idString);
+    if (isNaN(id)) {
+      setEntries(prev => [
+        ...prev,
+        { type: 'error', content: `view: invalid document ID: ${idString}`, timestamp: new Date() }
+      ]);
+      return;
+    }
+    
+    const document = documents.find(doc => doc.id === id);
+    if (document) {
+      setEntries(prev => [
+        ...prev,
+        { type: 'success', content: `Document #${id}: ${document.title}`, timestamp: new Date() },
+        { type: 'output', content: `Type: ${document.type}`, timestamp: new Date() },
+        { type: 'output', content: `Year: ${document.year}`, timestamp: new Date() },
+        { type: 'output', content: `Localities: Norfolk, Virginia Beach`, timestamp: new Date() },
+        { type: 'output', content: `Authors: J. Smith, A. Johnson`, timestamp: new Date() },
+        { type: 'output', content: `Abstract: This document examines the impact of coastal development...`, timestamp: new Date() }
+      ]);
+    } else {
+      setEntries(prev => [
+        ...prev,
+        { type: 'error', content: `Document not found with ID: ${id}`, timestamp: new Date() }
+      ]);
+    }
+  };
+
+  const handleMapCommand = (args: string[]) => {
+    if (!args.length) {
+      setEntries(prev => [
+        ...prev,
+        { type: 'error', content: 'map: missing argument', timestamp: new Date() }
+      ]);
+      return;
+    }
+    
+    const subCommand = args[0];
+    
+    if (subCommand === 'show-docs') {
+      setEntries(prev => [
+        ...prev,
+        { type: 'info', content: 'Showing documents on map view...', timestamp: new Date() },
+        { type: 'success', content: 'Map view activated with document overlay.', timestamp: new Date() }
+      ]);
+    } else if (subCommand === 'focus') {
+      const locality = args[1];
+      if (!locality) {
+        setEntries(prev => [
+          ...prev,
+          { type: 'error', content: 'map focus: missing locality name', timestamp: new Date() }
+        ]);
+        return;
+      }
+      
+      setEntries(prev => [
+        ...prev,
+        { type: 'info', content: `Focusing map on locality: ${locality}`, timestamp: new Date() },
+        { type: 'success', content: `Map centered on ${locality}.`, timestamp: new Date() }
+      ]);
+    } else {
+      setEntries(prev => [
+        ...prev,
+        { type: 'error', content: `Unknown map subcommand: ${subCommand}`, timestamp: new Date() }
+      ]);
+    }
+  };
+
+  const handleGraphCommand = (args: string[]) => {
+    if (!args.length) {
+      setEntries(prev => [
+        ...prev,
+        { type: 'error', content: 'graph: missing argument', timestamp: new Date() }
+      ]);
+      return;
+    }
+    
+    const subCommand = args[0];
+    
+    if (subCommand === 'add') {
+      const id = args[1];
+      if (!id) {
+        setEntries(prev => [
+          ...prev,
+          { type: 'error', content: 'graph add: missing document ID', timestamp: new Date() }
+        ]);
+        return;
+      }
+      
+      setEntries(prev => [
+        ...prev,
+        { type: 'info', content: `Adding document #${id} to knowledge graph...`, timestamp: new Date() },
+        { type: 'success', content: `Document #${id} added to graph.`, timestamp: new Date() }
+      ]);
+    } else if (subCommand === 'view') {
+      setEntries(prev => [
+        ...prev,
+        { type: 'info', content: 'Activating knowledge graph view...', timestamp: new Date() },
+        { type: 'success', content: 'Graph view activated.', timestamp: new Date() }
+      ]);
+    } else {
+      setEntries(prev => [
+        ...prev,
+        { type: 'error', content: `Unknown graph subcommand: ${subCommand}`, timestamp: new Date() }
+      ]);
+    }
+  };
+
+  const switchMode = (mode: 'shell' | 'agent' | 'explorer') => {
+    setTerminalMode(mode);
+    setEntries(prev => [
+      ...prev,
+      { type: 'info', content: `Switched to ${mode} mode.`, timestamp: new Date() }
+    ]);
+  };
+
+  return (
+    <div className="flex flex-col h-full" ref={terminalRef}>
+      {/* Terminal Header with Mode Selector */}
+      <div className="flex justify-between items-center bg-black text-green-500 border-b border-green-900 pb-1 mb-1">
+        <div className="flex space-x-2">
+          <button 
+            className={`px-2 py-1 text-xs rounded ${terminalMode === 'shell' ? 'bg-green-900 text-black' : ''}`} 
+            onClick={() => switchMode('shell')}
+          >
+            <TerminalIcon size={12} className="inline mr-1" />
+            Shell
+          </button>
+          <button 
+            className={`px-2 py-1 text-xs rounded ${terminalMode === 'agent' ? 'bg-green-900 text-black' : ''}`}
+            onClick={() => switchMode('agent')}
+          >
+            <MessageSquare size={12} className="inline mr-1" />
+            Agent
+          </button>
+          <button 
+            className={`px-2 py-1 text-xs rounded ${terminalMode === 'explorer' ? 'bg-green-900 text-black' : ''}`}
+            onClick={() => switchMode('explorer')}
+          >
+            <FolderOpen size={12} className="inline mr-1" />
+            Explorer
+          </button>
+        </div>
+        
+        <div className="text-xs">
+          <span className="opacity-70">Hampton Roads Terminal v1.0.0</span>
+        </div>
+      </div>
+
+      {/* Terminal Output */}
+      <div className="flex-1 overflow-auto p-1 bg-black text-green-500 text-xs" onClick={focusInput}>
+        {entries.map((entry, index) => (
+          <div key={index} className={`mb-1 ${entry.type === 'command' ? 'text-cyan-400' : entry.type === 'error' ? 'text-red-400' : entry.type === 'info' ? 'text-yellow-400' : entry.type === 'success' ? 'text-green-400' : ''}`}>
+            {entry.type === 'command' && <span className="text-green-300">$ </span>}
+            {entry.content}
+          </div>
+        ))}
+      </div>
+      
+      {/* Terminal Input */}
+      <div className="flex items-center mt-1 bg-black text-green-500 border-t border-green-900 pt-1">
+        <span className="text-green-300 mr-1">{currentPath}$</span>
+        <input
+          ref={inputRef}
+          type="text"
+          value={currentCommand}
+          onChange={(e) => setCurrentCommand(e.target.value)}
+          onKeyDown={handleKeyDown}
+          className="flex-grow bg-transparent outline-none text-green-500 text-xs"
+          autoFocus
+        />
+      </div>
     </div>
   );
 };
 
 export default function TerminalInterface() {
   const isMobile = useIsMobile();
-  const [activeTab, setActiveTab] = useState<'terminal' | 'system' | 'keyboard'>('system');
   const [showSidebar, setShowSidebar] = useState(true);
-  const [fileTree, setFileTree] = useState<FileTreeItem[]>(sampleFileTree);
-  const [openTabs, setOpenTabs] = useState<{id: string; name: string; path: string}[]>([
-    {id: '1', name: 'vCodeOpenFolder.reg', path: '/open-editors/vCodeOpenFolder.reg'}
-  ]);
-  const [activeTabId, setActiveTabId] = useState('1');
+  const [fileTree, setFileTree] = useState<FileTreeItem[]>(researchFileTree);
+  const [openTabs, setOpenTabs] = useState<{id: string; name: string; path: string}[]>([]);
+  const [activeTabId, setActiveTabId] = useState('');
   const [selectedFile, setSelectedFile] = useState<FileTreeItem | null>(null);
   
   // System data
   const systemData = {
-    hostname: 'batcore-home',
+    hostname: 'hampton-research',
     ipAddress: '96.22.220.83',
     uptime: '2d 7:45:24',
     cpuUsage: 18,
@@ -497,8 +984,25 @@ export default function TerminalInterface() {
     }
   };
   
+  // Toggle sidebar visibility
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
+  
   return (
     <div className="h-full flex flex-col bg-black text-green-500 font-mono border border-green-900 rounded">
+      {/* Top Toolbar */}
+      <div className="flex items-center p-1 border-b border-green-900">
+        <button 
+          className="p-1 hover:bg-green-900 hover:bg-opacity-20 rounded"
+          onClick={toggleSidebar}
+          title="Toggle Explorer"
+        >
+          <FolderOpen size={14} />
+        </button>
+        <div className="ml-2 text-xs">Hampton Roads Research Platform</div>
+      </div>
+      
       {/* Main VS Code-like layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* File Explorer Sidebar */}
@@ -557,62 +1061,17 @@ export default function TerminalInterface() {
           
           {/* Terminal Panel */}
           <div className="h-1/3 border-t border-green-900">
-            <div className="flex border-b border-green-900">
-              <button 
-                className={`px-4 py-1 border-r border-green-900 ${activeTab === 'terminal' ? 'bg-green-900 text-black' : ''}`}
-                onClick={() => setActiveTab('terminal')}
-              >
-                <TerminalIcon size={12} className="inline mr-1" />
-                TERMINAL
-              </button>
-              <button 
-                className={`px-4 py-1 border-r border-green-900 ${activeTab === 'system' ? 'bg-green-900 text-black' : ''}`}
-                onClick={() => setActiveTab('system')}
-              >
-                <Monitor size={12} className="inline mr-1" />
-                SYSTEM
-              </button>
-              {isMobile && (
-                <button 
-                  className={`px-4 py-1 ${activeTab === 'keyboard' ? 'bg-green-900 text-black' : ''}`}
-                  onClick={() => setActiveTab('keyboard')}
-                >
-                  <Smartphone size={12} className="inline mr-1" />
-                  KEYBOARD
-                </button>
-              )}
-            </div>
-            
-            <div className="h-[calc(100%-28px)] overflow-hidden">
-              {activeTab === 'terminal' && (
-                <TerminalContent />
-              )}
-              
-              {activeTab === 'system' && (
-                <div className="p-2">
-                  <SystemMonitor {...systemData} />
-                </div>
-              )}
-              
-              {activeTab === 'keyboard' && isMobile && (
-                <div className="p-2">
-                  <VirtualKeyboard />
-                </div>
-              )}
-            </div>
+            <TerminalContentFull />
           </div>
         </div>
       </div>
       
       {/* Status Bar */}
-      <div className="border-t border-green-900 p-1 text-xxs flex justify-between">
-        <div>2: cmd</div>
+      <div className="border-t border-green-900 p-1 text-xs flex justify-between">
+        <div>terminal: hampton-research</div>
         <div className="flex items-center gap-4">
-          <span>In 21, Col 40</span>
-          <span>Spaces: 4</span>
-          <span>UTF-8</span>
-          <span>CRLF</span>
-          <span>REG</span>
+          <span>{new Date().toLocaleDateString()}</span>
+          <span>{new Date().toLocaleTimeString()}</span>
         </div>
       </div>
     </div>
