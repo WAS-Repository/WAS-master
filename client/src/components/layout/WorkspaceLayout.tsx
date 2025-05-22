@@ -3,7 +3,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { SearchDialog } from '@/components/search/SearchDialog';
+import { SearchFeature } from '@/components/search/SearchFeature';
 import { 
   Search, 
   Maximize, 
@@ -127,7 +127,6 @@ export default function WorkspaceLayout() {
   const [navigationTab, setNavigationTab] = useState<number>(1);
   const [colorScheme, setColorScheme] = useState<ColorScheme>(colorSchemes[0]);
   const [showColorPicker, setShowColorPicker] = useState(false);
-  const [showSearchDialog, setShowSearchDialog] = useState(false);
   
   // Simulate real-time clock and changing metrics
   useEffect(() => {
@@ -302,6 +301,9 @@ export default function WorkspaceLayout() {
                   >
                     <FileText className="h-4 w-4" />
                   </button>
+                  <div className="ml-2">
+                    <SearchFeature />
+                  </div>
                 </div>
               </div>
               
