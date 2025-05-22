@@ -142,23 +142,7 @@ export default function Sidebar({ width, isCollapsed, onToggleCollapse }: Sideba
         </div>
       </div>
       
-      {/* Sidebar Footer */}
-      <div className="p-2 border-t border-border-color">
-        <Button 
-          className="w-full py-1 px-2 text-sm bg-primary bg-opacity-20 text-primary rounded flex items-center justify-center mb-2 hover:bg-opacity-30"
-          variant="outline"
-        >
-          <Search className="h-4 w-4 mr-1" />
-          Find Documents
-        </Button>
-        <Button 
-          className="w-full py-1 px-2 text-sm bg-secondary bg-opacity-20 text-secondary rounded flex items-center justify-center hover:bg-opacity-30"
-          variant="outline"
-        >
-          <PlusCircle className="h-4 w-4 mr-1" />
-          Add Source
-        </Button>
-      </div>
+
     </div>
   );
 }
