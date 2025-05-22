@@ -187,18 +187,9 @@ export default function WorkspaceLayout() {
         
         {/* Main content grid layout */}
         <div className="flex-1 flex flex-col">
-          {/* Current time and info bar */}
+          {/* Header bar */}
           <div className="flex bg-black border-b border-[#22dd22] p-2" style={{ borderColor: colorScheme.borderColor, backgroundColor: colorScheme.bgColor }}>
-            <div className="flex flex-col mr-6">
-              <div className="font-bold text-xl" style={{ color: colorScheme.mainColor }}>{formatTime(currentTime)}</div>
-              <div className="opacity-70 text-[10px]" style={{ color: colorScheme.mainColor }}>Current time in user time zone</div>
-            </div>
-            
-            <div className="flex-1 flex justify-between items-center">
-              <div className="flex items-center space-x-2">
-                {/* Network status removed */}
-              </div>
-              
+            <div className="flex-1 flex justify-end items-center">
               <div className="flex items-center space-x-2">
                 <Popover>
                   <PopoverTrigger asChild>
@@ -242,8 +233,6 @@ export default function WorkspaceLayout() {
                     </div>
                   </PopoverContent>
                 </Popover>
-                
-
               </div>
             </div>
           </div>
