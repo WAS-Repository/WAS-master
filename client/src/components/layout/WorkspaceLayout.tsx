@@ -369,7 +369,7 @@ export default function WorkspaceLayout() {
                 </div>
               </div>
               
-              {/* System metrics */}
+              {/* System metrics and Events Calendar */}
               <div className="flex-1 p-2 overflow-y-auto">
                 <div className="mb-3">
                   <div className="text-xs text-[#33ff33] font-bold uppercase mb-1">Document Correlation Strength</div>
@@ -394,24 +394,46 @@ export default function WorkspaceLayout() {
                   </div>
                 </div>
                 
+                {/* Calendar of Events */}
                 <div className="mb-3">
-                  <div className="text-xs text-[#33ff33] font-bold uppercase mb-1">Memory Usage</div>
-                  <div className="h-20 bg-[#001000] border border-[#33ff33] p-1">
-                    {/* Memory heatmap visualization */}
-                    <div className="w-full h-full grid grid-cols-10 grid-rows-4 gap-px">
-                      {[...Array(40)].map((_, i) => {
-                        const intensity = Math.random();
+                  <div className="text-xs text-[#ff00ff] font-bold uppercase mb-1">Calendar of Events</div>
+                  <div className="bg-[#001000] border border-[#33ff33] p-1">
+                    <div className="grid grid-cols-7 gap-px mb-1">
+                      {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, i) => (
+                        <div key={i} className="text-center text-[10px] text-[#33ff33] font-bold">
+                          {day}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    <div className="grid grid-cols-7 gap-px">
+                      {Array.from({ length: 30 }, (_, i) => {
+                        const hasEvent = [3, 8, 12, 17, 22, 25].includes(i);
                         return (
                           <div 
                             key={i} 
-                            className="w-full h-full" 
-                            style={{ 
-                              backgroundColor: `rgba(51, 255, 51, ${intensity})`,
-                              opacity: intensity > 0.3 ? 1 : 0.7
-                            }}
-                          />
+                            className={`text-center text-[10px] p-1 ${hasEvent ? 'bg-[#002200] border border-[#33ff33]' : ''}`}
+                          >
+                            {i + 1}
+                            {hasEvent && <div className="w-1 h-1 bg-[#33ff33] rounded-full mx-auto mt-0.5"></div>}
+                          </div>
                         );
                       })}
+                    </div>
+                    
+                    <div className="text-[10px] text-[#33ff33] mt-1">
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-[#33ff33] mr-1"></div>
+                        <span>04/08: Research data upload</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-[#33ff33] mr-1"></div>
+                        <span>04/17: Coastal analysis report</span>
+                      </div>
+                      <div className="flex items-center">
+                        <div className="w-2 h-2 bg-[#33ff33] mr-1"></div>
+                        <span>04/25: Stakeholder meeting</span>
+                      </div>
                     </div>
                   </div>
                 </div>
