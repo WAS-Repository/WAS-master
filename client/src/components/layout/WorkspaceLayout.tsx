@@ -673,58 +673,7 @@ export default function WorkspaceLayout() {
             </div>
             
             <div className="flex items-center">
-              <div className="mr-3 uppercase" style={{ color: colorScheme.mainColor }}>Back</div>
-              {/* Virtual keyboard indicator - On Mobile Keyboard main system */}
-              <div id="keyboard" className="flex flex-col">
-                <div className="flex mb-1 justify-center">
-                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>ESC</div>
-                  <div className="flex space-x-1">
-                    {['Z', '&', 'É', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].map((key, i) => (
-                      <div key={i} className="border w-6 h-6 flex items-center justify-center" style={{ borderColor: colorScheme.mainColor }}>{key}</div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="flex mb-1 justify-center">
-                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>TAB</div>
-                  <div className="flex space-x-1">
-                    {['A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].map((key, i) => (
-                      <div key={i} className="border w-6 h-6 flex items-center justify-center" style={{ borderColor: colorScheme.mainColor }}>{key}</div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="flex mb-1 justify-center">
-                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>CAPS</div>
-                  <div className="flex space-x-1">
-                    {['Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'].map((key, i) => (
-                      <div key={i} className="border w-6 h-6 flex items-center justify-center" style={{ borderColor: colorScheme.mainColor }}>{key}</div>
-                    ))}
-                  </div>
-                </div>
-                
-                <div className="flex mb-1 justify-center">
-                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>SHIFT</div>
-                  <div className="flex space-x-1">
-                    {['<', 'W', 'X', 'C', 'V', 'B', 'N', ',', '.', '/'].map((key, i) => (
-                      <div key={i} className="border w-6 h-6 flex items-center justify-center" style={{ borderColor: colorScheme.mainColor }}>{key}</div>
-                    ))}
-                  </div>
-                  <div className="border px-2 py-0.5 ml-1 text-center" style={{ borderColor: colorScheme.mainColor }}>SHIFT</div>
-                </div>
-                
-                <div className="flex justify-center">
-                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>CTRL</div>
-                  <div className="border px-2 py-0.5 mr-1 text-center" style={{ borderColor: colorScheme.mainColor }}>FN</div>
-                  <div className="border px-16 py-0.5 text-center" style={{ borderColor: colorScheme.mainColor }}>keyboard trigger event</div>
-                  <div className="border px-2 py-0.5 ml-1 text-center" style={{ borderColor: colorScheme.mainColor }}>ALT GR</div>
-                  <div className="border px-2 py-0.5 ml-1 text-center" style={{ borderColor: colorScheme.mainColor }}>CTRL</div>
-                </div>
-                
-                <div className="text-center text-[8px] mt-1" style={{ color: colorScheme.mainColor }}>
-                  On desktop mode this is the terminal. Keyboard leaves when bluetooth or wired keyboard is enabled
-                </div>
-              </div>
+              <div className="uppercase" style={{ color: colorScheme.mainColor }}>Back</div>
             </div>
           </div>
         </div>
