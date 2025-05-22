@@ -243,7 +243,7 @@ export default function WorkspaceLayout() {
                   </PopoverContent>
                 </Popover>
                 
-                <div className="uppercase text-right" style={{ color: colorScheme.mainColor }}>MAIN SHELL</div>
+
               </div>
             </div>
           </div>

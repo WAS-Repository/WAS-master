@@ -120,12 +120,14 @@ export default function AppLayout({ children }: AppLayoutProps) {
             </Button>
           )}
           
-          {/* App Logo */}
+          {/* App Logo & Time */}
           <div className="flex items-center mr-2 sm:mr-4">
             <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center mr-2">
               <Grid3X3 className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-base sm:text-xl font-medium truncate max-w-[150px] sm:max-w-full">Hampton Roads Research Graph</h1>
+            <h1 className="text-base sm:text-xl font-medium truncate max-w-[150px] sm:max-w-full">
+              {new Date().toLocaleTimeString()}
+            </h1>
           </div>
           
           {/* Main Navigation - Hide on Mobile */}
