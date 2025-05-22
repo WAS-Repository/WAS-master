@@ -248,27 +248,7 @@ export default function WorkspaceLayout() {
             </div>
           </div>
           
-          {/* Location and coordinate information */}
-          <div className="flex p-2 border-b" style={{ 
-            backgroundColor: colorScheme.bgColor,
-            borderColor: colorScheme.borderColor
-          }}>
-            <div className="w-1/3">
-              <div className="uppercase text-xs" style={{ color: colorScheme.accentColor }}>Primary Location of Impact</div>
-              <div style={{ color: colorScheme.mainColor }}>Hampton Roads, VA</div>
-            </div>
-            
-            <div className="w-1/3 text-center">
-              <div className="uppercase text-xs" style={{ color: colorScheme.mainColor }}>WORLD VIEW</div>
-              <div className="text-xs" style={{ color: colorScheme.mainColor }}>GLOBAL NETWORK MAP</div>
-            </div>
-            
-            <div className="w-1/3 text-right">
-              <div className="uppercase text-xs" style={{ color: colorScheme.mainColor }}>ENDPOINT LOCATION</div>
-              <div className="text-xs" style={{ color: colorScheme.mainColor }}>LAT/LON 36.9081°, -76.1911°</div>
-            </div>
-          </div>
-          
+
           {/* Main visualization area */}
           <div className="flex flex-1">
             {/* Center area - Map/Graph visualization */}
