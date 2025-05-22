@@ -37,7 +37,8 @@ import {
   Edit,
   Sun,
   Palette,
-  Check
+  Check,
+  PlusCircle
 } from 'lucide-react';
 import MapView from '../visualization/MapView';
 import KnowledgeGraph from '../visualization/KnowledgeGraph';
@@ -189,62 +190,92 @@ export default function WorkspaceLayout() {
             </div>
             
             <div className="flex-1 flex justify-between items-center">
-              <div className="flex items-center bg-black border px-2 py-1" style={{ borderColor: colorScheme.mainColor, backgroundColor: colorScheme.bgColor }}>
-                <span className="uppercase mr-2" style={{ color: colorScheme.accentColor }}>NETWORK STATUS</span>
-                <span className={networkPing < 30 
-                  ? `text-[${colorScheme.mainColor}]` 
-                  : networkPing < 60 
-                    ? "text-[#ffff33]" 
-                    : "text-[#ff3333]"
-                }>
-                  {networkPing}ms latency
-                </span>
+              <div className="flex items-center space-x-2">
+                <div className="flex items-center bg-black border px-2 py-1" style={{ borderColor: colorScheme.mainColor, backgroundColor: colorScheme.bgColor }}>
+                  <span className="uppercase mr-2" style={{ color: colorScheme.accentColor }}>NETWORK STATUS</span>
+                  <span className={networkPing < 30 
+                    ? `text-[${colorScheme.mainColor}]` 
+                    : networkPing < 60 
+                      ? "text-[#ffff33]" 
+                      : "text-[#ff3333]"
+                  }>
+                    {networkPing}ms latency
+                  </span>
+                </div>
+                
+                <Button 
+                  className="py-1 px-2 text-sm border flex items-center justify-center hover:bg-opacity-20"
+                  variant="outline"
+                  style={{ 
+                    color: colorScheme.mainColor,
+                    borderColor: colorScheme.mainColor,
+                    backgroundColor: colorScheme.bgColor
+                  }}
+                >
+                  <Search className="h-4 w-4 mr-1" />
+                  Find Documents
+                </Button>
+                
+                <Button 
+                  className="py-1 px-2 text-sm border flex items-center justify-center hover:bg-opacity-20"
+                  variant="outline"
+                  style={{ 
+                    color: colorScheme.accentColor,
+                    borderColor: colorScheme.accentColor,
+                    backgroundColor: colorScheme.bgColor
+                  }}
+                >
+                  <PlusCircle className="h-4 w-4 mr-1" />
+                  Add Source
+                </Button>
               </div>
               
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button 
-                    variant="ghost" 
-                    size="icon" 
-                    className="hover:bg-opacity-20" 
-                    style={{ color: colorScheme.mainColor }}
-                  >
-                    <Palette className="h-5 w-5" />
-                    <span className="sr-only">Change theme</span>
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-64 p-0" style={{ backgroundColor: colorScheme.bgAltColor, borderColor: colorScheme.borderColor }}>
-                  <div className="p-2 border-b" style={{ borderColor: colorScheme.borderColor }}>
-                    <h4 className="text-sm font-medium" style={{ color: colorScheme.mainColor }}>Choose a color scheme</h4>
-                  </div>
-                  <div className="p-2">
-                    <div className="grid gap-2">
-                      {colorSchemes.map((scheme) => (
-                        <Button
-                          key={scheme.id}
-                          variant="ghost"
-                          className="w-full justify-start flex items-center gap-2"
-                          style={{ 
-                            color: scheme.mainColor,
-                            backgroundColor: scheme.id === colorScheme.id ? scheme.bgAltColor : 'transparent'
-                          }}
-                          onClick={() => setColorScheme(scheme)}
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="w-4 h-4 rounded-full" style={{ backgroundColor: scheme.mainColor }}></div>
-                            <span>{scheme.name}</span>
-                          </div>
-                          {scheme.id === colorScheme.id && (
-                            <Check className="h-4 w-4 ml-auto" />
-                          )}
-                        </Button>
-                      ))}
+              <div className="flex items-center space-x-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="hover:bg-opacity-20" 
+                      style={{ color: colorScheme.mainColor }}
+                    >
+                      <Palette className="h-5 w-5" />
+                      <span className="sr-only">Change theme</span>
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-64 p-0" style={{ backgroundColor: colorScheme.bgAltColor, borderColor: colorScheme.borderColor }}>
+                    <div className="p-2 border-b" style={{ borderColor: colorScheme.borderColor }}>
+                      <h4 className="text-sm font-medium" style={{ color: colorScheme.mainColor }}>Choose a color scheme</h4>
                     </div>
-                  </div>
-                </PopoverContent>
-              </Popover>
-              
-              <div className="uppercase text-right" style={{ color: colorScheme.mainColor }}>MAIN SHELL</div>
+                    <div className="p-2">
+                      <div className="grid gap-2">
+                        {colorSchemes.map((scheme) => (
+                          <Button
+                            key={scheme.id}
+                            variant="ghost"
+                            className="w-full justify-start flex items-center gap-2"
+                            style={{ 
+                              color: scheme.mainColor,
+                              backgroundColor: scheme.id === colorScheme.id ? scheme.bgAltColor : 'transparent'
+                            }}
+                            onClick={() => setColorScheme(scheme)}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="w-4 h-4 rounded-full" style={{ backgroundColor: scheme.mainColor }}></div>
+                              <span>{scheme.name}</span>
+                            </div>
+                            {scheme.id === colorScheme.id && (
+                              <Check className="h-4 w-4 ml-auto" />
+                            )}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                
+                <div className="uppercase text-right" style={{ color: colorScheme.mainColor }}>MAIN SHELL</div>
+              </div>
             </div>
           </div>
           
