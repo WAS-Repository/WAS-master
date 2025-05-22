@@ -129,6 +129,7 @@ export default function WorkspaceLayout() {
   const [colorScheme, setColorScheme] = useState<ColorScheme>(colorSchemes[0]);
   const [showColorPicker, setColorPicker] = useState(false);
   const [showSearchDialog, setShowSearchDialog] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Simulate real-time clock and changing metrics
   useEffect(() => {
@@ -503,5 +504,100 @@ export default function WorkspaceLayout() {
         </div>
       </div>
     </div>
+    
+    {/* Dialog for Search with Micro-interactions */}
+    {showSearchDialog && (
+      <Dialog open={showSearchDialog} onOpenChange={setShowSearchDialog}>
+        <DialogContent className="sm:max-w-[800px] p-0 gap-0">
+          <div className="flex flex-col h-[600px]">
+            <div className="flex justify-between items-center p-4 border-b">
+              <div className="text-lg font-medium">Document Search</div>
+              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setShowSearchDialog(false)}>
+                <X size={16} />
+              </Button>
+            </div>
+            
+            <div className="p-4 border-b">
+              <div className="relative">
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search for documents, patents, research papers..."
+                  className="pr-10 pl-10"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0"
+                >
+                  <Filter size={14} />
+                </Button>
+              </div>
+              
+              <div className="flex justify-end mt-2">
+                <Button size="sm">
+                  Search
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex-1 overflow-hidden p-4">
+              <ScrollArea className="h-full w-full pr-4">
+                <div className="space-y-3">
+                  {searchQuery ? (
+                    <div className="text-muted-foreground text-center py-4">
+                      Enter search terms to see results
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="border rounded-md p-3">
+                        <div className="font-medium">Recent Searches</div>
+                        <div className="mt-2 space-y-1">
+                          <div className="flex items-center justify-between text-sm p-2 hover:bg-muted rounded cursor-pointer">
+                            <div className="flex items-center">
+                              <Search size={14} className="mr-2 text-muted-foreground" />
+                              <span>coastal erosion norfolk</span>
+                            </div>
+                            <span className="text-xs text-muted-foreground">May 21, 2025</span>
+                          </div>
+                          <div className="flex items-center justify-between text-sm p-2 hover:bg-muted rounded cursor-pointer">
+                            <div className="flex items-center">
+                              <Search size={14} className="mr-2 text-muted-foreground" />
+                              <span>sea level rise impact</span>
+                            </div>
+                            <span className="text-xs text-muted-foreground">May 20, 2025</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="border rounded-md p-3">
+                        <div className="font-medium">Saved Filters</div>
+                        <div className="mt-2 space-y-1">
+                          <div className="flex items-center justify-between text-sm p-2 hover:bg-muted rounded cursor-pointer">
+                            <div className="flex items-center">
+                              <Filter size={14} className="mr-2 text-muted-foreground" />
+                              <span>Research Papers (2023-2025)</span>
+                            </div>
+                            <Badge variant="outline" className="text-xs">5 results</Badge>
+                          </div>
+                          <div className="flex items-center justify-between text-sm p-2 hover:bg-muted rounded cursor-pointer">
+                            <div className="flex items-center">
+                              <Filter size={14} className="mr-2 text-muted-foreground" />
+                              <span>Norfolk Documents</span>
+                            </div>
+                            <Badge variant="outline" className="text-xs">12 results</Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    )}
   );
 }
