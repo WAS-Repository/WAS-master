@@ -29,6 +29,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [focusMode, setFocusMode] = useState(false);
   const [autoFocusEnabled, setAutoFocusEnabled] = useState(false);
   const [autoFocusTimer, setAutoFocusTimer] = useState<number | null>(null);
+  const [activeView, setActiveView] = useState<'map' | 'graph' | 'document' | 'split'>('split');
   
   const isDraggingTerminal = useRef(false);
   const initialY = useRef(0);
@@ -41,12 +42,30 @@ export default function AppLayout({ children }: AppLayoutProps) {
     }
   }, [isMobile]);
   
-  // Setup keyboard shortcut for focus mode (F key)
+  // Setup keyboard shortcuts for focus mode and view changes
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Alt+F to toggle focus mode
       if (e.altKey && e.key === 'f') {
         setFocusMode(prev => !prev);
+      }
+      
+      // View shortcuts (Alt + key)
+      if (e.altKey) {
+        switch (e.key.toLowerCase()) {
+          case 'm': // Map View
+            setActiveView('map');
+            break;
+          case 'g': // Graph View
+            setActiveView('graph');
+            break;
+          case 'd': // Document View
+            setActiveView('document');
+            break;
+          case 's': // Split View
+            setActiveView('split');
+            break;
+        }
       }
     };
     
@@ -208,10 +227,22 @@ export default function AppLayout({ children }: AppLayoutProps) {
                   <span className="ml-2 text-xs opacity-60">(5 min)</span>
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => {}}>Map View</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {}}>Graph View</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {}}>Document View</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {}}>Split View</DropdownMenuItem>
+                <DropdownMenuCheckboxItem checked={activeView === 'map'} onCheckedChange={() => setActiveView('map')}>
+                  Map View
+                  <span className="ml-2 text-xs opacity-60">(Alt+M)</span>
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={activeView === 'graph'} onCheckedChange={() => setActiveView('graph')}>
+                  Knowledge Graph
+                  <span className="ml-2 text-xs opacity-60">(Alt+G)</span>
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={activeView === 'document'} onCheckedChange={() => setActiveView('document')}>
+                  Document View
+                  <span className="ml-2 text-xs opacity-60">(Alt+D)</span>
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem checked={activeView === 'split'} onCheckedChange={() => setActiveView('split')}>
+                  Split View
+                  <span className="ml-2 text-xs opacity-60">(Alt+S)</span>
+                </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>
             

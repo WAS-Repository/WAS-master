@@ -660,14 +660,6 @@ export default function Terminal({ height, focusMode, onToggleFocusMode }: Termi
             <Search size={12} className="mr-1" />
             Search
           </Button>
-          <Button variant="ghost" size="sm" className="h-5 px-2 py-0 text-xs" onClick={() => setCurrentCommand('map show-docs')}>
-            <Map size={12} className="mr-1" />
-            Map
-          </Button>
-          <Button variant="ghost" size="sm" className="h-5 px-2 py-0 text-xs" onClick={() => setCurrentCommand('graph view')}>
-            <Network size={12} className="mr-1" />
-            Graph
-          </Button>
         </div>
       </div>
       
