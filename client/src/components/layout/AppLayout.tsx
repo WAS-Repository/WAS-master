@@ -2,7 +2,7 @@ import { ReactNode, useState, useRef, useCallback, useEffect } from "react";
 import Terminal from "./Terminal";
 import { 
   Sun, Moon, Settings, Menu, Grid3X3, X, Search, PlusCircle, Palette, 
-  Database, FileText, Shield, Maximize, Minimize 
+  Database, FileText, Shield, Eye
 } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
@@ -187,7 +187,34 @@ export default function AppLayout({ children }: AppLayoutProps) {
               </DropdownMenuContent>
             </DropdownMenu>
             <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">Edit</Button>
-            <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">View</Button>
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">View</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuCheckboxItem 
+                  checked={focusMode}
+                  onCheckedChange={setFocusMode}
+                >
+                  Focus Mode
+                  <span className="ml-2 text-xs opacity-60">(Alt+F)</span>
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuCheckboxItem 
+                  checked={autoFocusEnabled}
+                  onCheckedChange={setAutoFocusEnabled}
+                >
+                  Auto Focus
+                  <span className="ml-2 text-xs opacity-60">(5 min)</span>
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => {}}>Map View</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {}}>Graph View</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {}}>Document View</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {}}>Split View</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            
             <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">Help</Button>
           </div>
         </div>
@@ -204,18 +231,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
           <div className="h-6 w-[1px] bg-border mx-1 sm:mx-2"></div>
-          <Button 
-            variant="ghost" 
-            size="icon" 
-            onClick={() => setFocusMode(!focusMode)} 
-            className="h-8 w-8 sm:h-9 sm:w-9" 
-            title={focusMode ? "Exit Focus Mode (Alt+F)" : "Enter Focus Mode (Alt+F)"}
-          >
-            {focusMode ? 
-              <Minimize className="h-4 w-4 sm:h-5 sm:w-5" /> : 
-              <Maximize className="h-4 w-4 sm:h-5 sm:w-5" />
-            }
-          </Button>
+
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 sm:h-9 sm:w-9" title="Toggle Theme">
             {theme === "dark" ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
           </Button>
