@@ -187,10 +187,37 @@ export default function Terminal({ height }: TerminalProps) {
       onClick={focusInput}
       ref={terminalRef}
     >
-      <div className="mb-1 text-text-secondary">Search Agent Terminal</div>
+      {/* Terminal Header with Tabs */}
+      <div className="flex justify-between items-center mb-2 border-b border-border-color pb-1">
+        <div className="flex space-x-4">
+          <div className="text-primary font-semibold cursor-pointer">Search Agent</div>
+          <div className="text-text-secondary cursor-pointer hover:text-primary">System</div>
+          <div className="text-text-secondary cursor-pointer hover:text-primary">Data</div>
+        </div>
+        
+        <div className="flex space-x-2">
+          <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+            <span className="sr-only">Minimize</span>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3v3a2 2 0 0 1-2 2H3"/><path d="M21 8h-3a2 2 0 0 1-2-2V3"/><path d="M3 16h3a2 2 0 0 1 2 2v3"/><path d="M16 21v-3a2 2 0 0 1 2-2h3"/></svg>
+          </Button>
+        </div>
+      </div>
+      
+      {/* Search Agent Help Bar */}
+      <div className="bg-bg-dark p-1 rounded mb-2 text-xs flex justify-between items-center">
+        <div>
+          <span className="text-primary font-medium">Search Agent Commands:</span>
+          <span className="text-text-secondary ml-2">search, extract, graph, map, connect, export</span>
+        </div>
+        <div>
+          <Button variant="ghost" size="sm" className="h-5 px-2 py-0 text-xs">
+            Help
+          </Button>
+        </div>
+      </div>
       
       {/* Terminal output display */}
-      <div className="space-y-1">
+      <div className="space-y-1 max-h-[calc(100%-80px)] overflow-y-auto">
         {entries.map((entry, index) => (
           <div key={index} className={`${entry.type === 'input' ? 'flex' : ''}`}>
             {entry.type === 'input' && <span className="text-secondary pr-1">&gt;</span>}
@@ -209,8 +236,8 @@ export default function Terminal({ height }: TerminalProps) {
         ))}
       </div>
       
-      {/* Input line */}
-      <div className="flex items-center mt-1">
+      {/* Input line with enhanced styling */}
+      <div className="flex items-center mt-2 bg-bg-dark rounded p-1">
         <span className="text-secondary pr-1">&gt;</span>
         <input
           ref={inputRef}
@@ -230,10 +257,12 @@ export default function Terminal({ height }: TerminalProps) {
             }
           }}
           className="flex-grow bg-transparent outline-none text-text-primary"
-          placeholder="Type a command..."
+          placeholder="Type search command (e.g., search 'coastal erosion' locality:Norfolk)..."
           autoFocus
         />
-        <span className="text-text-secondary animate-pulse">|</span>
+        <Button variant="ghost" size="sm" className="h-6 px-2 py-0 text-xs" onClick={handleSubmitCommand}>
+          Execute
+        </Button>
       </div>
     </div>
   );
