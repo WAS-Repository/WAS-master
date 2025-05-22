@@ -161,68 +161,8 @@ export default function MapView() {
 
   return (
     <div className="h-full flex flex-col md:flex-row relative">
-      {/* Mobile controls */}
-      {isMobile && (
-        <div className="absolute top-2 right-2 z-[1000]">
-          <Button
-            variant="default"
-            size="sm"
-            className="rounded-full shadow-lg bg-slate-800 border border-slate-700"
-            onClick={() => setShowList(!showList)}
-          >
-            {showList ? <MapPin size={16} /> : <Search size={16} />}
-          </Button>
-        </div>
-      )}
-
-      {/* Locality List Panel */}
-      <div 
-        className={`${
-          isMobile 
-            ? `absolute z-[1000] top-12 right-2 w-72 max-h-[70vh] overflow-y-auto rounded-lg shadow-lg transition-all ${
-                showList ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full pointer-events-none'
-              }`
-            : 'w-1/4 border-r'
-        } bg-slate-900 bg-opacity-90 backdrop-blur-sm`}
-      >
-        <div className="p-3 border-b border-slate-700">
-          <h3 className="text-sm font-medium text-slate-200">Hampton Roads Localities</h3>
-          <p className="text-xs text-slate-400 mt-1">Select a locality to view documents</p>
-        </div>
-        <div className="divide-y divide-slate-800">
-          {locationMarkers.map((marker) => (
-            <div 
-              key={marker.name}
-              className={`p-3 cursor-pointer transition-colors ${
-                selectedLocality === marker.name 
-                  ? 'bg-slate-800' 
-                  : 'hover:bg-slate-800'
-              }`}
-              onClick={() => handleLocalitySelect(marker.name, marker.position)}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="text-sm font-medium text-slate-200">{marker.name}</h4>
-                  <p className="text-xs text-slate-400 mt-0.5">{marker.documents} documents</p>
-                </div>
-                <Badge variant="outline" className="text-xs bg-slate-800">
-                  {marker.types.length} types
-                </Badge>
-              </div>
-              <div className="flex flex-wrap gap-1 mt-2">
-                {marker.types.map((type) => (
-                  <Badge key={type} variant="secondary" className="text-[10px]">
-                    {type}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
       {/* Map Container */}
-      <div className={`flex-grow ${isMobile && showList ? 'opacity-50' : 'opacity-100'}`}>
+      <div className="flex-grow">
         {isLoading ? (
           <div className="h-full flex items-center justify-center bg-slate-900">
             <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
