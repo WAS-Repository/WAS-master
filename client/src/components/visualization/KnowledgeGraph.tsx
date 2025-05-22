@@ -4,9 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Search, Filter, ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, ChevronDown } from 'lucide-react';
-import * as d3 from 'd3-force';
-import { select } from 'd3-selection';
-import { zoom } from 'd3-zoom';
+import * as d3 from 'd3';
 
 // Sample data for the knowledge graph
 const sampleNodes = [
@@ -133,19 +131,19 @@ export default function KnowledgeGraph() {
     if (!svgRef.current) return;
 
     // Clear previous graph
-    select(svgRef.current).selectAll("*").remove();
+    d3.select(svgRef.current).selectAll("*").remove();
 
     const width = svgRef.current.clientWidth;
     const height = svgRef.current.clientHeight;
     
-    const svg = select(svgRef.current)
+    const svg = d3.select(svgRef.current)
       .attr("viewBox", `0 0 ${width} ${height}`)
-      .call((zoom()
+      .call(d3.zoom()
         .scaleExtent([0.1, 4])
         .on("zoom", (event) => {
           container.attr("transform", event.transform);
           setZoomLevel(event.transform.k);
-        }) as any));
+        }));
 
     const container = svg.append("g");
     
@@ -153,7 +151,7 @@ export default function KnowledgeGraph() {
     const simulation = d3.forceSimulation(filteredNodes as any)
       .force("link", d3.forceLink(filteredLinks)
         .id((d: any) => d.id)
-        .distance(d => 100 / (d as any).weight)
+        .distance((d: any) => 100 / d.weight)
       )
       .force("charge", d3.forceManyBody().strength(-200))
       .force("center", d3.forceCenter(width / 2, height / 2))
@@ -176,12 +174,12 @@ export default function KnowledgeGraph() {
       .enter()
       .append("g")
       .attr("class", "node")
-      .call((d3.drag()
+      .call(d3.drag()
         .on("start", dragstarted)
         .on("drag", dragged)
-        .on("end", dragended) as any))
+        .on("end", dragended))
       .on("click", (event, d) => {
-        setSelectedNode(d as Node);
+        setSelectedNode(d as any);
         event.stopPropagation();
       });
 

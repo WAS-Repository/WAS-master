@@ -216,6 +216,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error processing search query" });
     }
   });
+  
+  // GeoJSON data endpoint
+  app.get("/api/geojson", (req, res) => {
+    try {
+      // Read the GeoJSON file from attached_assets
+      const filePath = process.cwd() + '/attached_assets/hampton_roads_localities.geojson';
+      const fs = require('fs');
+      
+      if (fs.existsSync(filePath)) {
+        const data = fs.readFileSync(filePath, 'utf8');
+        const geojson = JSON.parse(data);
+        res.json(geojson);
+      } else {
+        console.error('GeoJSON file not found at:', filePath);
+        res.status(404).json({ message: "GeoJSON file not found" });
+      }
+    } catch (error) {
+      console.error('Error loading GeoJSON:', error);
+      res.status(500).json({ message: "Error loading GeoJSON data" });
+    }
+  });
 
   app.get("/api/search/recent", async (req, res) => {
     try {
