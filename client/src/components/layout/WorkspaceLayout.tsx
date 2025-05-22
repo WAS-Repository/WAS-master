@@ -105,39 +105,6 @@ export default function WorkspaceLayout() {
       
       {/* Main content area with grid layout */}
       <div className="flex flex-grow overflow-hidden">
-        {/* Left icon navigation bar */}
-        <div className="w-10 bg-black border-r border-[#22dd22] flex flex-col items-center pt-2">
-          <button 
-            className={`w-7 h-7 mb-3 flex items-center justify-center ${navigationTab === 1 ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'} border border-[#33ff33] rounded`}
-            onClick={() => setNavigationTab(1)}
-          >
-            <File className="h-4 w-4" />
-          </button>
-          <button 
-            className={`w-7 h-7 mb-3 flex items-center justify-center ${navigationTab === 2 ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'} border border-[#33ff33] rounded`}
-            onClick={() => setNavigationTab(2)}
-          >
-            <Layers className="h-4 w-4" />
-          </button>
-          <button 
-            className={`w-7 h-7 mb-3 flex items-center justify-center ${navigationTab === 3 ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'} border border-[#33ff33] rounded`}
-            onClick={() => setNavigationTab(3)}
-          >
-            <List className="h-4 w-4" />
-          </button>
-          <button 
-            className={`w-7 h-7 mb-3 flex items-center justify-center ${navigationTab === 4 ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'} border border-[#33ff33] rounded`}
-            onClick={() => setNavigationTab(4)}
-          >
-            <Database className="h-4 w-4" />
-          </button>
-          <button 
-            className={`w-7 h-7 mb-3 flex items-center justify-center ${navigationTab === 5 ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'} border border-[#33ff33] rounded`}
-            onClick={() => setNavigationTab(5)}
-          >
-            <Terminal className="h-4 w-4" />
-          </button>
-        </div>
         
         {/* Main content grid layout */}
         <div className="flex-1 flex flex-col">
