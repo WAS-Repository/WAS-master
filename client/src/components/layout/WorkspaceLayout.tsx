@@ -383,30 +383,7 @@ export default function WorkspaceLayout() {
                 </div>
               </div>
               
-              {/* Key players graph */}
-              <div className="p-2 border-b" style={{ borderColor: colorScheme.borderColor }}>
-                <div className="text-xs font-bold uppercase mb-1" style={{ color: colorScheme.mainColor }}>Key Role Players</div>
-                <div className="h-32 relative p-1 border" style={{ 
-                  backgroundColor: colorScheme.bgAltColor,
-                  borderColor: colorScheme.mainColor
-                }}>
-                  {/* Simple knowledge graph visualization */}
-                  <svg className="w-full h-full">
-                    <circle cx="50%" cy="30%" r="5" fill={colorScheme.mainColor} />
-                    <circle cx="30%" cy="60%" r="5" fill={colorScheme.mainColor} />
-                    <circle cx="70%" cy="70%" r="5" fill={colorScheme.mainColor} />
-                    <circle cx="80%" cy="40%" r="5" fill={colorScheme.mainColor} />
-                    <circle cx="20%" cy="40%" r="5" fill={colorScheme.mainColor} />
-                    
-                    <line x1="50%" y1="30%" x2="30%" y2="60%" stroke={colorScheme.mainColor} strokeWidth="1" />
-                    <line x1="50%" y1="30%" x2="70%" y2="70%" stroke={colorScheme.mainColor} strokeWidth="1" />
-                    <line x1="50%" y1="30%" x2="80%" y2="40%" stroke={colorScheme.mainColor} strokeWidth="1" />
-                    <line x1="50%" y1="30%" x2="20%" y2="40%" stroke={colorScheme.mainColor} strokeWidth="1" />
-                    <line x1="30%" y1="60%" x2="70%" y2="70%" stroke={colorScheme.mainColor} strokeWidth="1" />
-                    <line x1="80%" y1="40%" x2="70%" y2="70%" stroke={colorScheme.mainColor} strokeWidth="1" />
-                  </svg>
-                </div>
-              </div>
+
               
               {/* Extra space for the funding table to expand */}
               <div className="flex-1 p-2 overflow-y-auto">
