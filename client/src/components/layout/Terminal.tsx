@@ -527,6 +527,15 @@ export default function Terminal({ height }: TerminalProps) {
     ]);
   };
 
+  // Function to switch terminal mode
+  const switchMode = (mode: TerminalMode) => {
+    setTerminalMode(mode);
+    setEntries(prev => [
+      ...prev,
+      { type: 'info', content: `Switched to ${mode} mode.`, timestamp: new Date() }
+    ]);
+  };
+
   // Handle command history
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
@@ -589,9 +598,39 @@ export default function Terminal({ height }: TerminalProps) {
         </div>
       </div>
 
-      {/* Command helper bar */}
+      {/* Terminal mode selector and command helper bar */}
       <div className="bg-bg-dark p-1 rounded mb-2 text-xs flex justify-between items-center">
         <div className="flex flex-wrap gap-2">
+          <div className="border-r pr-2 mr-2 flex gap-1">
+            <Button 
+              variant={terminalMode === 'shell' ? 'default' : 'ghost'} 
+              size="sm" 
+              className="h-5 px-2 py-0 text-xs" 
+              onClick={() => switchMode('shell')}
+            >
+              <TerminalIcon size={12} className="mr-1" />
+              Shell
+            </Button>
+            <Button 
+              variant={terminalMode === 'agent' ? 'default' : 'ghost'} 
+              size="sm" 
+              className="h-5 px-2 py-0 text-xs"
+              onClick={() => switchMode('agent')}
+            >
+              <MessageSquare size={12} className="mr-1" />
+              Agent
+            </Button>
+            <Button 
+              variant={terminalMode === 'explorer' ? 'default' : 'ghost'} 
+              size="sm" 
+              className="h-5 px-2 py-0 text-xs"
+              onClick={() => switchMode('explorer')}
+            >
+              <FolderOpen size={12} className="mr-1" />
+              Explorer
+            </Button>
+          </div>
+          
           <Button variant="ghost" size="sm" className="h-5 px-2 py-0 text-xs" onClick={() => setCurrentCommand('help')}>
             <HelpCircle size={12} className="mr-1" />
             Help
