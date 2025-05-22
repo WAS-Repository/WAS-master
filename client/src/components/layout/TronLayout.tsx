@@ -13,14 +13,16 @@ import {
   Wifi,
   Clock,
   Laptop,
-  ChevronRight
+  ChevronRight,
+  Eye,
+  Download,
+  Save
 } from 'lucide-react';
 import DocumentViewer from '../visualization/DocumentViewer';
 import MapView from '../visualization/MapView';
 import KnowledgeGraph from '../visualization/KnowledgeGraph';
-import Terminal from './Terminal';
-// Use our custom TerminalInterface component
 import TerminalInterface from './TerminalInterface';
+import ResearchWorkspacesMenu, { ResearchWorkspace, researchWorkspaces } from '../workspace/ResearchWorkspaces';
 
 export default function TronLayout() {
   const isMobile = useIsMobile();
@@ -29,6 +31,7 @@ export default function TronLayout() {
   const [memoryUsage, setMemoryUsage] = useState(Math.floor(Math.random() * 30) + 10); // Random value between 10-40%
   const [networkPing, setNetworkPing] = useState(Math.floor(Math.random() * 40) + 20); // Random value between 20-60ms
   const [activeView, setActiveView] = useState<'document' | 'map' | 'graph'>('document');
+  const [currentWorkspace, setCurrentWorkspace] = useState<ResearchWorkspace>(researchWorkspaces[0]);
   
   // Simulate real-time metrics
   useEffect(() => {
