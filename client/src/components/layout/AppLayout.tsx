@@ -1,10 +1,17 @@
 import { ReactNode, useState, useRef, useCallback, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Terminal from "./Terminal";
-import { Sun, Moon, Settings, Menu, Grid3X3, X } from "lucide-react";
+import { Sun, Moon, Settings, Menu, Grid3X3, X, Search, PlusCircle } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -123,7 +130,26 @@ export default function AppLayout({ children }: AppLayoutProps) {
           
           {/* Main Navigation - Hide on Mobile */}
           <div className="hidden md:flex space-x-2 lg:space-x-4">
-            <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">File</Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">File</Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                <DropdownMenuItem>
+                  <Search className="h-4 w-4 mr-2" />
+                  Find Documents
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <PlusCircle className="h-4 w-4 mr-2" />
+                  Add Source
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>New Project</DropdownMenuItem>
+                <DropdownMenuItem>Open...</DropdownMenuItem>
+                <DropdownMenuItem>Save</DropdownMenuItem>
+                <DropdownMenuItem>Export Results</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">Edit</Button>
             <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">View</Button>
             <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">Help</Button>

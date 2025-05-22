@@ -203,31 +203,7 @@ export default function WorkspaceLayout() {
                   </span>
                 </div>
                 
-                <Button 
-                  className="py-1 px-2 text-sm border flex items-center justify-center hover:bg-opacity-20"
-                  variant="outline"
-                  style={{ 
-                    color: colorScheme.mainColor,
-                    borderColor: colorScheme.mainColor,
-                    backgroundColor: colorScheme.bgColor
-                  }}
-                >
-                  <Search className="h-4 w-4 mr-1" />
-                  Find Documents
-                </Button>
-                
-                <Button 
-                  className="py-1 px-2 text-sm border flex items-center justify-center hover:bg-opacity-20"
-                  variant="outline"
-                  style={{ 
-                    color: colorScheme.accentColor,
-                    borderColor: colorScheme.accentColor,
-                    backgroundColor: colorScheme.bgColor
-                  }}
-                >
-                  <PlusCircle className="h-4 w-4 mr-1" />
-                  Add Source
-                </Button>
+
               </div>
               
               <div className="flex items-center space-x-2">
