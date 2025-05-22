@@ -77,13 +77,14 @@ const locationMarkers = [
   }
 ];
 
-// Style function for GeoJSON
+// Style function for GeoJSON with improved contrast for accessibility
 const geoJSONStyle = {
-  fillColor: '#3b82f6',
-  weight: 1,
+  fillColor: '#60a5fa', // Brighter blue fill
+  weight: 2,            // Thicker border
   opacity: 1,
-  color: '#1e40af',
-  fillOpacity: 0.25
+  color: '#1d4ed8',     // More vibrant border color
+  fillOpacity: 0.2,     // Slightly more transparent fill
+  dashArray: '3',       // Add dash pattern to borders for better visibility
 };
 
 export default function MapView() {
@@ -120,8 +121,9 @@ export default function MapView() {
     }
   };
 
-  // Determine tile URL based on theme (dark/light)
-  const tileUrl = "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png";
+  // Determine tile URL based on theme (dark/light) with better contrast and road data
+  // Using OpenStreetMap with higher contrast for better accessibility
+  const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 
   return (
     <div className="h-full flex flex-col md:flex-row relative">
