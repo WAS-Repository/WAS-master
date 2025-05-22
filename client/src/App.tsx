@@ -8,6 +8,7 @@ import Home from "@/pages/home";
 import AppLayout from "@/components/layout/AppLayout";
 import { ThemeProvider } from "./context/ThemeProvider";
 import { SearchProvider } from "./context/SearchContext";
+import { SearchDialogContainer } from "./components/search/SearchDialogContainer";
 
 function Router() {
   return (
@@ -28,6 +29,7 @@ function App() {
               <Toaster />
               <Router />
             </AppLayout>
+            <SearchDialogContainer />
           </SearchProvider>
         </TooltipProvider>
       </ThemeProvider>
