@@ -191,19 +191,7 @@ export default function WorkspaceLayout() {
             
             <div className="flex-1 flex justify-between items-center">
               <div className="flex items-center space-x-2">
-                <div className="flex items-center bg-black border px-2 py-1" style={{ borderColor: colorScheme.mainColor, backgroundColor: colorScheme.bgColor }}>
-                  <span className="uppercase mr-2" style={{ color: colorScheme.accentColor }}>NETWORK STATUS</span>
-                  <span className={networkPing < 30 
-                    ? `text-[${colorScheme.mainColor}]` 
-                    : networkPing < 60 
-                      ? "text-[#ffff33]" 
-                      : "text-[#ff3333]"
-                  }>
-                    {networkPing}ms latency
-                  </span>
-                </div>
-                
-
+                {/* Network status removed */}
               </div>
               
               <div className="flex items-center space-x-2">
