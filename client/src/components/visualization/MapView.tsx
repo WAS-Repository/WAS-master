@@ -87,9 +87,43 @@ const geoJSONStyle = {
   dashArray: '3',       // Add dash pattern to borders for better visibility
 };
 
+// MapBounds component to restrict panning and zooming
+function MapBoundsHandler() {
+  const map = useMap();
+  
+  useEffect(() => {
+    // Define the bounds for Hampton Roads area
+    // These values create a rectangular boundary around all our markers
+    const southWest = L.latLng(36.5, -76.8);
+    const northEast = L.latLng(37.4, -75.8);
+    const bounds = L.latLngBounds(southWest, northEast);
+    
+    // Set maximum boundaries for the map
+    map.setMaxBounds(bounds);
+    
+    // Set min/max zoom levels
+    map.setMinZoom(8);
+    map.setMaxZoom(14);
+    
+    // Ensure initial view is within bounds
+    map.fitBounds(bounds);
+    
+    // Add event handler to keep map within bounds
+    map.on('drag', function() {
+      map.panInsideBounds(bounds, { animate: false });
+    });
+    
+    return () => {
+      map.off('drag');
+    };
+  }, [map]);
+  
+  return null;
+}
+
 export default function MapView() {
   const isMobile = useIsMobile();
-  const [mapCenter, setMapCenter] = useState<[number, number]>([36.8508, -76.2859]);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([36.8508, -76.2859]); // Norfolk as default center
   const [selectedLocality, setSelectedLocality] = useState<string | null>(null);
   const [showList, setShowList] = useState(!isMobile);
   const geoJSONRef = useRef<any>(null);
@@ -244,6 +278,7 @@ export default function MapView() {
             ))}
             
             <MapCenterHandler center={mapCenter} />
+            <MapBoundsHandler />
           </MapContainer>
         )}
       </div>
