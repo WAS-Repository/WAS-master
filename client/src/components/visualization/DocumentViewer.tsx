@@ -1,8 +1,9 @@
-import { useState } from 'react';
-import { Search, ChevronLeft, ChevronRight, Download, Share } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Search, ChevronLeft, ChevronRight, Download, Share, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 type DocumentCategory = 'research_paper' | 'patent' | 'engineering_drawing';
 
@@ -131,6 +132,8 @@ const sampleDocuments: Record<DocumentCategory, Document[]> = {
 export default function DocumentViewer() {
   const [selectedDocument, setSelectedDocument] = useState<Document>(sampleDocuments.research_paper[0]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [showSidebar, setShowSidebar] = useState(true);
+  const isMobile = useIsMobile();
   
   // Filter documents based on search query
   const filteredDocuments = {
@@ -151,12 +154,37 @@ export default function DocumentViewer() {
     )
   };
   
+  // Handle mobile view - auto-collapse sidebar
+  useEffect(() => {
+    if (isMobile) {
+      setShowSidebar(false);
+    } else {
+      setShowSidebar(true);
+    }
+  }, [isMobile]);
+  
+  // Document selection in mobile view - auto-hide sidebar
+  const handleDocumentSelect = (doc: Document) => {
+    setSelectedDocument(doc);
+    if (isMobile) {
+      setShowSidebar(false);
+    }
+  };
+  
+  // Toggle sidebar visibility
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
+  
   return (
-    <div className="h-full flex">
+    <div className="h-full flex relative">
       {/* Document list sidebar */}
-      <div className="w-1/4 border-r border-border-color bg-bg-panel overflow-y-auto">
-        <div className="sticky top-0 bg-bg-panel border-b border-border-color p-2">
-          <div className="relative">
+      <div 
+        className={`${isMobile ? 'absolute z-10 h-full' : 'w-1/4'} border-r border-border-color bg-bg-panel overflow-y-auto transition-all ${showSidebar ? 'left-0' : isMobile ? '-left-full' : 'w-0 -ml-4 opacity-0'}`}
+        style={{ width: showSidebar ? (isMobile ? '85%' : '25%') : isMobile ? '0' : '0' }}
+      >
+        <div className="sticky top-0 bg-bg-panel border-b border-border-color p-2 flex items-center justify-between">
+          <div className="relative flex-grow">
             <Input
               type="text"
               placeholder="Search documents..."
@@ -166,6 +194,11 @@ export default function DocumentViewer() {
             />
             <Search className="h-4 w-4 absolute right-2 top-2 text-text-secondary" />
           </div>
+          {isMobile && (
+            <Button size="sm" variant="ghost" className="ml-1 p-1" onClick={toggleSidebar}>
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
         
         <div className="p-2">
@@ -175,7 +208,7 @@ export default function DocumentViewer() {
               <div 
                 key={doc.id}
                 className={`p-2 rounded cursor-pointer ${selectedDocument.id === doc.id ? 'bg-bg-dark' : 'hover:bg-bg-dark'}`}
-                onClick={() => setSelectedDocument(doc)}
+                onClick={() => handleDocumentSelect(doc)}
               >
                 <h4 className={`text-sm ${selectedDocument.id === doc.id ? 'font-medium' : ''}`}>{doc.title}</h4>
                 <p className="text-xs text-text-secondary">{doc.location} • {doc.year}</p>
@@ -189,7 +222,7 @@ export default function DocumentViewer() {
               <div 
                 key={doc.id}
                 className={`p-2 rounded cursor-pointer ${selectedDocument.id === doc.id ? 'bg-bg-dark' : 'hover:bg-bg-dark'}`}
-                onClick={() => setSelectedDocument(doc)}
+                onClick={() => handleDocumentSelect(doc)}
               >
                 <h4 className={`text-sm ${selectedDocument.id === doc.id ? 'font-medium' : ''}`}>{doc.title}</h4>
                 <p className="text-xs text-text-secondary">{doc.location} • {doc.year}</p>
@@ -203,7 +236,7 @@ export default function DocumentViewer() {
               <div 
                 key={doc.id}
                 className={`p-2 rounded cursor-pointer ${selectedDocument.id === doc.id ? 'bg-bg-dark' : 'hover:bg-bg-dark'}`}
-                onClick={() => setSelectedDocument(doc)}
+                onClick={() => handleDocumentSelect(doc)}
               >
                 <h4 className={`text-sm ${selectedDocument.id === doc.id ? 'font-medium' : ''}`}>{doc.title}</h4>
                 <p className="text-xs text-text-secondary">{doc.location} • {doc.year}</p>
@@ -214,170 +247,220 @@ export default function DocumentViewer() {
       </div>
       
       {/* Document content area */}
-      <div className="flex-grow overflow-y-auto p-4">
-        <div className="max-w-3xl mx-auto">
-          <div className="mb-4">
-            <h2 className="text-xl font-medium text-primary mb-1">{selectedDocument.title}</h2>
-            <div className="flex items-center text-sm text-text-secondary">
-              <span className="mr-3">Authors: {selectedDocument.authors.join(', ')}</span>
-              <span>Published: {selectedDocument.publishedDate}</span>
-            </div>
+      <div className={`flex-grow overflow-y-auto ${isMobile && showSidebar ? 'hidden' : 'block'}`}>
+        {/* Mobile header with document title and sidebar toggle */}
+        {isMobile && (
+          <div className="sticky top-0 z-10 bg-bg-dark border-b border-border-color p-2 flex items-center">
+            <Button variant="ghost" size="sm" className="p-1 mr-2" onClick={toggleSidebar}>
+              <Menu className="h-4 w-4" />
+            </Button>
+            <h2 className="text-sm font-medium truncate">{selectedDocument.title}</h2>
           </div>
-          
-          <div className="mb-4 bg-bg-panel p-3 rounded-md border border-border-color">
-            <h3 className="text-sm font-medium mb-2">Document Metadata</h3>
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <span className="text-text-secondary">Document Type:</span>
-                <span className="ml-1">
-                  {selectedDocument.type === 'research_paper' ? 'Research Paper' : 
-                   selectedDocument.type === 'patent' ? 'Patent' : 
-                   'Engineering Drawing'}
-                </span>
-              </div>
-              <div>
-                <span className="text-text-secondary">Source:</span>
-                <span className="ml-1">{selectedDocument.source}</span>
-              </div>
-              {selectedDocument.citationCount !== undefined && (
-                <div>
-                  <span className="text-text-secondary">Citation Count:</span>
-                  <span className="ml-1">{selectedDocument.citationCount}</span>
-                </div>
-              )}
-              <div>
-                <span className="text-text-secondary">Localities:</span>
-                <span className="ml-1">{selectedDocument.localities.join(', ')}</span>
-              </div>
-              {selectedDocument.keywords && (
-                <div>
-                  <span className="text-text-secondary">Keywords:</span>
-                  <span className="ml-1">{selectedDocument.keywords.join(', ')}</span>
-                </div>
-              )}
-              <div>
-                <span className="text-text-secondary">File Format:</span>
-                <span className="ml-1">{selectedDocument.fileFormat} ({selectedDocument.fileSize})</span>
+        )}
+        
+        <div className="p-2 sm:p-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="mb-4">
+              <h2 className="text-lg sm:text-xl font-medium text-primary mb-1">{selectedDocument.title}</h2>
+              <div className="flex flex-col sm:flex-row sm:items-center text-xs sm:text-sm text-text-secondary">
+                <span className="sm:mr-3">Authors: {selectedDocument.authors.join(', ')}</span>
+                <span>Published: {selectedDocument.publishedDate}</span>
               </div>
             </div>
-          </div>
-          
-          {selectedDocument.type === 'research_paper' && (
-            <>
+            
+            <div className="mb-4 bg-bg-panel p-3 rounded-md border border-border-color">
+              <h3 className="text-sm font-medium mb-2">Document Metadata</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span className="text-text-secondary">Document Type:</span>
+                  <span className="ml-1">
+                    {selectedDocument.type === 'research_paper' ? 'Research Paper' : 
+                     selectedDocument.type === 'patent' ? 'Patent' : 
+                     'Engineering Drawing'}
+                  </span>
+                </div>
+                <div>
+                  <span className="text-text-secondary">Source:</span>
+                  <span className="ml-1">{selectedDocument.source}</span>
+                </div>
+                {selectedDocument.citationCount !== undefined && (
+                  <div>
+                    <span className="text-text-secondary">Citation Count:</span>
+                    <span className="ml-1">{selectedDocument.citationCount}</span>
+                  </div>
+                )}
+                <div>
+                  <span className="text-text-secondary">Localities:</span>
+                  <span className="ml-1">{selectedDocument.localities.join(', ')}</span>
+                </div>
+                {selectedDocument.keywords && (
+                  <div>
+                    <span className="text-text-secondary">Keywords:</span>
+                    <span className="ml-1">{selectedDocument.keywords.join(', ')}</span>
+                  </div>
+                )}
+                <div>
+                  <span className="text-text-secondary">File Format:</span>
+                  <span className="ml-1">{selectedDocument.fileFormat} ({selectedDocument.fileSize})</span>
+                </div>
+              </div>
+            </div>
+            
+            {selectedDocument.type === 'research_paper' && (
+              <>
+                <div className="mb-4">
+                  <h3 className="text-base font-medium mb-2">Abstract</h3>
+                  <p className="text-sm text-text-secondary leading-relaxed mb-3">
+                    This comprehensive study examines the patterns and impacts of coastal erosion throughout the Hampton Roads region of Virginia. Using data collected over a ten-year period (2010-2020), we present analysis of shoreline changes, erosion rates, and projected impacts on infrastructure and communities. Special attention is given to the localities of Norfolk, Virginia Beach, Hampton, and Portsmouth, which show varying degrees of vulnerability. The research incorporates climate change projections to model future erosion scenarios under different sea level rise conditions.
+                  </p>
+                  <p className="text-sm text-text-secondary leading-relaxed">
+                    Our findings indicate that without intervention, approximately 15% of coastal areas in Hampton Roads will experience severe erosion by 2050, with potential infrastructure damage estimated at $3.2 billion. We propose several mitigation strategies that could be implemented at the municipal and regional levels, including living shoreline approaches, strategic retreat from highly vulnerable areas, and engineered barrier systems suitable for the unique conditions of the Chesapeake Bay region.
+                  </p>
+                </div>
+                
+                <div className="mb-4">
+                  <h3 className="text-base font-medium mb-2">Locality Impact Analysis</h3>
+                  <div className="bg-bg-panel rounded-md overflow-hidden border border-border-color overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-bg-dark">
+                          <TableHead className="py-2 px-3 text-left text-xs font-medium">Locality</TableHead>
+                          <TableHead className="py-2 px-3 text-left text-xs font-medium">Erosion Rate (m/yr)</TableHead>
+                          <TableHead className="py-2 px-3 text-left text-xs font-medium">Vulnerable Area (km²)</TableHead>
+                          <TableHead className="py-2 px-3 text-left text-xs font-medium">Risk Level</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className="py-2 px-3 text-xs">Norfolk</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">0.32</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">5.7</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">
+                            <span className="px-2 py-0.5 text-xs rounded bg-error bg-opacity-20 text-error">High</span>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="py-2 px-3 text-xs">Virginia Beach</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">0.41</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">8.3</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">
+                            <span className="px-2 py-0.5 text-xs rounded bg-error bg-opacity-20 text-error">High</span>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="py-2 px-3 text-xs">Hampton</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">0.25</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">3.8</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">
+                            <span className="px-2 py-0.5 text-xs rounded bg-accent bg-opacity-20 text-accent">Medium</span>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="py-2 px-3 text-xs">Portsmouth</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">0.18</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">2.1</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">
+                            <span className="px-2 py-0.5 text-xs rounded bg-secondary bg-opacity-20 text-secondary">Low</span>
+                          </TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="py-2 px-3 text-xs">Poquoson</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">0.37</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">4.6</TableCell>
+                          <TableCell className="py-2 px-3 text-xs">
+                            <span className="px-2 py-0.5 text-xs rounded bg-error bg-opacity-20 text-error">High</span>
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <p className="text-xs text-text-secondary mt-2">Table 1: Erosion rates and vulnerability assessment by locality</p>
+                </div>
+              </>
+            )}
+            
+            {selectedDocument.type === 'patent' && (
               <div className="mb-4">
-                <h3 className="text-base font-medium mb-2">Abstract</h3>
+                <h3 className="text-base font-medium mb-2">Patent Description</h3>
                 <p className="text-sm text-text-secondary leading-relaxed mb-3">
-                  This comprehensive study examines the patterns and impacts of coastal erosion throughout the Hampton Roads region of Virginia. Using data collected over a ten-year period (2010-2020), we present analysis of shoreline changes, erosion rates, and projected impacts on infrastructure and communities. Special attention is given to the localities of Norfolk, Virginia Beach, Hampton, and Portsmouth, which show varying degrees of vulnerability. The research incorporates climate change projections to model future erosion scenarios under different sea level rise conditions.
+                  This patent describes a novel approach to flood barrier systems specifically designed for coastal urban areas with high population density. The technology utilizes modular deployable barriers that can be rapidly installed in advance of storm events and which integrate with permanent infrastructure components. The system is designed to protect against storm surge events up to 15 feet while minimizing visual and environmental impacts during normal conditions.
                 </p>
-                <p className="text-sm text-text-secondary leading-relaxed">
-                  Our findings indicate that without intervention, approximately 15% of coastal areas in Hampton Roads will experience severe erosion by 2050, with potential infrastructure damage estimated at $3.2 billion. We propose several mitigation strategies that could be implemented at the municipal and regional levels, including living shoreline approaches, strategic retreat from highly vulnerable areas, and engineered barrier systems suitable for the unique conditions of the Chesapeake Bay region.
+                <p className="text-sm text-text-secondary leading-relaxed mb-3">
+                  The invention addresses the unique challenges faced by the Hampton Roads region, with particular attention to the needs of Virginia Beach's oceanfront and bay areas. The modular design allows for scalable implementation based on municipal budgets and can be adapted to various coastal typologies present in the region.
                 </p>
+                
+                <h3 className="text-base font-medium mt-4 mb-2">Key Claims</h3>
+                <ol className="list-decimal pl-5 space-y-2 text-sm text-text-secondary">
+                  <li>A deployable flood barrier system comprising interconnected modular units that can be rapidly installed prior to storm events.</li>
+                  <li>A locking mechanism allowing individual barrier sections to create watertight seals when connected.</li>
+                  <li>Integration points designed to connect with existing seawall and hardened infrastructure.</li>
+                  <li>A hydraulic deployment system allowing installation by minimal personnel.</li>
+                  <li>Materials engineered to withstand impact from floating debris and wave action.</li>
+                </ol>
+              </div>
+            )}
+            
+            {selectedDocument.type === 'engineering_drawing' && (
+              <div className="mb-4">
+                <h3 className="text-base font-medium mb-2">Drawing Details</h3>
+                <p className="text-sm text-text-secondary leading-relaxed mb-3">
+                  These technical engineering drawings detail the proposed modifications to the Hampton Roads Bridge-Tunnel (HRBT) expansion project. The drawings include structural specifications, materials requirements, and integration plans with existing infrastructure. Special attention is given to designing for increased sea level rise and more frequent storm surge events expected in the coming decades.
+                </p>
+                
+                <div className="mt-4 bg-bg-dark p-4 rounded-md border border-border-color flex justify-center items-center h-60">
+                  <div className="text-center">
+                    <p className="text-text-secondary mb-2">Engineering Drawing Preview</p>
+                    <p className="text-xs text-text-secondary opacity-60">[Preview requires CAD viewer]</p>
+                  </div>
+                </div>
+                
+                <h3 className="text-base font-medium mt-4 mb-2">Specifications</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  <div className="bg-bg-panel p-3 rounded-md">
+                    <h4 className="font-medium text-xs mb-1 text-primary">Materials</h4>
+                    <ul className="list-disc pl-4 text-xs text-text-secondary space-y-1">
+                      <li>High-strength marine-grade concrete (Type M75)</li>
+                      <li>Corrosion-resistant reinforcement (316L stainless)</li>
+                      <li>Elastomeric bearing pads with 75-year service life</li>
+                      <li>Marine-grade protective coatings</li>
+                    </ul>
+                  </div>
+                  <div className="bg-bg-panel p-3 rounded-md">
+                    <h4 className="font-medium text-xs mb-1 text-primary">Design Parameters</h4>
+                    <ul className="list-disc pl-4 text-xs text-text-secondary space-y-1">
+                      <li>Category 3 hurricane resistance</li>
+                      <li>Wave loads up to 8 meters</li>
+                      <li>2 feet SLR accommodation</li>
+                      <li>100-year service life</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div className="mt-5 flex flex-wrap gap-2 justify-between items-center">
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="text-xs flex items-center">
+                  <Download className="h-3 w-3 mr-1" />
+                  Download
+                </Button>
+                <Button variant="outline" size="sm" className="text-xs flex items-center">
+                  <Share className="h-3 w-3 mr-1" />
+                  Share
+                </Button>
               </div>
               
-              <div className="mb-4">
-                <h3 className="text-base font-medium mb-2">Locality Impact Analysis</h3>
-                <div className="bg-bg-panel rounded-md overflow-hidden border border-border-color">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-bg-dark">
-                        <TableHead className="py-2 px-3 text-left text-xs font-medium">Locality</TableHead>
-                        <TableHead className="py-2 px-3 text-left text-xs font-medium">Erosion Rate (m/yr)</TableHead>
-                        <TableHead className="py-2 px-3 text-left text-xs font-medium">Vulnerable Area (km²)</TableHead>
-                        <TableHead className="py-2 px-3 text-left text-xs font-medium">Risk Level</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell className="py-2 px-3 text-xs">Norfolk</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">0.32</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">5.7</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">
-                          <span className="px-2 py-0.5 text-xs rounded bg-error bg-opacity-20 text-error">High</span>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="py-2 px-3 text-xs">Virginia Beach</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">0.41</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">8.3</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">
-                          <span className="px-2 py-0.5 text-xs rounded bg-error bg-opacity-20 text-error">High</span>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="py-2 px-3 text-xs">Hampton</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">0.25</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">3.8</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">
-                          <span className="px-2 py-0.5 text-xs rounded bg-accent bg-opacity-20 text-accent">Medium</span>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="py-2 px-3 text-xs">Portsmouth</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">0.18</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">2.1</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">
-                          <span className="px-2 py-0.5 text-xs rounded bg-secondary bg-opacity-20 text-secondary">Low</span>
-                        </TableCell>
-                      </TableRow>
-                      <TableRow>
-                        <TableCell className="py-2 px-3 text-xs">Poquoson</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">0.37</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">4.6</TableCell>
-                        <TableCell className="py-2 px-3 text-xs">
-                          <span className="px-2 py-0.5 text-xs rounded bg-error bg-opacity-20 text-error">High</span>
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </div>
-                <p className="text-xs text-text-secondary mt-2">Table 1: Erosion rates and vulnerability assessment by locality</p>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" className="text-xs flex items-center">
+                  <ChevronLeft className="h-4 w-4 mr-1" />
+                  Previous
+                </Button>
+                <Button variant="outline" size="sm" className="text-xs flex items-center">
+                  Next
+                  <ChevronRight className="h-4 w-4 ml-1" />
+                </Button>
               </div>
-            </>
-          )}
-          
-          {selectedDocument.type === 'patent' && (
-            <div className="mb-4">
-              <h3 className="text-base font-medium mb-2">Patent Description</h3>
-              <p className="text-sm text-text-secondary leading-relaxed mb-3">
-                This patent describes a novel approach to flood barrier systems specifically designed for coastal urban areas with high population density. The technology utilizes modular deployable barriers that can be rapidly installed in advance of storm events and which integrate with permanent infrastructure components.
-              </p>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                The system addresses specific challenges identified in the Hampton Roads region, including limited deployment space, aesthetic considerations for tourist areas, and the need for minimal impact on daily commerce and transportation when not in use. Test installations in Virginia Beach have demonstrated the system's effectiveness during moderate storm surge events.
-              </p>
             </div>
-          )}
-          
-          {selectedDocument.type === 'engineering_drawing' && (
-            <div className="mb-4">
-              <h3 className="text-base font-medium mb-2">Drawing Specifications</h3>
-              <p className="text-sm text-text-secondary leading-relaxed mb-3">
-                Engineering schematic detailing structural specifications for infrastructure improvements in the Hampton Roads region. The drawing includes detailed measurements, material specifications, and implementation guidelines for construction teams.
-              </p>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                This technical document was produced as part of the Hampton Roads Infrastructure Resilience Initiative and meets all requirements specified by the Virginia Department of Transportation and the U.S. Army Corps of Engineers for coastal infrastructure projects.
-              </p>
-            </div>
-          )}
-          
-          <div className="flex justify-between mt-6 mb-4">
-            <Button variant="outline" size="sm" className="flex items-center">
-              <ChevronLeft className="h-4 w-4 mr-1" />
-              Previous Section
-            </Button>
-            <div className="flex space-x-2">
-              <Button size="sm" className="bg-primary text-white flex items-center">
-                <Download className="h-4 w-4 mr-1" />
-                Download {selectedDocument.fileFormat}
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center">
-                <Share className="h-4 w-4 mr-1" />
-                Share
-              </Button>
-            </div>
-            <Button variant="outline" size="sm" className="flex items-center">
-              Next Section
-              <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
           </div>
         </div>
       </div>

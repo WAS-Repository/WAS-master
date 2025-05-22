@@ -1,10 +1,10 @@
-import { ReactNode, useState, useRef, useCallback } from "react";
+import { ReactNode, useState, useRef, useCallback, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Terminal from "./Terminal";
-import { Sun, Moon, Settings, Search, Grid3X3 } from "lucide-react";
+import { Sun, Moon, Settings, Menu, Grid3X3, X } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -12,9 +12,12 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
   const { theme, setTheme } = useTheme();
-  const [isSidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [terminalHeight, setTerminalHeight] = useState(200);
-  const [sidebarWidth, setSidebarWidth] = useState(240);
+  const isMobile = useIsMobile();
+  const [isSidebarCollapsed, setSidebarCollapsed] = useState(isMobile);
+  const [isTerminalCollapsed, setTerminalCollapsed] = useState(isMobile);
+  const [terminalHeight, setTerminalHeight] = useState(isMobile ? 150 : 200);
+  const [sidebarWidth, setSidebarWidth] = useState(isMobile ? 0 : 240);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   
   const isDraggingSidebar = useRef(false);
   const isDraggingTerminal = useRef(false);
@@ -23,7 +26,19 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const initialWidth = useRef(0);
   const initialHeight = useRef(0);
 
+  // Update layout when screen size changes
+  useEffect(() => {
+    if (isMobile) {
+      setSidebarCollapsed(true);
+      setTerminalCollapsed(true);
+      setSidebarWidth(0);
+    } else if (sidebarWidth === 0) {
+      setSidebarWidth(240);
+    }
+  }, [isMobile]);
+
   const startSidebarResize = useCallback((e: React.MouseEvent) => {
+    if (isMobile) return;
     isDraggingSidebar.current = true;
     initialX.current = e.clientX;
     initialWidth.current = sidebarWidth;
@@ -31,7 +46,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     document.addEventListener('mousemove', handleSidebarResize);
     document.addEventListener('mouseup', stopSidebarResize);
     e.preventDefault();
-  }, [sidebarWidth]);
+  }, [sidebarWidth, isMobile]);
 
   const handleSidebarResize = useCallback((e: MouseEvent) => {
     if (isDraggingSidebar.current) {
@@ -49,6 +64,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   }, [handleSidebarResize]);
 
   const startTerminalResize = useCallback((e: React.MouseEvent) => {
+    if (isMobile) return;
     isDraggingTerminal.current = true;
     initialY.current = e.clientY;
     initialHeight.current = terminalHeight;
@@ -56,7 +72,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     document.addEventListener('mousemove', handleTerminalResize);
     document.addEventListener('mouseup', stopTerminalResize);
     e.preventDefault();
-  }, [terminalHeight]);
+  }, [terminalHeight, isMobile]);
 
   const handleTerminalResize = useCallback((e: MouseEvent) => {
     if (isDraggingTerminal.current) {
@@ -77,55 +93,85 @@ export default function AppLayout({ children }: AppLayoutProps) {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const toggleTerminal = () => {
+    setTerminalCollapsed(!isTerminalCollapsed);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-bg-dark text-text-primary">
       {/* Header/Toolbar */}
-      <div className="flex items-center justify-between px-4 py-2 bg-bg-panel border-b border-border-color">
+      <div className="flex items-center justify-between px-2 sm:px-4 py-2 bg-bg-panel border-b border-border-color">
         <div className="flex items-center">
+          {/* Mobile Menu Button */}
+          {isMobile && (
+            <Button variant="ghost" size="icon" className="mr-2" onClick={toggleMobileMenu}>
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          )}
+          
           {/* App Logo */}
-          <div className="flex items-center mr-4">
+          <div className="flex items-center mr-2 sm:mr-4">
             <div className="w-8 h-8 rounded-md bg-primary flex items-center justify-center mr-2">
               <Grid3X3 className="h-5 w-5 text-white" />
             </div>
-            <h1 className="text-xl font-medium">Hampton Roads Research Graph</h1>
+            <h1 className="text-base sm:text-xl font-medium truncate max-w-[150px] sm:max-w-full">Hampton Roads Research Graph</h1>
           </div>
           
-          {/* Main Navigation */}
-          <div className="flex space-x-4">
-            <Button variant="ghost" className="px-3 py-1 text-sm rounded">File</Button>
-            <Button variant="ghost" className="px-3 py-1 text-sm rounded">Edit</Button>
-            <Button variant="ghost" className="px-3 py-1 text-sm rounded">View</Button>
-            <Button variant="ghost" className="px-3 py-1 text-sm rounded">Help</Button>
+          {/* Main Navigation - Hide on Mobile */}
+          <div className="hidden md:flex space-x-2 lg:space-x-4">
+            <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">File</Button>
+            <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">Edit</Button>
+            <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">View</Button>
+            <Button variant="ghost" className="px-2 sm:px-3 py-1 text-xs sm:text-sm rounded">Help</Button>
           </div>
         </div>
         
         {/* User Controls */}
-        <div className="flex items-center space-x-2">
-          <Button variant="ghost" size="icon" onClick={toggleTheme}>
-            {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+        <div className="flex items-center space-x-1 sm:space-x-2">
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 sm:h-9 sm:w-9">
+            {theme === "dark" ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
           </Button>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
+          <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
+            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
-          <div className="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-bg-dark">
-            <span className="font-medium">JD</span>
+          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-accent flex items-center justify-center text-bg-dark">
+            <span className="font-medium text-sm sm:text-base">JD</span>
           </div>
         </div>
       </div>
       
-      <div className="flex-grow flex overflow-hidden">
+      {/* Mobile Menu Overlay */}
+      {isMobile && mobileMenuOpen && (
+        <div className="absolute inset-0 bg-black bg-opacity-50 z-40" onClick={toggleMobileMenu}></div>
+      )}
+      
+      <div className="flex-grow flex overflow-hidden relative">
         {/* Sidebar */}
-        <Sidebar 
-          width={sidebarWidth} 
-          isCollapsed={isSidebarCollapsed} 
-          onToggleCollapse={() => setSidebarCollapsed(!isSidebarCollapsed)} 
-        />
+        <div className={`${isMobile ? 'absolute z-50 h-full' : ''} ${mobileMenuOpen || !isMobile ? 'block' : 'hidden'}`}>
+          <Sidebar 
+            width={isMobile ? 280 : sidebarWidth} 
+            isCollapsed={!mobileMenuOpen && isSidebarCollapsed} 
+            onToggleCollapse={() => {
+              if (!isMobile) {
+                setSidebarCollapsed(!isSidebarCollapsed);
+              } else {
+                setMobileMenuOpen(false);
+              }
+            }} 
+          />
+        </div>
         
-        {/* Sidebar Resizer */}
-        <div 
-          className="w-1 cursor-col-resize bg-border-color hover:bg-primary transition-colors" 
-          onMouseDown={startSidebarResize}
-        />
+        {/* Sidebar Resizer - Hide on Mobile */}
+        {!isMobile && !isSidebarCollapsed && (
+          <div 
+            className="w-1 cursor-col-resize bg-border-color hover:bg-primary transition-colors" 
+            onMouseDown={startSidebarResize}
+          />
+        )}
         
         {/* Main Content */}
         <div className="flex-grow flex flex-col overflow-hidden">
@@ -133,14 +179,28 @@ export default function AppLayout({ children }: AppLayoutProps) {
         </div>
       </div>
       
-      {/* Terminal Resizer */}
-      <div 
-        className="h-1 cursor-row-resize bg-border-color hover:bg-primary transition-colors" 
-        onMouseDown={startTerminalResize}
-      />
+      {/* Terminal Control */}
+      <div className="flex justify-center">
+        <button 
+          className="px-3 py-0.5 text-xs bg-bg-panel rounded-t-md border-t border-l border-r border-border-color"
+          onClick={toggleTerminal}
+        >
+          {isTerminalCollapsed ? 'Show Terminal' : 'Hide Terminal'}
+        </button>
+      </div>
+      
+      {/* Terminal Resizer - Hide on Mobile */}
+      {!isMobile && !isTerminalCollapsed && (
+        <div 
+          className="h-1 cursor-row-resize bg-border-color hover:bg-primary transition-colors" 
+          onMouseDown={startTerminalResize}
+        />
+      )}
       
       {/* Terminal */}
-      <Terminal height={terminalHeight} />
+      {!isTerminalCollapsed && (
+        <Terminal height={terminalHeight} />
+      )}
     </div>
   );
 }
