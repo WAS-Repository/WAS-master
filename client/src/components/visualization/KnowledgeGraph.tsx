@@ -1,414 +1,499 @@
-import { useRef, useEffect, useState } from 'react';
-import { forceSimulation, forceLink, forceManyBody, forceCenter, SimulationNodeDatum, SimulationLinkDatum } from 'd3-force';
-import { select } from 'd3-selection';
-import { zoom, zoomIdentity } from 'd3-zoom';
-import { Card, CardContent } from '@/components/ui/card';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
+import { useState, useEffect, useRef } from 'react';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
-import { Search, Move, RotateCcw, Share } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Search, Filter, ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, ChevronDown } from 'lucide-react';
+import * as d3 from 'd3-force';
+import { select } from 'd3-selection';
+import { zoom } from 'd3-zoom';
 
-interface Node extends SimulationNodeDatum {
+// Sample data for the knowledge graph
+const sampleNodes = [
+  { id: 'doc1', label: 'Coastal Erosion Study', type: 'document', category: 'research_paper' },
+  { id: 'doc2', label: 'Flood Barrier System', type: 'document', category: 'patent' },
+  { id: 'doc3', label: 'Port Facility Norfolk', type: 'document', category: 'engineering_drawing' },
+  { id: 'doc4', label: 'Naval Base Impact', type: 'document', category: 'research_paper' },
+  { id: 'doc5', label: 'Sea Level Rise Projections', type: 'document', category: 'research_paper' },
+  { id: 'loc1', label: 'Norfolk', type: 'locality' },
+  { id: 'loc2', label: 'Virginia Beach', type: 'locality' },
+  { id: 'loc3', label: 'Hampton', type: 'locality' },
+  { id: 'loc4', label: 'Portsmouth', type: 'locality' },
+  { id: 'center1', label: 'ODU Research Center', type: 'center' },
+  { id: 'center2', label: 'VIMS', type: 'center' }
+];
+
+const sampleLinks = [
+  { id: 'link1', source: 'doc1', target: 'loc1', weight: 3 },
+  { id: 'link2', source: 'doc1', target: 'loc2', weight: 2 },
+  { id: 'link3', source: 'doc1', target: 'loc3', weight: 1 },
+  { id: 'link4', source: 'doc2', target: 'loc2', weight: 3 },
+  { id: 'link5', source: 'doc3', target: 'loc1', weight: 3 },
+  { id: 'link6', source: 'doc4', target: 'loc1', weight: 3 },
+  { id: 'link7', source: 'doc5', target: 'loc1', weight: 2 },
+  { id: 'link8', source: 'doc5', target: 'loc2', weight: 2 },
+  { id: 'link9', source: 'doc5', target: 'loc3', weight: 2 },
+  { id: 'link10', source: 'doc5', target: 'loc4', weight: 2 },
+  { id: 'link11', source: 'doc1', target: 'center1', weight: 1 },
+  { id: 'link12', source: 'doc5', target: 'center2', weight: 1 },
+  { id: 'link13', source: 'doc1', target: 'doc5', weight: 2 }
+];
+
+interface Node extends d3.SimulationNodeDatum {
   id: string;
-  name: string;
-  type: 'document' | 'locality' | 'central';
+  label: string;
+  type: 'document' | 'locality' | 'center';
   category?: string;
-  authors?: string[];
-  publishedDate?: string;
-  institution?: string;
-  localities?: string[];
+  x?: number;
+  y?: number;
+  fx?: number | null;
+  fy?: number | null;
 }
 
-interface Link extends SimulationLinkDatum<Node> {
+interface Link extends d3.SimulationLinkDatum<Node> {
+  id: string;
   source: string | Node;
   target: string | Node;
-  value: number;
+  weight: number;
 }
-
-const sampleData = {
-  nodes: [
-    { id: "center", name: "Hampton Roads", type: "central" },
-    
-    // Research Papers
-    { id: "doc1", name: "Coastal Erosion Study", type: "document", category: "research_paper", 
-      authors: ["James R. Smith", "Maria Delgado"], publishedDate: "2021-03-15", 
-      institution: "Old Dominion University", localities: ["Virginia Beach", "Norfolk", "Hampton"] },
-    { id: "doc2", name: "Naval Base Impact", type: "document", category: "research_paper",
-      authors: ["Robert Johnson"], publishedDate: "2020-08-22", 
-      institution: "Naval Research Lab", localities: ["Norfolk"] },
-    
-    // Patents
-    { id: "doc3", name: "Flood Barrier Patent", type: "document", category: "patent",
-      authors: ["Jennifer Lee"], publishedDate: "2019-06-10", 
-      institution: "Virginia Tech", localities: ["Virginia Beach"] },
-    { id: "doc4", name: "Port Technology Patent", type: "document", category: "patent",
-      authors: ["Michael Chen"], publishedDate: "2018-11-15", 
-      institution: "Port Authority", localities: ["Portsmouth"] },
-    
-    // Engineering Drawings
-    { id: "doc5", name: "Bridge Structure", type: "document", category: "engineering_drawing",
-      authors: ["Sarah Williams"], publishedDate: "2017-07-30", 
-      institution: "Transportation Dept", localities: ["Hampton"] },
-    { id: "doc6", name: "Port Facility", type: "document", category: "engineering_drawing",
-      authors: ["David Miller"], publishedDate: "2018-03-22", 
-      institution: "Port Authority", localities: ["Norfolk"] },
-    
-    // Localities
-    { id: "loc1", name: "Norfolk", type: "locality" },
-    { id: "loc2", name: "Portsmouth", type: "locality" },
-    { id: "loc3", name: "Virginia Beach", type: "locality" },
-  ],
-  links: [
-    // Connect all documents to central node
-    { source: "center", target: "doc1", value: 1 },
-    { source: "center", target: "doc2", value: 1 },
-    { source: "center", target: "doc3", value: 1 },
-    { source: "center", target: "doc4", value: 1 },
-    { source: "center", target: "doc5", value: 1 },
-    { source: "center", target: "doc6", value: 1 },
-    
-    // Connect documents to localities
-    { source: "doc1", target: "loc1", value: 1 },
-    { source: "doc1", target: "loc3", value: 1 },
-    { source: "doc2", target: "loc1", value: 1 },
-    { source: "doc3", target: "loc3", value: 1 },
-    { source: "doc4", target: "loc2", value: 1 },
-    { source: "doc5", target: "loc1", value: 1 },
-    { source: "doc6", target: "loc1", value: 1 },
-    
-    // Connect some documents to each other
-    { source: "doc1", target: "doc2", value: 0.6 },
-    { source: "doc3", target: "doc1", value: 0.5 },
-    { source: "doc5", target: "doc6", value: 0.7 },
-  ]
-};
 
 export default function KnowledgeGraph() {
   const svgRef = useRef<SVGSVGElement>(null);
+  const isMobile = useIsMobile();
+  const [nodes, setNodes] = useState<Node[]>(sampleNodes);
+  const [links, setLinks] = useState<Link[]>(sampleLinks);
+  const [searchQuery, setSearchQuery] = useState('');
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
     researchPapers: true,
     patents: true,
-    engineeringDrawings: true,
-    localities: true
+    drawings: true,
+    localities: true,
+    centers: true
   });
-  const [connectionStrength, setConnectionStrength] = useState(70);
+  const [zoomLevel, setZoomLevel] = useState(1);
   
-  // Effect for initializing and updating the graph
+  // Filter nodes based on search query and type filters
+  const filteredNodes = nodes.filter(node => {
+    // Search filter
+    const matchesSearch = node.label.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Type filters
+    const matchesType = 
+      (node.type === 'document' && node.category === 'research_paper' && filters.researchPapers) ||
+      (node.type === 'document' && node.category === 'patent' && filters.patents) ||
+      (node.type === 'document' && node.category === 'engineering_drawing' && filters.drawings) ||
+      (node.type === 'locality' && filters.localities) ||
+      (node.type === 'center' && filters.centers);
+    
+    return matchesSearch && matchesType;
+  });
+  
+  // Filter links to only include connections between filtered nodes
+  const filteredLinks = links.filter(link => {
+    const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
+    const targetId = typeof link.target === 'string' ? link.target : link.target.id;
+    
+    return filteredNodes.some(node => node.id === sourceId) && 
+           filteredNodes.some(node => node.id === targetId);
+  });
+
+  // Reset the graph to default position
+  const resetGraph = () => {
+    if (svgRef.current) {
+      select(svgRef.current)
+        .call(zoom().transform as any, d3.zoomIdentity);
+    }
+    setZoomLevel(1);
+  };
+
+  // Zoom in function
+  const zoomIn = () => {
+    if (svgRef.current) {
+      select(svgRef.current)
+        .transition()
+        .call((zoom().scaleBy as any), 1.5);
+      setZoomLevel(prev => prev * 1.5);
+    }
+  };
+
+  // Zoom out function
+  const zoomOut = () => {
+    if (svgRef.current) {
+      select(svgRef.current)
+        .transition()
+        .call((zoom().scaleBy as any), 0.75);
+      setZoomLevel(prev => prev * 0.75);
+    }
+  };
+
+  // Graph visualization using D3
   useEffect(() => {
     if (!svgRef.current) return;
-    
-    const svg = select(svgRef.current);
+
+    // Clear previous graph
+    select(svgRef.current).selectAll("*").remove();
+
     const width = svgRef.current.clientWidth;
     const height = svgRef.current.clientHeight;
     
-    // Clear previous graph
-    svg.selectAll("*").remove();
+    const svg = select(svgRef.current)
+      .attr("viewBox", `0 0 ${width} ${height}`)
+      .call((zoom()
+        .scaleExtent([0.1, 4])
+        .on("zoom", (event) => {
+          container.attr("transform", event.transform);
+          setZoomLevel(event.transform.k);
+        }) as any));
+
+    const container = svg.append("g");
     
-    // Create zoom behavior
-    const zoomBehavior = zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.25, 5])
-      .on("zoom", (event) => {
-        g.attr("transform", event.transform.toString());
-      });
-    
-    svg.call(zoomBehavior);
-    
-    // Add a group for the graph elements
-    const g = svg.append("g");
-    
-    // Filter nodes based on user preferences
-    const filteredNodes = sampleData.nodes.filter(node => {
-      if (node.type === "central") return true;
-      if (node.type === "locality") return filters.localities;
-      if (node.type === "document") {
-        if (node.category === "research_paper") return filters.researchPapers;
-        if (node.category === "patent") return filters.patents;
-        if (node.category === "engineering_drawing") return filters.engineeringDrawings;
-      }
-      return true;
-    });
-    
-    // Get valid node IDs after filtering
-    const validNodeIds = new Set(filteredNodes.map(node => node.id));
-    
-    // Filter links based on filtered nodes
-    const filteredLinks = sampleData.links.filter(link => {
-      const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
-      const targetId = typeof link.target === 'string' ? link.target : link.target.id;
-      return validNodeIds.has(sourceId) && validNodeIds.has(targetId);
-    }).map(link => ({...link, value: link.value * (connectionStrength / 100)}));
-    
-    // Create the force simulation
-    const simulation = forceSimulation<Node, Link>(filteredNodes)
-      .force("link", forceLink<Node, Link>(filteredLinks)
-        .id(d => d.id)
-        .distance(d => 150 / (d.value || 1))
+    // Create the simulation
+    const simulation = d3.forceSimulation(filteredNodes as any)
+      .force("link", d3.forceLink(filteredLinks)
+        .id((d: any) => d.id)
+        .distance(d => 100 / (d as any).weight)
       )
-      .force("charge", forceManyBody().strength(-300))
-      .force("center", forceCenter(width / 2, height / 2));
-    
-    // Draw links
-    const links = g.append("g")
+      .force("charge", d3.forceManyBody().strength(-200))
+      .force("center", d3.forceCenter(width / 2, height / 2))
+      .force("collide", d3.forceCollide().radius(30));
+
+    // Draw the links
+    const link = container.append("g")
       .selectAll("line")
       .data(filteredLinks)
       .enter()
       .append("line")
-      .attr("stroke", "#8E8E8E")
-      .attr("stroke-width", d => d.value * 2)
-      .attr("stroke-opacity", 0.6);
-    
-    // Draw nodes
-    const nodes = g.append("g")
-      .selectAll("circle")
+      .attr("stroke", "#64748b")
+      .attr("stroke-opacity", 0.6)
+      .attr("stroke-width", (d: any) => Math.sqrt(d.weight));
+
+    // Create node groups
+    const node = container.append("g")
+      .selectAll(".node")
       .data(filteredNodes)
       .enter()
-      .append("circle")
-      .attr("r", d => d.type === "central" ? 20 : d.type === "locality" ? 10 : 12)
-      .attr("fill", d => {
-        if (d.type === "central") return "#4285F4";
-        if (d.type === "locality") return "#8E8E8E";
-        if (d.category === "research_paper") return "#34A853";
-        if (d.category === "patent") return "#FBBC05";
-        if (d.category === "engineering_drawing") return "#EA4335";
-        return "#4285F4";
-      })
-      .attr("cursor", "pointer")
+      .append("g")
+      .attr("class", "node")
+      .call((d3.drag()
+        .on("start", dragstarted)
+        .on("drag", dragged)
+        .on("end", dragended) as any))
       .on("click", (event, d) => {
-        setSelectedNode(d);
-      })
-      .on("mouseover", function() {
-        select(this)
-          .transition()
-          .duration(200)
-          .attr("r", d => (d as any).type === "central" ? 22 : (d as any).type === "locality" ? 12 : 14);
-      })
-      .on("mouseout", function() {
-        select(this)
-          .transition()
-          .duration(200)
-          .attr("r", d => (d as any).type === "central" ? 20 : (d as any).type === "locality" ? 10 : 12);
+        setSelectedNode(d as Node);
+        event.stopPropagation();
       });
+
+    // Clear selection when clicking on background
+    svg.on("click", () => {
+      setSelectedNode(null);
+    });
+
+    // Node circles with different colors based on type
+    node.append("circle")
+      .attr("r", 8)
+      .attr("fill", (d: any) => {
+        if (d.type === 'document') {
+          if (d.category === 'research_paper') return "#3b82f6"; // Blue
+          if (d.category === 'patent') return "#10b981"; // Green
+          if (d.category === 'engineering_drawing') return "#f59e0b"; // Amber
+          return "#64748b"; // Default gray
+        }
+        if (d.type === 'locality') return "#f43f5e"; // Red
+        if (d.type === 'center') return "#8b5cf6"; // Purple
+        return "#64748b"; // Default gray
+      })
+      .attr("stroke", "#1e293b")
+      .attr("stroke-width", 1.5);
     
-    // Add labels
-    const labels = g.append("g")
-      .selectAll("text")
-      .data(filteredNodes)
-      .enter()
-      .append("text")
-      .text(d => d.name)
-      .attr("text-anchor", "middle")
-      .attr("dy", d => d.type === "central" ? 30 : 25)
-      .attr("font-size", d => d.type === "central" ? 12 : 10)
-      .attr("fill", "#E1E1E1");
+    // Node labels
+    node.append("text")
+      .attr("dx", 12)
+      .attr("dy", ".35em")
+      .attr("font-size", isMobile ? "8px" : "10px")
+      .attr("fill", "#e2e8f0")
+      .text((d: any) => d.label.length > 20 ? d.label.substring(0, 20) + '...' : d.label);
     
-    // Update positions on simulation tick
+    // Update node and link positions on each tick
     simulation.on("tick", () => {
-      links
-        .attr("x1", d => (d.source as Node).x ?? 0)
-        .attr("y1", d => (d.source as Node).y ?? 0)
-        .attr("x2", d => (d.target as Node).x ?? 0)
-        .attr("y2", d => (d.target as Node).y ?? 0);
-      
-      nodes
-        .attr("cx", d => d.x ?? 0)
-        .attr("cy", d => d.y ?? 0);
-      
-      labels
-        .attr("x", d => d.x ?? 0)
-        .attr("y", d => d.y ?? 0);
+      link
+        .attr("x1", (d: any) => d.source.x)
+        .attr("y1", (d: any) => d.source.y)
+        .attr("x2", (d: any) => d.target.x)
+        .attr("y2", (d: any) => d.target.y);
+
+      node
+        .attr("transform", (d: any) => `translate(${d.x},${d.y})`);
     });
     
-    // Center view
-    const centerView = () => {
-      svg.transition().duration(750).call(
-        zoomBehavior.transform,
-        zoomIdentity.translate(width / 2, height / 2).scale(0.8)
-      );
-    };
+    // Drag functions
+    function dragstarted(event: any, d: any) {
+      if (!event.active) simulation.alphaTarget(0.3).restart();
+      d.fx = d.x;
+      d.fy = d.y;
+    }
     
-    centerView();
+    function dragged(event: any, d: any) {
+      d.fx = event.x;
+      d.fy = event.y;
+    }
     
-    // Cleanup
+    function dragended(event: any, d: any) {
+      if (!event.active) simulation.alphaTarget(0);
+      d.fx = null;
+      d.fy = null;
+    }
+    
+    // Add zoom controls
+    /* We're using buttons outside SVG instead
+    svg.append("g")
+      .attr("transform", `translate(${width - 70}, 20)`)
+      .attr("class", "zoom-controls")
+      .call((g) => {
+        // Zoom in button
+        g.append("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 20)
+          .attr("height", 20)
+          .attr("fill", "#1e293b")
+          .attr("rx", 4)
+          .on("click", zoomIn);
+        
+        g.append("text")
+          .attr("x", 10)
+          .attr("y", 13)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "14px")
+          .attr("fill", "#e2e8f0")
+          .text("+")
+          .on("click", zoomIn);
+        
+        // Zoom out button
+        g.append("rect")
+          .attr("x", 30)
+          .attr("y", 0)
+          .attr("width", 20)
+          .attr("height", 20)
+          .attr("fill", "#1e293b")
+          .attr("rx", 4)
+          .on("click", zoomOut);
+        
+        g.append("text")
+          .attr("x", 40)
+          .attr("y", 13)
+          .attr("text-anchor", "middle")
+          .attr("font-size", "14px")
+          .attr("fill", "#e2e8f0")
+          .text("-")
+          .on("click", zoomOut);
+      });
+    */
+    
     return () => {
       simulation.stop();
     };
-  }, [filters, connectionStrength]);
-  
+  }, [filteredNodes, filteredLinks, isMobile]);
+
   return (
-    <div className="relative h-full bg-bg-dark">
-      <svg ref={svgRef} width="100%" height="100%" />
-      
-      {/* Filter Panel */}
-      <div className="absolute top-4 right-4 bg-bg-panel bg-opacity-80 p-3 rounded-md shadow-lg">
-        <div className="mb-3">
-          <h3 className="text-sm font-medium mb-2">Filter by Type</h3>
-          <div className="space-y-1">
-            <div className="flex items-center">
-              <Checkbox 
-                id="research-papers" 
-                checked={filters.researchPapers} 
-                onCheckedChange={(checked) => 
-                  setFilters(prev => ({...prev, researchPapers: !!checked}))
-                }
-                className="mr-2"
-              />
-              <Label htmlFor="research-papers" className="text-sm">Research Papers</Label>
-            </div>
-            
-            <div className="flex items-center">
-              <Checkbox 
-                id="patents" 
-                checked={filters.patents} 
-                onCheckedChange={(checked) => 
-                  setFilters(prev => ({...prev, patents: !!checked}))
-                }
-                className="mr-2"
-              />
-              <Label htmlFor="patents" className="text-sm">Patents</Label>
-            </div>
-            
-            <div className="flex items-center">
-              <Checkbox 
-                id="engineering-drawings" 
-                checked={filters.engineeringDrawings} 
-                onCheckedChange={(checked) => 
-                  setFilters(prev => ({...prev, engineeringDrawings: !!checked}))
-                }
-                className="mr-2"
-              />
-              <Label htmlFor="engineering-drawings" className="text-sm">Engineering Drawings</Label>
-            </div>
-            
-            <div className="flex items-center">
-              <Checkbox 
-                id="localities" 
-                checked={filters.localities} 
-                onCheckedChange={(checked) => 
-                  setFilters(prev => ({...prev, localities: !!checked}))
-                }
-                className="mr-2"
-              />
-              <Label htmlFor="localities" className="text-sm">Localities</Label>
-            </div>
-          </div>
-        </div>
-        
-        <div className="mb-3">
-          <h3 className="text-sm font-medium mb-2">View Controls</h3>
-          <div className="grid grid-cols-2 gap-2">
-            <Button variant="secondary" size="sm" className="flex items-center justify-center">
-              <Search className="h-4 w-4 mr-1" />
-              Zoom
-            </Button>
-            <Button variant="secondary" size="sm" className="flex items-center justify-center">
-              <Move className="h-4 w-4 mr-1" />
-              Pan
-            </Button>
-            <Button variant="secondary" size="sm" className="flex items-center justify-center">
-              <RotateCcw className="h-4 w-4 mr-1" />
-              Reset
-            </Button>
-            <Button variant="secondary" size="sm" className="flex items-center justify-center">
-              <Share className="h-4 w-4 mr-1" />
-              Share
-            </Button>
-          </div>
-        </div>
-        
-        <div>
-          <h3 className="text-sm font-medium mb-2">Connection Strength</h3>
-          <Slider
-            value={[connectionStrength]}
-            min={1}
-            max={100}
-            step={1}
-            onValueChange={([value]) => setConnectionStrength(value)}
+    <div className="h-full flex flex-col relative bg-slate-900">
+      {/* Controls */}
+      <div className="p-2 border-b border-slate-800 flex items-center justify-between gap-2 bg-slate-900">
+        <div className="flex-grow relative">
+          <Input 
+            type="text"
+            placeholder="Search nodes..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-slate-800 border-slate-700 text-slate-200 placeholder-slate-400 text-sm"
           />
+          <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+        </div>
+        
+        <div className="flex gap-1">
+          <Button 
+            variant="outline"
+            size="sm"
+            className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 p-1"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter className="h-4 w-4" />
+          </Button>
+
+          <Button 
+            variant="outline"
+            size="sm"
+            className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 p-1"
+            onClick={zoomIn}
+          >
+            <ZoomIn className="h-4 w-4" />
+          </Button>
+          
+          <Button 
+            variant="outline"
+            size="sm"
+            className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 p-1"
+            onClick={zoomOut}
+          >
+            <ZoomOut className="h-4 w-4" />
+          </Button>
+          
+          <Button 
+            variant="outline"
+            size="sm"
+            className="bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 p-1"
+            onClick={resetGraph}
+          >
+            <RotateCcw className="h-4 w-4" />
+          </Button>
         </div>
       </div>
       
-      {/* Node Details Panel */}
-      {selectedNode && (
-        <Card className="absolute bottom-4 left-4 bg-bg-panel bg-opacity-80 p-0 rounded-md shadow-lg max-w-md">
-          <CardContent className="p-3">
+      {/* Filters Panel */}
+      {showFilters && (
+        <div className="p-2 border-b border-slate-800 bg-slate-800">
+          <div className="text-xs text-slate-300 font-medium mb-2">Filter by type:</div>
+          <div className="flex flex-wrap gap-2">
+            <Badge 
+              variant={filters.researchPapers ? "default" : "outline"}
+              className={`cursor-pointer ${filters.researchPapers ? 'bg-blue-600' : 'bg-slate-800 text-slate-400'}`}
+              onClick={() => setFilters({...filters, researchPapers: !filters.researchPapers})}
+            >
+              Research Papers
+            </Badge>
+            <Badge 
+              variant={filters.patents ? "default" : "outline"}
+              className={`cursor-pointer ${filters.patents ? 'bg-green-600' : 'bg-slate-800 text-slate-400'}`}
+              onClick={() => setFilters({...filters, patents: !filters.patents})}
+            >
+              Patents
+            </Badge>
+            <Badge 
+              variant={filters.drawings ? "default" : "outline"}
+              className={`cursor-pointer ${filters.drawings ? 'bg-amber-600' : 'bg-slate-800 text-slate-400'}`}
+              onClick={() => setFilters({...filters, drawings: !filters.drawings})}
+            >
+              Engineering Drawings
+            </Badge>
+            <Badge 
+              variant={filters.localities ? "default" : "outline"}
+              className={`cursor-pointer ${filters.localities ? 'bg-red-600' : 'bg-slate-800 text-slate-400'}`}
+              onClick={() => setFilters({...filters, localities: !filters.localities})}
+            >
+              Localities
+            </Badge>
+            <Badge 
+              variant={filters.centers ? "default" : "outline"}
+              className={`cursor-pointer ${filters.centers ? 'bg-purple-600' : 'bg-slate-800 text-slate-400'}`}
+              onClick={() => setFilters({...filters, centers: !filters.centers})}
+            >
+              Research Centers
+            </Badge>
+          </div>
+        </div>
+      )}
+      
+      {/* Graph SVG */}
+      <div className="relative flex-grow overflow-hidden">
+        <svg ref={svgRef} width="100%" height="100%" className="bg-slate-900"></svg>
+        
+        {/* Selected Node Info Panel */}
+        {selectedNode && (
+          <div className="absolute bottom-2 left-2 right-2 max-h-[40%] bg-slate-800 rounded-lg shadow-lg border border-slate-700 overflow-y-auto p-3">
             <div className="flex justify-between items-start mb-2">
-              <h3 className={`font-medium ${
-                selectedNode.category === "research_paper" ? "text-primary" : 
-                selectedNode.category === "patent" ? "text-accent" : 
-                selectedNode.category === "engineering_drawing" ? "text-secondary" :
-                "text-text-primary"
-              }`}>
-                {selectedNode.name}
-              </h3>
-              <Button variant="ghost" size="sm" onClick={() => setSelectedNode(null)}>
-                <span className="sr-only">Close</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+              <div>
+                <h3 className="font-medium text-slate-200 text-sm">{selectedNode.label}</h3>
+                <div className="flex items-center gap-1 mt-1">
+                  <Badge 
+                    variant="outline" 
+                    className={`
+                      ${selectedNode.type === 'document' && selectedNode.category === 'research_paper' ? 'bg-blue-600' : ''}
+                      ${selectedNode.type === 'document' && selectedNode.category === 'patent' ? 'bg-green-600' : ''}
+                      ${selectedNode.type === 'document' && selectedNode.category === 'engineering_drawing' ? 'bg-amber-600' : ''}
+                      ${selectedNode.type === 'locality' ? 'bg-red-600' : ''}
+                      ${selectedNode.type === 'center' ? 'bg-purple-600' : ''}
+                    `}
+                  >
+                    {selectedNode.type === 'document' 
+                      ? selectedNode.category === 'research_paper' 
+                        ? 'Research Paper'
+                        : selectedNode.category === 'patent'
+                          ? 'Patent'
+                          : 'Engineering Drawing'
+                      : selectedNode.type === 'locality'
+                        ? 'Locality'
+                        : 'Research Center'
+                    }
+                  </Badge>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="sm"
+                className="p-1 h-6 w-6"
+                onClick={() => setSelectedNode(null)}
+              >
+                <X className="h-4 w-4 text-slate-400" />
               </Button>
             </div>
             
-            {selectedNode.type === "document" && (
-              <>
-                <div className="text-xs space-y-1 font-mono text-text-secondary mb-2">
-                  {selectedNode.authors && (
-                    <p><span className="text-accent">Authors:</span> {selectedNode.authors.join(", ")}</p>
-                  )}
-                  {selectedNode.publishedDate && (
-                    <p><span className="text-accent">Published:</span> {selectedNode.publishedDate}</p>
-                  )}
-                  {selectedNode.institution && (
-                    <p><span className="text-accent">Institution:</span> {selectedNode.institution}</p>
-                  )}
-                  {selectedNode.localities && (
-                    <p><span className="text-accent">Localities:</span> {selectedNode.localities.join(", ")}</p>
-                  )}
-                </div>
-                <div className="text-xs text-text-primary font-medium mb-2">Abstract:</div>
-                <p className="text-xs text-text-secondary leading-relaxed">
-                  {selectedNode.category === "research_paper" 
-                    ? "This study examines the coastal erosion patterns affecting the Hampton Roads area, with particular focus on climate change impacts. The research provides data-driven projections and potential mitigation strategies for local municipalities." 
-                    : selectedNode.category === "patent"
-                    ? "This patent describes a novel approach to flood barrier systems specifically designed for coastal urban areas with high population density." 
-                    : "Engineering schematic detailing structural specifications for infrastructure improvements in the Hampton Roads region."}
-                </p>
-                
-                <div className="mt-3 flex space-x-2">
-                  <Button size="sm" className="bg-primary text-white">
-                    View Document
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    Show Connections
-                  </Button>
-                </div>
-              </>
-            )}
-            
-            {selectedNode.type === "locality" && (
-              <>
-                <div className="text-xs space-y-1 font-mono text-text-secondary mb-2">
-                  <p><span className="text-accent">Type:</span> Municipality</p>
-                  <p><span className="text-accent">Region:</span> Hampton Roads, Virginia</p>
-                  <p><span className="text-accent">Related Documents:</span> 5</p>
-                </div>
-                <p className="text-xs text-text-secondary leading-relaxed">
-                  {selectedNode.name} is a locality within the Hampton Roads metropolitan area of Virginia, with significant research and engineering documentation related to coastal management and infrastructure.
-                </p>
-                
-                <div className="mt-3 flex space-x-2">
-                  <Button size="sm" className="bg-primary text-white">
-                    View on Map
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    List Documents
-                  </Button>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+            <div className="text-xs text-slate-300 mt-3">
+              <div className="font-medium">Connected to:</div>
+              <div className="mt-2 space-y-1 max-h-[80px] overflow-y-auto">
+                {links
+                  .filter(link => {
+                    const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
+                    const targetId = typeof link.target === 'string' ? link.target : link.target.id;
+                    return sourceId === selectedNode.id || targetId === selectedNode.id;
+                  })
+                  .map(link => {
+                    const sourceId = typeof link.source === 'string' ? link.source : link.source.id;
+                    const targetId = typeof link.target === 'string' ? link.target : link.target.id;
+                    const connectedNodeId = sourceId === selectedNode.id ? targetId : sourceId;
+                    const connectedNode = nodes.find(node => node.id === connectedNodeId);
+                    
+                    if (!connectedNode) return null;
+                    
+                    return (
+                      <div 
+                        key={link.id} 
+                        className="flex items-center justify-between p-1 rounded hover:bg-slate-700 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedNode(connectedNode);
+                        }}
+                      >
+                        <span>{connectedNode.label}</span>
+                        <Badge 
+                          variant="outline" 
+                          className="text-[10px]"
+                        >
+                          {link.weight === 3 ? 'Strong' : link.weight === 2 ? 'Medium' : 'Weak'}
+                        </Badge>
+                      </div>
+                    );
+                  })}
+              </div>
+              
+              {/* View details button - would navigate to document page */}
+              <Button 
+                variant="default" 
+                size="sm"
+                className="w-full mt-3 text-xs bg-slate-700 hover:bg-slate-600"
+              >
+                View details
+              </Button>
+            </div>
+          </div>
+        )}
+      </div>
+      
+      {/* Mobile zoom level indicator */}
+      {isMobile && (
+        <div className="absolute bottom-2 right-2 bg-slate-800 rounded-full px-2 py-1 text-xs text-slate-400 border border-slate-700">
+          {Math.round(zoomLevel * 100)}%
+        </div>
       )}
     </div>
   );
