@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from '@/hooks/use-theme';
 import { 
   FileText, 
   Folder, 
@@ -15,8 +16,22 @@ import {
   FolderOpen,
   MessageSquare, 
   Map,
-  Maximize2
+  Maximize2,
+  Sun,
+  Moon
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem
+} from '@/components/ui/dropdown-menu';
 
 // File/Directory Type
 type FileSystemItem = {
@@ -79,6 +94,7 @@ type TerminalEntry = {
 
 const VSCodeLayout: React.FC = () => {
   const isMobile = useIsMobile();
+  const { theme, setTheme } = useTheme();
   const [fileSystem, setFileSystem] = useState<FileSystemItem[]>(fileSystemData);
   const [entries, setEntries] = useState<TerminalEntry[]>([
     { 

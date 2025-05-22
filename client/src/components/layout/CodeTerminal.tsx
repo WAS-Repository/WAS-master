@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from '@/hooks/use-theme';
 import { 
   FileText, 
   ChevronDown, 
@@ -11,8 +12,23 @@ import {
   MessageSquare,
   FolderOpen,
   HelpCircle,
-  Map
+  Map,
+  Sun,
+  Moon,
+  Settings
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 
 // File system types
@@ -75,6 +91,8 @@ const fileSystemData: FileSystemItem[] = [
 ];
 
 const CodeTerminal: React.FC = () => {
+  const { theme, setTheme } = useTheme();
+  
   // File explorer state
   const [fileSystem, setFileSystem] = useState<FileSystemItem[]>(fileSystemData);
   const [openFiles, setOpenFiles] = useState<{path: string, name: string}[]>([]);
