@@ -40,7 +40,8 @@ import {
   Sun,
   Palette,
   Check,
-  PlusCircle
+  PlusCircle,
+  X
 } from 'lucide-react';
 import MapView from '../visualization/MapView';
 import KnowledgeGraph from '../visualization/KnowledgeGraph';
@@ -382,7 +383,7 @@ export default function WorkspaceLayout() {
                           <span className="ml-1 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: '#ffff33' }}></span>
                         )}
                         {grant.type === 'engineering' && (
-                          <span className="ml-1 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: '#ff3333' }}></span>
+                          <span className="ml-1 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: '#33ffff' }}></span>
                         )}
                       </div>
                     </div>
@@ -390,214 +391,95 @@ export default function WorkspaceLayout() {
                 </div>
               </div>
               
-
-              
-              {/* Extra space for the funding table to expand */}
-              <div className="flex-1 p-2 overflow-y-auto">
-                {/* Content removed to simplify the interface */}
-              </div>
-            </div>
-          </div>
-          
-          {/* Terminal section */}
-          {showTerminal && (
-            <div className="border-t" style={{ 
-              borderColor: colorScheme.borderColor,
-              backgroundColor: colorScheme.bgColor
-            }}>
-              <div className="flex items-center justify-between border-b p-1" style={{ 
-                borderColor: colorScheme.borderColor,
-                backgroundColor: colorScheme.bgColor
-              }}>
-                <div className="flex items-center">
-                  <Terminal className="h-4 w-4 mr-2" style={{ color: colorScheme.mainColor }} />
-                  <span className="text-xs font-medium" style={{ color: colorScheme.mainColor }}>Terminal</span>
+              <div className="p-2 border-b text-xs" style={{ borderColor: colorScheme.borderColor }}>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-bold uppercase" style={{ color: colorScheme.mainColor }}>Active Users</span>
+                  <span className="text-[10px]" style={{ color: colorScheme.mainColor }}>Online: 3</span>
                 </div>
-                
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="h-6 px-2 py-0 text-xs border hover:bg-opacity-20"
-                  style={{ 
-                    color: colorScheme.mainColor,
-                    borderColor: colorScheme.mainColor
-                  }}
-                  onClick={toggleTerminal}
-                >
-                  Hide Terminal
-                </Button>
-              </div>
-              
-              <div className="p-2 overflow-y-auto font-mono text-xs" style={{ height: "160px", color: colorScheme.mainColor }}>
-                {/* Terminal Tabs */}
-                <div className="flex border-b mb-2 pb-1" style={{ borderColor: colorScheme.borderColor }}>
-                  <div className="mr-4 cursor-pointer font-semibold" style={{ color: colorScheme.accentColor }}>Search Agent</div>
-                  <div className="mr-4 cursor-pointer opacity-60 hover:opacity-100">System</div>
-                  <div className="mr-4 cursor-pointer opacity-60 hover:opacity-100">Data</div>
-                </div>
-                
-                {/* Command Reference */}
-                <div className="mb-2 py-1 px-2 text-xs flex justify-between" style={{ backgroundColor: `${colorScheme.bgAltColor}40` }}>
-                  <div>
-                    <span className="font-semibold" style={{ color: colorScheme.accentColor }}>Commands:</span>
-                    <span className="ml-2 opacity-80">search, extract, graph, map, connect, export</span>
+                <div className="border p-1 rounded text-[10px]" style={{ 
+                  borderColor: colorScheme.mainColor,
+                  color: colorScheme.mainColor,
+                  backgroundColor: colorScheme.bgColor
+                }}>
+                  <div className="flex items-center py-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                    <div>Dr. Sanchez (Research)</div>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-5 px-2 py-0 text-[10px]"
-                    style={{ color: colorScheme.mainColor }}
-                  >
-                    Help
-                  </Button>
-                </div>
-                
-                {/* Terminal Content */}
-                <div className="space-y-1">
-                  <div style={{ color: colorScheme.accentColor }}>{'>'} Hampton Roads Research Graph Agent v1.0.0</div>
-                  <div style={{ color: colorScheme.mainColor }}>{'>'} Loaded 7 localities and 15 document references</div>
-                  <div style={{ color: colorScheme.mainColor }}>{'>'} Network graph initialized with 11 nodes and 13 connections</div>
-                  <div style={{ color: '#ffff33' }}>{'>'} Warning: Some document metadata is incomplete</div>
-                  <div style={{ color: colorScheme.mainColor }}>{'>'} Type 'help' for a list of available commands</div>
-                </div>
-                
-                {/* Command Input with Enhanced Styling */}
-                <div className="flex items-center mt-2 p-1 rounded" style={{ backgroundColor: `${colorScheme.bgAltColor}80` }}>
-                  <span style={{ color: colorScheme.accentColor }} className="mr-1">{'>'}</span>
-                  <Input 
-                    className="flex-grow bg-transparent border-none text-xs focus-visible:ring-0 focus-visible:ring-offset-0"
-                    style={{ color: colorScheme.mainColor }}
-                    placeholder="Type search command (e.g., search 'coastal erosion' locality:Norfolk)..."
-                  />
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-6 ml-1 px-2 py-0 text-xs"
-                    style={{ color: colorScheme.accentColor }}
-                    onClick={() => setShowSearchDialog(true)}
-                  >
-                    Execute
-                  </Button>
+                  <div className="flex items-center py-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                    <div>A. Thompson (Admin)</div>
+                  </div>
+                  <div className="flex items-center py-1">
+                    <div className="w-2 h-2 bg-green-400 rounded-full mr-2"></div>
+                    <div>L. Jackson (Engineering)</div>
+                  </div>
+                  <div className="flex items-center py-1 opacity-50">
+                    <div className="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+                    <div>T. Wilson (Policy) - Away</div>
+                  </div>
                 </div>
               </div>
-            </div>
-          )}
-          
-          {/* Footer status bar */}
-          <div className="border-t py-1 px-2 text-[10px] flex items-center justify-between" 
-            style={{ 
-              backgroundColor: colorScheme.bgColor,
-              borderColor: colorScheme.borderColor,
-              color: colorScheme.mainColor 
-            }}
-          >
-            <div className="flex items-center space-x-3">
-              <div>APR 30 20:45 linux wired</div>
-              <div>MANUFACTURER: SEACORE CHASSIS</div>
-              <div>CPU USAGE: {cpuUsage}%</div>
-            </div>
-            
-            <div className="flex items-center">
-              <div className="uppercase" style={{ color: colorScheme.mainColor }}>Back</div>
+              
+              {/* System status */}
+              <div className="p-2 text-xs" style={{ borderColor: colorScheme.borderColor }}>
+                <div className="font-bold mb-1 uppercase" style={{ color: colorScheme.mainColor }}>System Status</div>
+                <div className="border rounded p-1 text-[10px]" style={{ 
+                  borderColor: colorScheme.mainColor,
+                  color: colorScheme.mainColor
+                }}>
+                  <div className="flex justify-between mb-1">
+                    <div className="flex items-center">
+                      <Cpu className="h-3 w-3 mr-1" />
+                      <span>CPU Usage</span>
+                    </div>
+                    <div>{cpuUsage}%</div>
+                  </div>
+                  <div className="w-full bg-gray-800 h-1 mb-2 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full" 
+                      style={{ 
+                        width: `${cpuUsage}%`, 
+                        backgroundColor: cpuUsage > 75 ? '#ff4433' : (cpuUsage > 50 ? '#ffaa33' : colorScheme.accentColor)
+                      }}
+                    ></div>
+                  </div>
+                  
+                  <div className="flex justify-between mb-1">
+                    <div className="flex items-center">
+                      <Wifi className="h-3 w-3 mr-1" />
+                      <span>Network Latency</span>
+                    </div>
+                    <div>{networkPing} ms</div>
+                  </div>
+                  <div className="w-full bg-gray-800 h-1 mb-2 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full" 
+                      style={{ 
+                        width: `${Math.min(100, networkPing)}%`,
+                        backgroundColor: networkPing > 60 ? '#ff4433' : (networkPing > 40 ? '#ffaa33' : colorScheme.accentColor)
+                      }}
+                    ></div>
+                  </div>
+                  
+                  <div className="flex justify-between mb-1">
+                    <div className="flex items-center">
+                      <HardDrive className="h-3 w-3 mr-1" />
+                      <span>Storage</span>
+                    </div>
+                    <div>43%</div>
+                  </div>
+                  <div className="w-full bg-gray-800 h-1 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full" 
+                      style={{ 
+                        width: '43%',
+                        backgroundColor: colorScheme.accentColor
+                      }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    
-    {/* Dialog for Search with Micro-interactions */}
-    {showSearchDialog && (
-      <Dialog open={showSearchDialog} onOpenChange={setShowSearchDialog}>
-        <DialogContent className="sm:max-w-[800px] p-0 gap-0">
-          <div className="flex flex-col h-[600px]">
-            <div className="flex justify-between items-center p-4 border-b">
-              <div className="text-lg font-medium">Document Search</div>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0" onClick={() => setShowSearchDialog(false)}>
-                <X size={16} />
-              </Button>
-            </div>
-            
-            <div className="p-4 border-b">
-              <div className="relative">
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for documents, patents, research papers..."
-                  className="pr-10 pl-10"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground" size={16} />
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0"
-                >
-                  <Filter size={14} />
-                </Button>
-              </div>
-              
-              <div className="flex justify-end mt-2">
-                <Button size="sm">
-                  Search
-                </Button>
-              </div>
-            </div>
-            
-            <div className="flex-1 overflow-hidden p-4">
-              <ScrollArea className="h-full w-full pr-4">
-                <div className="space-y-3">
-                  {searchQuery ? (
-                    <div className="text-muted-foreground text-center py-4">
-                      Enter search terms to see results
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="border rounded-md p-3">
-                        <div className="font-medium">Recent Searches</div>
-                        <div className="mt-2 space-y-1">
-                          <div className="flex items-center justify-between text-sm p-2 hover:bg-muted rounded cursor-pointer">
-                            <div className="flex items-center">
-                              <Search size={14} className="mr-2 text-muted-foreground" />
-                              <span>coastal erosion norfolk</span>
-                            </div>
-                            <span className="text-xs text-muted-foreground">May 21, 2025</span>
-                          </div>
-                          <div className="flex items-center justify-between text-sm p-2 hover:bg-muted rounded cursor-pointer">
-                            <div className="flex items-center">
-                              <Search size={14} className="mr-2 text-muted-foreground" />
-                              <span>sea level rise impact</span>
-                            </div>
-                            <span className="text-xs text-muted-foreground">May 20, 2025</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="border rounded-md p-3">
-                        <div className="font-medium">Saved Filters</div>
-                        <div className="mt-2 space-y-1">
-                          <div className="flex items-center justify-between text-sm p-2 hover:bg-muted rounded cursor-pointer">
-                            <div className="flex items-center">
-                              <Filter size={14} className="mr-2 text-muted-foreground" />
-                              <span>Research Papers (2023-2025)</span>
-                            </div>
-                            <Badge variant="outline" className="text-xs">5 results</Badge>
-                          </div>
-                          <div className="flex items-center justify-between text-sm p-2 hover:bg-muted rounded cursor-pointer">
-                            <div className="flex items-center">
-                              <Filter size={14} className="mr-2 text-muted-foreground" />
-                              <span>Norfolk Documents</span>
-                            </div>
-                            <Badge variant="outline" className="text-xs">12 results</Badge>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </ScrollArea>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-    )}
   );
 }

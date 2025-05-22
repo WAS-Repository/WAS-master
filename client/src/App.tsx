@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
 import AppLayout from "@/components/layout/AppLayout";
 import { ThemeProvider } from "./context/ThemeProvider";
+import { SearchProvider } from "./context/SearchContext";
 
 function Router() {
   return (
@@ -22,10 +23,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider>
-          <AppLayout>
-            <Toaster />
-            <Router />
-          </AppLayout>
+          <SearchProvider>
+            <AppLayout>
+              <Toaster />
+              <Router />
+            </AppLayout>
+          </SearchProvider>
         </TooltipProvider>
       </ThemeProvider>
     </QueryClientProvider>
