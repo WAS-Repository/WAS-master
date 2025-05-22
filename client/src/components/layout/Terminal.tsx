@@ -13,12 +13,16 @@ import {
   Database,
   Map,
   Network,
-  MessageSquare
+  MessageSquare,
+  Maximize,
+  Minimize
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface TerminalProps {
   height: number;
+  focusMode?: boolean;
+  onToggleFocusMode?: () => void;
 }
 
 type TerminalEntry = {
@@ -38,7 +42,7 @@ type FileEntry = {
 
 type TerminalMode = 'shell' | 'agent' | 'explorer';
 
-export default function Terminal({ height }: TerminalProps) {
+export default function Terminal({ height, focusMode, onToggleFocusMode }: TerminalProps) {
   // Terminal state
   const [entries, setEntries] = useState<TerminalEntry[]>([
     { 
@@ -158,6 +162,24 @@ export default function Terminal({ height }: TerminalProps) {
           break;
         case 'stats':
           showStats();
+          break;
+        case 'focus':
+          if (onToggleFocusMode) {
+            onToggleFocusMode();
+            setEntries(prev => [
+              ...prev,
+              { 
+                type: 'success', 
+                content: focusMode ? 'Exiting focus mode...' : 'Entering focus mode...', 
+                timestamp: new Date() 
+              }
+            ]);
+          } else {
+            setEntries(prev => [
+              ...prev,
+              { type: 'error', content: 'Focus mode control not available', timestamp: new Date() }
+            ]);
+          }
           break;
         default:
           setEntries(prev => [

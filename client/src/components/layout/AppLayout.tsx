@@ -222,9 +222,30 @@ export default function AppLayout({ children }: AppLayoutProps) {
           <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" title="Color Scheme">
             <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" title="Settings">
-            <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9" title="Settings">
+                <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => setFocusMode(!focusMode)}>
+                {focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
+                <span className="ml-2 text-xs opacity-60">(Alt+F)</span>
+              </DropdownMenuItem>
+              <DropdownMenuCheckboxItem 
+                checked={autoFocusEnabled}
+                onCheckedChange={setAutoFocusEnabled}
+              >
+                Auto Focus after inactivity
+                <span className="ml-2 text-xs opacity-60">(5 min)</span>
+              </DropdownMenuCheckboxItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={toggleTheme}>
+                {theme === "dark" ? "Light Theme" : "Dark Theme"}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-accent flex items-center justify-center text-bg-dark">
             <span className="font-medium text-sm sm:text-base">JD</span>
           </div>
