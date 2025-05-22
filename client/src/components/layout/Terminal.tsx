@@ -12,8 +12,10 @@ import {
   FileText,
   Database,
   Map,
-  Network
+  Network,
+  MessageSquare
 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface TerminalProps {
   height: number;
@@ -34,6 +36,8 @@ type FileEntry = {
   children?: FileEntry[];
 };
 
+type TerminalMode = 'shell' | 'agent' | 'explorer';
+
 export default function Terminal({ height }: TerminalProps) {
   // Terminal state
   const [entries, setEntries] = useState<TerminalEntry[]>([
@@ -46,12 +50,18 @@ export default function Terminal({ height }: TerminalProps) {
       type: 'info', 
       content: 'Type \'help\' for a list of available commands.', 
       timestamp: new Date() 
+    },
+    {
+      type: 'info',
+      content: 'Type \'mode <shell|agent|explorer>\' to switch terminal modes.',
+      timestamp: new Date()
     }
   ]);
   const [currentCommand, setCurrentCommand] = useState('');
   const [commandHistory, setCommandHistory] = useState<string[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const [currentPath, setCurrentPath] = useState('/home/user');
+  const [terminalMode, setTerminalMode] = useState<TerminalMode>('shell');
   
   // Sample document data
   const [documents] = useState([
@@ -111,6 +121,21 @@ export default function Terminal({ height }: TerminalProps) {
           break;
         case 'cat':
           viewFile(args[0]);
+          break;
+        case 'mode':
+          if (args.length === 0) {
+            setEntries(prev => [
+              ...prev,
+              { type: 'info', content: `Current mode: ${terminalMode}`, timestamp: new Date() }
+            ]);
+          } else if (['shell', 'agent', 'explorer'].includes(args[0])) {
+            switchMode(args[0] as TerminalMode);
+          } else {
+            setEntries(prev => [
+              ...prev,
+              { type: 'error', content: `Unknown mode: ${args[0]}. Available modes: shell, agent, explorer`, timestamp: new Date() }
+            ]);
+          }
           break;
         // Research commands
         case 'search':

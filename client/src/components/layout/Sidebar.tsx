@@ -64,35 +64,8 @@ export default function Sidebar({ width, isCollapsed, onToggleCollapse }: Sideba
         </Button>
       </div>
       
-      {/* Terminal Navigation */}
+      {/* Navigation */}
       <div className="overflow-y-auto p-3 flex-grow">
-        <div className="mb-4">
-          <div className="flex items-center mb-2">
-            <ChevronRight className={`h-4 w-4 mr-1 text-text-secondary ${expandedSections.filters ? 'transform rotate-90' : ''}`} 
-              onClick={() => toggleSection('filters')}
-            />
-            <span className="text-sm font-medium cursor-pointer" onClick={() => toggleSection('filters')}>
-              Terminal Modes
-            </span>
-          </div>
-          
-          {expandedSections.filters && (
-            <div className="ml-5 space-y-2">
-              <div className="flex items-center text-xs py-1 cursor-pointer hover:bg-opacity-10 hover:bg-white rounded px-1">
-                <TerminalIcon className="h-3 w-3 mr-1 text-primary" />
-                <span>Shell Mode</span>
-              </div>
-              <div className="flex items-center text-xs py-1 cursor-pointer hover:bg-opacity-10 hover:bg-white rounded px-1">
-                <MessageSquare className="h-3 w-3 mr-1 text-primary" />
-                <span>Agent Mode</span>
-              </div>
-              <div className="flex items-center text-xs py-1 cursor-pointer hover:bg-opacity-10 hover:bg-white rounded px-1">
-                <FolderOpen className="h-3 w-3 mr-1 text-primary" />
-                <span>Explorer Mode</span>
-              </div>
-            </div>
-          )}
-        </div>
         
         {/* Recent Commands */}
         <div className="mb-4">
