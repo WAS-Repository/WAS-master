@@ -3,6 +3,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { SearchDialog } from '@/components/search/SearchDialog';
 import { 
   Search, 
   Maximize, 
@@ -126,6 +127,7 @@ export default function WorkspaceLayout() {
   const [navigationTab, setNavigationTab] = useState<number>(1);
   const [colorScheme, setColorScheme] = useState<ColorScheme>(colorSchemes[0]);
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showSearchDialog, setShowSearchDialog] = useState(false);
   
   // Simulate real-time clock and changing metrics
   useEffect(() => {
@@ -467,6 +469,7 @@ export default function WorkspaceLayout() {
                     size="sm" 
                     className="h-6 ml-1 px-2 py-0 text-xs"
                     style={{ color: colorScheme.accentColor }}
+                    onClick={() => setShowSearchDialog(true)}
                   >
                     Execute
                   </Button>
