@@ -46,6 +46,7 @@ import {
 import MapView from '../visualization/MapView';
 import KnowledgeGraph from '../visualization/KnowledgeGraph';
 import DocumentViewer from '../visualization/DocumentViewer';
+import WorkspacePanels from './WorkspacePanels';
 import {
   Popover,
   PopoverContent,

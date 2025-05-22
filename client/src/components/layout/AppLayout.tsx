@@ -29,7 +29,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [focusMode, setFocusMode] = useState(false);
   const [autoFocusEnabled, setAutoFocusEnabled] = useState(false);
   const [autoFocusTimer, setAutoFocusTimer] = useState<number | null>(null);
-  const [activeView, setActiveView] = useState<'map' | 'graph' | 'document' | 'split' | 'funding'>('split');
+  const [activeView, setActiveView] = useState<'map' | 'graph' | 'document' | 'split' | 'funding'>('document');
   
   const isDraggingTerminal = useRef(false);
   const initialY = useRef(0);
