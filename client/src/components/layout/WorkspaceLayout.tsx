@@ -326,39 +326,58 @@ export default function WorkspaceLayout() {
               borderColor: colorScheme.borderColor,
               backgroundColor: colorScheme.bgColor
             }}>
-              {/* Process table */}
+              {/* Funding Tracking Table */}
               <div className="p-2 border-b" style={{ borderColor: colorScheme.borderColor }}>
                 <div className="text-xs flex items-center justify-between mb-1" style={{ color: colorScheme.mainColor }}>
-                  <span className="text-xs font-bold uppercase" style={{ color: colorScheme.mainColor }}>PID TABLE</span>
-                  <span className="text-[10px]" style={{ color: colorScheme.mainColor }}>Active: 7/12</span>
+                  <span className="text-xs font-bold uppercase" style={{ color: colorScheme.mainColor }}>PUBLIC FUNDING DATA</span>
+                  <span className="text-[10px]" style={{ color: colorScheme.mainColor }}>Total: $14.6M</span>
                 </div>
-                <div className="text-[10px] border" style={{ 
+                <div className="max-h-48 overflow-y-auto text-[10px] border" style={{ 
                   backgroundColor: colorScheme.bgColor,
                   borderColor: colorScheme.mainColor,
                   color: colorScheme.mainColor
                 }}>
-                  <div className="grid grid-cols-5 border-b p-1" style={{ borderColor: colorScheme.mainColor }}>
-                    <div>PID</div>
-                    <div>Name</div>
-                    <div className="text-right">CPU</div>
-                    <div className="text-right">MEM</div>
-                    <div className="text-right">Time</div>
+                  <div className="sticky top-0 grid grid-cols-5 border-b p-1" style={{ 
+                    borderColor: colorScheme.mainColor,
+                    backgroundColor: colorScheme.bgColor
+                  }}>
+                    <div>Date</div>
+                    <div>Agency</div>
+                    <div>Project</div>
+                    <div className="text-right">Amount</div>
+                    <div className="text-right">Doc ID</div>
                   </div>
                   
                   {[
-                    { pid: '15608', name: 'edge-map', cpu: '3.5%', mem: '2.8%', time: '1:25.16' },
-                    { pid: '15612', name: 'edge-ui', cpu: '6.2%', mem: '4.1%', time: '2:48.33' },
-                    { pid: '15617', name: 'edge-db', cpu: '3.3%', mem: '1.6%', time: '0:31.71' },
-                    { pid: '15631', name: 'node', cpu: '2.0%', mem: '3.3%', time: '0:12.46' }
-                  ].map((process, i) => (
-                    <div key={i} className="grid grid-cols-5 p-1 hover:bg-opacity-20" style={{ 
-                      color: colorScheme.mainColor
+                    { date: '2023-04-15', agency: 'NSF', project: 'Coastal Erosion Study', amount: '$1.2M', docId: 'RP-0731', type: 'research' },
+                    { date: '2023-02-10', agency: 'NOAA', project: 'Tidal Pattern Analysis', amount: '$850K', docId: 'RP-0645', type: 'research' },
+                    { date: '2022-11-05', agency: 'EPA', project: 'Water Quality Assessment', amount: '$2.1M', docId: 'RP-0592', type: 'research' },
+                    { date: '2022-08-22', agency: 'USACE', project: 'Flood Barrier System', amount: '$3.7M', docId: 'PT-0114', type: 'patent' },
+                    { date: '2022-06-30', agency: 'DOD', project: 'Naval Base Protection', amount: '$4.3M', docId: 'ED-0078', type: 'engineering' },
+                    { date: '2022-03-12', agency: 'NSF', project: 'Sediment Transport', amount: '$920K', docId: 'RP-0489', type: 'research' },
+                    { date: '2021-11-04', agency: 'FEMA', project: 'Emergency Response', amount: '$1.5M', docId: 'RP-0423', type: 'research' }
+                  ].map((grant, i) => (
+                    <div key={i} className="grid grid-cols-5 p-1 hover:bg-opacity-20 border-b" style={{ 
+                      color: colorScheme.mainColor,
+                      borderColor: colorScheme.borderColor,
+                      cursor: 'pointer'
                     }}>
-                      <div>{process.pid}</div>
-                      <div>{process.name}</div>
-                      <div className="text-right">{process.cpu}</div>
-                      <div className="text-right">{process.mem}</div>
-                      <div className="text-right">{process.time}</div>
+                      <div>{grant.date}</div>
+                      <div>{grant.agency}</div>
+                      <div className="truncate">{grant.project}</div>
+                      <div className="text-right">{grant.amount}</div>
+                      <div className="text-right flex items-center justify-end">
+                        {grant.docId}
+                        {grant.type === 'research' && (
+                          <span className="ml-1 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: colorScheme.accentColor }}></span>
+                        )}
+                        {grant.type === 'patent' && (
+                          <span className="ml-1 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: '#ffff33' }}></span>
+                        )}
+                        {grant.type === 'engineering' && (
+                          <span className="ml-1 inline-block h-2 w-2 rounded-full" style={{ backgroundColor: '#ff3333' }}></span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
