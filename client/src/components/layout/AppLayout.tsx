@@ -29,7 +29,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [focusMode, setFocusMode] = useState(false);
   const [autoFocusEnabled, setAutoFocusEnabled] = useState(false);
   const [autoFocusTimer, setAutoFocusTimer] = useState<number | null>(null);
-  const [activeView, setActiveView] = useState<'map' | 'graph' | 'document' | 'split'>('split');
+  const [activeView, setActiveView] = useState<'map' | 'graph' | 'document' | 'split' | 'funding'>('split');
   
   const isDraggingTerminal = useRef(false);
   const initialY = useRef(0);
@@ -64,6 +64,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
             break;
           case 's': // Split View
             setActiveView('split');
+            break;
+          case 'p': // Public Funding Data
+            setActiveView('funding');
             break;
         }
       }
@@ -242,6 +245,11 @@ export default function AppLayout({ children }: AppLayoutProps) {
                 <DropdownMenuCheckboxItem checked={activeView === 'split'} onCheckedChange={() => setActiveView('split')}>
                   Split View
                   <span className="ml-2 text-xs opacity-60">(Alt+S)</span>
+                </DropdownMenuCheckboxItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuCheckboxItem checked={activeView === 'funding'} onCheckedChange={() => setActiveView('funding')}>
+                  Public Funding Data
+                  <span className="ml-2 text-xs opacity-60">(Alt+P)</span>
                 </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>
