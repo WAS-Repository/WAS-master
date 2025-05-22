@@ -556,16 +556,50 @@ const VSCodeLayout: React.FC = () => {
   return (
     <div className="h-full flex flex-col text-white bg-[#1e1e1e] font-sans overflow-hidden">
       {/* Top Menu Bar */}
-      <div className="flex items-center h-8 bg-[#252526] px-2 text-xs">
+      <div className="flex items-center justify-between h-8 bg-[#252526] px-2 text-xs">
         <div className="flex items-center space-x-3">
           <span>File</span>
           <span>Edit</span>
           <span>Selection</span>
-          <span>View</span>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <span className="cursor-pointer">View</span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" className="w-48 bg-[#1e1e1e] border-[#3e3e3e] text-white">
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="cursor-pointer hover:bg-[#2a2d2e]">
+                  <div className="flex items-center">
+                    {theme === "light" ? <Sun className="h-4 w-4 mr-2" /> : <Moon className="h-4 w-4 mr-2" />}
+                    <span>Theme</span>
+                  </div>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="bg-[#1e1e1e] border-[#3e3e3e] text-white">
+                  <DropdownMenuRadioGroup value={theme} onValueChange={(value) => setTheme(value as "light" | "dark")}>
+                    <DropdownMenuRadioItem value="light" className="cursor-pointer hover:bg-[#2a2d2e]">
+                      <Sun className="h-4 w-4 mr-2" /> Light
+                    </DropdownMenuRadioItem>
+                    <DropdownMenuRadioItem value="dark" className="cursor-pointer hover:bg-[#2a2d2e]">
+                      <Moon className="h-4 w-4 mr-2" /> Dark
+                    </DropdownMenuRadioItem>
+                  </DropdownMenuRadioGroup>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+              <DropdownMenuSeparator className="bg-[#3e3e3e]" />
+              <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]">
+                Appearance
+              </DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]">
+                Editor Layout
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <span>Go</span>
           <span>Debug</span>
           <span>Terminal</span>
           <span>Help</span>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Settings className="h-4 w-4 cursor-pointer" />
         </div>
       </div>
       
