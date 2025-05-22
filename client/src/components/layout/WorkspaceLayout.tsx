@@ -420,62 +420,7 @@ export default function WorkspaceLayout() {
                 </div>
               </div>
               
-              {/* System status */}
-              <div className="p-2 text-xs" style={{ borderColor: colorScheme.borderColor }}>
-                <div className="font-bold mb-1 uppercase" style={{ color: colorScheme.mainColor }}>System Status</div>
-                <div className="border rounded p-1 text-[10px]" style={{ 
-                  borderColor: colorScheme.mainColor,
-                  color: colorScheme.mainColor
-                }}>
-                  <div className="flex justify-between mb-1">
-                    <div className="flex items-center">
-                      <Cpu className="h-3 w-3 mr-1" />
-                      <span>CPU Usage</span>
-                    </div>
-                    <div>{cpuUsage}%</div>
-                  </div>
-                  <div className="w-full bg-gray-800 h-1 mb-2 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" 
-                      style={{ 
-                        width: `${cpuUsage}%`, 
-                        backgroundColor: cpuUsage > 75 ? '#ff4433' : (cpuUsage > 50 ? '#ffaa33' : colorScheme.accentColor)
-                      }}
-                    ></div>
-                  </div>
-                  
-                  <div className="flex justify-between mb-1">
-                    <div className="flex items-center">
-                      <Wifi className="h-3 w-3 mr-1" />
-                      <span>Network Latency</span>
-                    </div>
-                    <div>{networkPing} ms</div>
-                  </div>
-                  <div className="w-full bg-gray-800 h-1 mb-2 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" 
-                      style={{ 
-                        width: `${Math.min(100, networkPing)}%`,
-                        backgroundColor: networkPing > 60 ? '#ff4433' : (networkPing > 40 ? '#ffaa33' : colorScheme.accentColor)
-                      }}
-                    ></div>
-                  </div>
-                  
-                  <div className="flex justify-between mb-1">
-                    <div className="flex items-center">
-                      <HardDrive className="h-3 w-3 mr-1" />
-                      <span>Storage</span>
-                    </div>
-                    <div>43%</div>
-                  </div>
-                  <div className="w-full bg-gray-800 h-1 rounded-full overflow-hidden">
-                    <div className="h-full rounded-full" 
-                      style={{ 
-                        width: '43%',
-                        backgroundColor: colorScheme.accentColor
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              </div>
+
             </div>
           </div>
         </div>
