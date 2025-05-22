@@ -3,6 +3,7 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { SearchFeature } from '@/components/search/SearchFeature';
 import { 
   Search, 
@@ -126,7 +127,8 @@ export default function WorkspaceLayout() {
   const [documentViewMode, setDocumentViewMode] = useState<'map' | 'graph' | 'documents'>('map');
   const [navigationTab, setNavigationTab] = useState<number>(1);
   const [colorScheme, setColorScheme] = useState<ColorScheme>(colorSchemes[0]);
-  const [showColorPicker, setShowColorPicker] = useState(false);
+  const [showColorPicker, setColorPicker] = useState(false);
+  const [showSearchDialog, setShowSearchDialog] = useState(false);
   
   // Simulate real-time clock and changing metrics
   useEffect(() => {
