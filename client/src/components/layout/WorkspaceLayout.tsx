@@ -421,19 +421,55 @@ export default function WorkspaceLayout() {
                 </Button>
               </div>
               
-              <div className="p-2 h-20 overflow-y-auto font-mono text-xs" style={{ color: colorScheme.mainColor }}>
-                <div style={{ color: colorScheme.mainColor }}>{'>'} Initialized Hampton Roads document visualization</div>
-                <div style={{ color: colorScheme.mainColor }}>{'>'} Loaded 7 localities and 15 document references</div>
-                <div style={{ color: colorScheme.mainColor }}>{'>'} Network graph initialized with 11 nodes and 13 connections</div>
-                <div style={{ color: '#ffff33' }}>{'>'} Warning: Some document metadata is incomplete</div>
-                <div style={{ color: colorScheme.mainColor }}>{'>'} System ready</div>
-                <div className="flex items-center mt-2">
-                  <span style={{ color: colorScheme.mainColor }} className="mr-1">{'>'}</span>
-                  <Input 
-                    className="h-6 py-1 px-2 bg-transparent border-none text-xs focus-visible:ring-0 focus-visible:ring-offset-0"
+              <div className="p-2 overflow-y-auto font-mono text-xs" style={{ height: "160px", color: colorScheme.mainColor }}>
+                {/* Terminal Tabs */}
+                <div className="flex border-b mb-2 pb-1" style={{ borderColor: colorScheme.borderColor }}>
+                  <div className="mr-4 cursor-pointer font-semibold" style={{ color: colorScheme.accentColor }}>Search Agent</div>
+                  <div className="mr-4 cursor-pointer opacity-60 hover:opacity-100">System</div>
+                  <div className="mr-4 cursor-pointer opacity-60 hover:opacity-100">Data</div>
+                </div>
+                
+                {/* Command Reference */}
+                <div className="mb-2 py-1 px-2 text-xs flex justify-between" style={{ backgroundColor: `${colorScheme.bgAltColor}40` }}>
+                  <div>
+                    <span className="font-semibold" style={{ color: colorScheme.accentColor }}>Commands:</span>
+                    <span className="ml-2 opacity-80">search, extract, graph, map, connect, export</span>
+                  </div>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-5 px-2 py-0 text-[10px]"
                     style={{ color: colorScheme.mainColor }}
-                    placeholder="Enter command..."
+                  >
+                    Help
+                  </Button>
+                </div>
+                
+                {/* Terminal Content */}
+                <div className="space-y-1">
+                  <div style={{ color: colorScheme.accentColor }}>{'>'} Hampton Roads Research Graph Agent v1.0.0</div>
+                  <div style={{ color: colorScheme.mainColor }}>{'>'} Loaded 7 localities and 15 document references</div>
+                  <div style={{ color: colorScheme.mainColor }}>{'>'} Network graph initialized with 11 nodes and 13 connections</div>
+                  <div style={{ color: '#ffff33' }}>{'>'} Warning: Some document metadata is incomplete</div>
+                  <div style={{ color: colorScheme.mainColor }}>{'>'} Type 'help' for a list of available commands</div>
+                </div>
+                
+                {/* Command Input with Enhanced Styling */}
+                <div className="flex items-center mt-2 p-1 rounded" style={{ backgroundColor: `${colorScheme.bgAltColor}80` }}>
+                  <span style={{ color: colorScheme.accentColor }} className="mr-1">{'>'}</span>
+                  <Input 
+                    className="flex-grow bg-transparent border-none text-xs focus-visible:ring-0 focus-visible:ring-offset-0"
+                    style={{ color: colorScheme.mainColor }}
+                    placeholder="Type search command (e.g., search 'coastal erosion' locality:Norfolk)..."
                   />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="h-6 ml-1 px-2 py-0 text-xs"
+                    style={{ color: colorScheme.accentColor }}
+                  >
+                    Execute
+                  </Button>
                 </div>
               </div>
             </div>
