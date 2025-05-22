@@ -24,7 +24,18 @@ import {
   ServerCrash,
   ExternalLink,
   Database,
-  MonitorSmartphone
+  MonitorSmartphone,
+  File,
+  Layers,
+  Plus,
+  Minus,
+  Menu,
+  Globe,
+  List,
+  Settings,
+  HelpCircle,
+  Edit,
+  Sun
 } from 'lucide-react';
 import MapView from '../visualization/MapView';
 import KnowledgeGraph from '../visualization/KnowledgeGraph';
@@ -36,16 +47,16 @@ import DocumentViewer from '../visualization/DocumentViewer';
  */
 export default function WorkspaceLayout() {
   const isMobile = useIsMobile();
-  const [terminalHeight, setTerminalHeight] = useState(220);
+  const [terminalHeight, setTerminalHeight] = useState(100);
   const [showTerminal, setShowTerminal] = useState(true);
-  const [showFileExplorer, setShowFileExplorer] = useState(!isMobile);
-  const [activeDocTab, setActiveDocTab] = useState('all');
+  const [activeDocTab, setActiveDocTab] = useState<'all' | 'research' | 'patents' | 'drawings'>('all');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isProcessing, setIsProcessing] = useState(false);
   const [cpuUsage, setCpuUsage] = useState(Math.floor(Math.random() * 20) + 5); // Random value between 5-25%
   const [networkPing, setNetworkPing] = useState(Math.floor(Math.random() * 40) + 20); // Random value between 20-60ms
-  const [selectedDocument, setSelectedDocument] = useState(null);
+  const [selectedLocality, setSelectedLocality] = useState<string | null>("Norfolk");
   const [documentViewMode, setDocumentViewMode] = useState<'map' | 'graph' | 'documents'>('map');
+  const [navigationTab, setNavigationTab] = useState<number>(1);
   
   // Simulate real-time clock and changing metrics
   useEffect(() => {
@@ -66,22 +77,9 @@ export default function WorkspaceLayout() {
     return () => clearInterval(timer);
   }, []);
   
-  // Adjust layout for mobile devices
-  useEffect(() => {
-    if (isMobile) {
-      setShowTerminal(false);
-      setShowFileExplorer(false);
-    }
-  }, [isMobile]);
-  
   // Toggle terminal visibility
   const toggleTerminal = () => {
     setShowTerminal(!showTerminal);
-  };
-  
-  // Toggle file explorer visibility
-  const toggleFileExplorer = () => {
-    setShowFileExplorer(!showFileExplorer);
   };
   
   // Format time as HH:MM:SS with leading zeros
@@ -103,417 +101,423 @@ export default function WorkspaceLayout() {
   };
 
   return (
-    <div className="h-full flex flex-col overflow-hidden bg-black text-[#00ff00] font-mono">
-      {/* Top status bar */}
+    <div className="h-full flex flex-col overflow-hidden bg-black text-[#00ff00] font-mono scanlines">
+      {/* Top navbar */}
       <div className="bg-black border-b border-[#22dd22] p-1 flex justify-between items-center text-xs">
-        <div className="flex items-center space-x-4">
-          <div className="flex flex-col items-center justify-center">
-            <div className="text-[#33ff33] font-bold text-xl">{formatTime(currentTime)}</div>
-            <div className="text-[#33ff33] opacity-70 text-[10px]">Current time in user time zone</div>
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center bg-[#001000] border border-[#33ff33] p-1 rounded">
+            <Globe className="h-5 w-5 text-[#33ff33] mr-1" />
+            <span className="text-[#33ff33] font-bold text-sm">Hampton Roads Research Graph</span>
           </div>
           
-          <div className="px-2 py-1 border border-[#44ff44] bg-black">
-            <span className="text-[#33ff33] mr-1">NETWORK STATUS</span>
-            <span className={networkPing < 30 ? "text-[#33ff33]" : networkPing < 60 ? "text-[#ffff33]" : "text-[#ff3333]"}>
-              {networkPing}ms latency
-            </span>
+          <div className="flex space-x-4 mx-4">
+            <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">File</div>
+            <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">Edit</div>
+            <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">View</div>
+            <div className="cursor-pointer hover:text-[#33ff33] text-[#33ff33]">Help</div>
           </div>
         </div>
         
-        <div className="flex items-center">
-          <div className="px-2 py-1 mr-2 text-center">
-            <div className="text-[#33ff33] uppercase">MAIN SHELL</div>
-          </div>
+        <div className="flex items-center space-x-3">
+          <Sun className="h-5 w-5 text-[#33ff33] cursor-pointer" />
+          <Settings className="h-5 w-5 text-[#33ff33] cursor-pointer" />
+          <div className="h-8 w-8 rounded-full bg-[#ff00ff] flex items-center justify-center text-black font-bold">JD</div>
         </div>
       </div>
       
-      {/* Main content area - flexible layout */}
+      {/* Main content area with grid layout */}
       <div className="flex flex-grow overflow-hidden">
-        {/* Left sidebar - File Explorer for desktop, toggleable for mobile */}
-        {showFileExplorer && (
-          <div className="w-[200px] border-r border-[#22dd22] bg-[#001100] flex flex-col">
-            <div className="p-2 border-b border-[#22dd22]">
-              <h3 className="text-[#33ff33] text-xs uppercase">File Explorer</h3>
+        {/* Left icon navigation bar */}
+        <div className="w-10 bg-black border-r border-[#22dd22] flex flex-col items-center pt-2">
+          <button 
+            className={`w-7 h-7 mb-3 flex items-center justify-center ${navigationTab === 1 ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'} border border-[#33ff33] rounded`}
+            onClick={() => setNavigationTab(1)}
+          >
+            <File className="h-4 w-4" />
+          </button>
+          <button 
+            className={`w-7 h-7 mb-3 flex items-center justify-center ${navigationTab === 2 ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'} border border-[#33ff33] rounded`}
+            onClick={() => setNavigationTab(2)}
+          >
+            <Layers className="h-4 w-4" />
+          </button>
+          <button 
+            className={`w-7 h-7 mb-3 flex items-center justify-center ${navigationTab === 3 ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'} border border-[#33ff33] rounded`}
+            onClick={() => setNavigationTab(3)}
+          >
+            <List className="h-4 w-4" />
+          </button>
+          <button 
+            className={`w-7 h-7 mb-3 flex items-center justify-center ${navigationTab === 4 ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'} border border-[#33ff33] rounded`}
+            onClick={() => setNavigationTab(4)}
+          >
+            <Database className="h-4 w-4" />
+          </button>
+          <button 
+            className={`w-7 h-7 mb-3 flex items-center justify-center ${navigationTab === 5 ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'} border border-[#33ff33] rounded`}
+            onClick={() => setNavigationTab(5)}
+          >
+            <Terminal className="h-4 w-4" />
+          </button>
+        </div>
+        
+        {/* Main content grid layout */}
+        <div className="flex-1 flex flex-col">
+          {/* Current time and info bar */}
+          <div className="flex bg-black border-b border-[#22dd22] p-2">
+            <div className="flex flex-col mr-6">
+              <div className="text-[#33ff33] font-bold text-xl">{formatTime(currentTime)}</div>
+              <div className="text-[#33ff33] opacity-70 text-[10px]">Current time in user time zone</div>
+            </div>
+            
+            <div className="flex-1 flex justify-between items-center">
+              <div className="flex items-center bg-black border border-[#33ff33] px-2 py-1">
+                <span className="text-[#ff00ff] uppercase mr-2">NETWORK STATUS</span>
+                <span className={networkPing < 30 ? "text-[#33ff33]" : networkPing < 60 ? "text-[#ffff33]" : "text-[#ff3333]"}>
+                  {networkPing}ms latency
+                </span>
+              </div>
               
-              <div className="mt-4 grid grid-cols-4 gap-2">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((_, index) => (
-                  <div 
-                    key={index} 
-                    className="flex flex-col items-center justify-center cursor-pointer hover:bg-[#002200]"
-                    title={`File system action ${index + 1}`}
+              <div className="uppercase text-[#33ff33]">EMPTY</div>
+              
+              <div className="uppercase text-[#33ff33] text-right">MAIN SHELL</div>
+            </div>
+          </div>
+          
+          {/* Location and coordinate information */}
+          <div className="flex bg-black border-b border-[#22dd22] p-2">
+            <div className="w-1/3">
+              <div className="text-[#ff00ff] uppercase text-xs">Primary Location of Impact</div>
+              <div className="text-[#33ff33]">Hampton Roads, VA</div>
+            </div>
+            
+            <div className="w-1/3 text-center">
+              <div className="text-[#33ff33] uppercase text-xs">WORLD VIEW</div>
+              <div className="text-[#33ff33] text-xs">GLOBAL NETWORK MAP</div>
+            </div>
+            
+            <div className="w-1/3 text-right">
+              <div className="text-[#33ff33] uppercase text-xs">ENDPOINT LOCATION</div>
+              <div className="text-[#33ff33] text-xs">LAT/LON 36.9081°, -76.1911°</div>
+            </div>
+          </div>
+          
+          {/* Main visualization area */}
+          <div className="flex flex-1">
+            {/* Left column - document navigation */}
+            <div className="w-56 border-r border-[#22dd22] bg-black p-2 flex flex-col">
+              <div className="mb-3">
+                <div className="text-[#33ff33] font-semibold mb-1">Hampton Roads Localities</div>
+                <div className="text-xs text-[#33ff33] mb-2">Select a locality to view</div>
+                <div className="space-y-1">
+                  {['Norfolk', 'Hampton', 'Portsmouth', 'Virginia Beach', 'Newport News', 'Suffolk', 'Chesapeake'].map(locality => (
+                    <div 
+                      key={locality}
+                      className={`cursor-pointer p-1 rounded flex items-center ${selectedLocality === locality ? 'bg-[#001800]' : 'hover:bg-[#001800]'}`}
+                      onClick={() => setSelectedLocality(locality)}
+                    >
+                      <div className={`w-2 h-2 rounded-full ${selectedLocality === locality ? 'bg-[#33ff33]' : 'bg-[#33ff33] opacity-50'} mr-2`}></div>
+                      <span className="text-[#33ff33] text-sm">{locality}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="mt-2 mb-auto">
+                <div className="text-[#ff00ff] font-semibold text-xs mb-1">Documents Selection Tabs</div>
+                <div className="border border-[#33ff33] p-1 flex space-x-1 bg-black">
+                  <button 
+                    className={`px-2 py-0.5 text-xs ${activeDocTab === 'all' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    onClick={() => setActiveDocTab('all')}
                   >
-                    <div className="w-8 h-8 flex items-center justify-center border border-[#33ff33]">
-                      {index === 0 && <FileText size={14} className="text-[#33ff33]" />}
-                      {index === 1 && <Database size={14} className="text-[#33ff33]" />}
-                      {index === 2 && <Shield size={14} className="text-[#33ff33]" />}
-                      {index === 3 && <HardDrive size={14} className="text-[#33ff33]" />}
-                      {index === 4 && <Network size={14} className="text-[#33ff33]" />}
-                      {index === 5 && <Map size={14} className="text-[#33ff33]" />}
-                      {index === 6 && <RefreshCw size={14} className="text-[#33ff33]" />}
-                      {index === 7 && <ExternalLink size={14} className="text-[#33ff33]" />}
-                      {index === 8 && <ServerCrash size={14} className="text-[#33ff33]" />}
-                      {index === 9 && <MonitorSmartphone size={14} className="text-[#33ff33]" />}
-                      {index === 10 && <Wifi size={14} className="text-[#33ff33]" />}
-                      {index === 11 && <AlertTriangle size={14} className="text-[#33ff33]" />}
-                    </div>
+                    All
+                  </button>
+                  <button 
+                    className={`px-2 py-0.5 text-xs ${activeDocTab === 'research' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    onClick={() => setActiveDocTab('research')}
+                  >
+                    Research
+                  </button>
+                  <button 
+                    className={`px-2 py-0.5 text-xs ${activeDocTab === 'patents' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    onClick={() => setActiveDocTab('patents')}
+                  >
+                    Patents
+                  </button>
+                  <button 
+                    className={`px-2 py-0.5 text-xs ${activeDocTab === 'drawings' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    onClick={() => setActiveDocTab('drawings')}
+                  >
+                    Drawings
+                  </button>
+                </div>
+                
+                <div className="border-l border-r border-b border-[#33ff33] bg-black p-2">
+                  <div className="text-[#33ff33] text-xs mb-1">
+                    {selectedLocality}: {activeDocTab === 'all' ? '3 types' : ''}
                   </div>
-                ))}
+                </div>
+              </div>
+            </div>
+            
+            {/* Center area - Map/Graph visualization */}
+            <div className="flex-1 relative">
+              <div className="absolute inset-0">
+                <div className={`absolute inset-0 transition-opacity duration-300 ${documentViewMode === 'map' ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
+                  <MapView />
+                </div>
+                
+                <div className={`absolute inset-0 transition-opacity duration-300 ${documentViewMode === 'graph' ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
+                  <KnowledgeGraph />
+                </div>
+                
+                <div className={`absolute inset-0 transition-opacity duration-300 ${documentViewMode === 'documents' ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
+                  <DocumentViewer />
+                </div>
               </div>
               
-              <div className="mt-4">
-                <h4 className="text-[#33ff33] text-xs">Document Categories</h4>
-                <div className="mt-1 cursor-pointer hover:bg-[#002200] p-1 flex items-center">
-                  <span className="mr-1 text-[#33ff33]">▶</span>
-                  <span className="text-[#33ff33] text-xs">Research Papers</span>
+              {/* Control overlay */}
+              <div className="absolute top-2 right-2 z-30 bg-black bg-opacity-70 border border-[#33ff33] rounded p-1">
+                <div className="flex items-center space-x-2">
+                  <button 
+                    className={`p-1 ${documentViewMode === 'map' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    onClick={() => setDocumentViewMode('map')}
+                  >
+                    <Map className="h-4 w-4" />
+                  </button>
+                  <button 
+                    className={`p-1 ${documentViewMode === 'graph' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    onClick={() => setDocumentViewMode('graph')}
+                  >
+                    <Network className="h-4 w-4" />
+                  </button>
+                  <button 
+                    className={`p-1 ${documentViewMode === 'documents' ? 'bg-[#001800] text-[#33ff33]' : 'text-[#33ff33]'}`}
+                    onClick={() => setDocumentViewMode('documents')}
+                  >
+                    <FileText className="h-4 w-4" />
+                  </button>
                 </div>
-                <div className="mt-1 cursor-pointer hover:bg-[#002200] p-1 flex items-center">
-                  <span className="mr-1 text-[#33ff33]">▶</span>
-                  <span className="text-[#33ff33] text-xs">Patents</span>
+              </div>
+              
+              {/* Map zoom controls */}
+              <div className="absolute top-2 left-2 z-30 bg-black bg-opacity-70 border border-[#33ff33] rounded p-1">
+                <div className="flex flex-col">
+                  <button className="p-1 text-[#33ff33]">
+                    <Plus className="h-4 w-4" />
+                  </button>
+                  <button className="p-1 text-[#33ff33]">
+                    <Minus className="h-4 w-4" />
+                  </button>
                 </div>
-                <div className="mt-1 cursor-pointer hover:bg-[#002200] p-1 flex items-center">
-                  <span className="mr-1 text-[#33ff33]">▶</span>
-                  <span className="text-[#33ff33] text-xs">Engineering Drawings</span>
-                  <div className="ml-2">
-                    <div className="cursor-pointer hover:bg-[#002200] p-1 flex items-center ml-3">
-                      <Shield className="h-4 w-4 mr-1 text-[#33ff33]" />
-                      <span className="text-[#33ff33] text-xs">Bridge_Structure_Hampton.dwg</span>
+              </div>
+            </div>
+            
+            {/* Right column - system monitors */}
+            <div className="w-64 border-l border-[#22dd22] bg-black flex flex-col">
+              {/* Process table */}
+              <div className="p-2 border-b border-[#22dd22]">
+                <div className="text-xs text-[#33ff33] flex items-center justify-between mb-1">
+                  <span className="text-xs text-[#33ff33] font-bold uppercase">PID TABLE</span>
+                  <span className="text-[10px] text-[#33ff33]">Active: 7/12</span>
+                </div>
+                <div className="bg-black border border-[#33ff33] text-[10px]">
+                  <div className="grid grid-cols-5 border-b border-[#33ff33] p-1">
+                    <div>PID</div>
+                    <div>Name</div>
+                    <div className="text-right">CPU</div>
+                    <div className="text-right">MEM</div>
+                    <div className="text-right">Time</div>
+                  </div>
+                  
+                  {[
+                    { pid: '15608', name: 'edge-map', cpu: '3.5%', mem: '2.8%', time: '1:25.16' },
+                    { pid: '15612', name: 'edge-ui', cpu: '6.2%', mem: '4.1%', time: '2:48.33' },
+                    { pid: '15617', name: 'edge-db', cpu: '3.3%', mem: '1.6%', time: '0:31.71' },
+                    { pid: '15631', name: 'node', cpu: '2.0%', mem: '3.3%', time: '0:12.46' }
+                  ].map((process, i) => (
+                    <div key={i} className="grid grid-cols-5 p-1 hover:bg-[#001800]">
+                      <div>{process.pid}</div>
+                      <div>{process.name}</div>
+                      <div className="text-right">{process.cpu}</div>
+                      <div className="text-right">{process.mem}</div>
+                      <div className="text-right">{process.time}</div>
                     </div>
-                    <div className="cursor-pointer hover:bg-[#002200] p-1 flex items-center ml-3">
-                      <Shield className="h-4 w-4 mr-1 text-[#33ff33]" />
-                      <span className="text-[#33ff33] text-xs">Port_Facility_Norfolk.dwg</span>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Key players graph */}
+              <div className="p-2 border-b border-[#22dd22]">
+                <div className="text-xs text-[#33ff33] font-bold uppercase mb-1">Key Role Players</div>
+                <div className="h-32 bg-[#001000] border border-[#33ff33] relative p-1">
+                  {/* Simple knowledge graph visualization */}
+                  <svg className="w-full h-full">
+                    <circle cx="50%" cy="30%" r="5" fill="#33ff33" />
+                    <circle cx="30%" cy="60%" r="5" fill="#33ff33" />
+                    <circle cx="70%" cy="70%" r="5" fill="#33ff33" />
+                    <circle cx="80%" cy="40%" r="5" fill="#33ff33" />
+                    <circle cx="20%" cy="40%" r="5" fill="#33ff33" />
+                    
+                    <line x1="50%" y1="30%" x2="30%" y2="60%" stroke="#33ff33" strokeWidth="1" />
+                    <line x1="50%" y1="30%" x2="70%" y2="70%" stroke="#33ff33" strokeWidth="1" />
+                    <line x1="50%" y1="30%" x2="80%" y2="40%" stroke="#33ff33" strokeWidth="1" />
+                    <line x1="50%" y1="30%" x2="20%" y2="40%" stroke="#33ff33" strokeWidth="1" />
+                    <line x1="30%" y1="60%" x2="70%" y2="70%" stroke="#33ff33" strokeWidth="1" />
+                    <line x1="80%" y1="40%" x2="70%" y2="70%" stroke="#33ff33" strokeWidth="1" />
+                  </svg>
+                </div>
+              </div>
+              
+              {/* System metrics */}
+              <div className="flex-1 p-2 overflow-y-auto">
+                <div className="mb-3">
+                  <div className="text-xs text-[#33ff33] font-bold uppercase mb-1">Document Correlation Strength</div>
+                  <div className="flex items-center space-x-1">
+                    <div className="h-3 flex-grow bg-[#001000] border border-[#33ff33]">
+                      <div className="h-full bg-[#33ff33]" style={{ width: `60%` }}></div>
+                    </div>
+                    <span className="text-[#33ff33] text-xs">60%</span>
+                  </div>
+                </div>
+                
+                <div className="mb-3">
+                  <div className="text-xs text-[#33ff33] font-bold uppercase mb-1">CPU Usage</div>
+                  <div className="flex items-center space-x-1">
+                    <div className="h-3 flex-grow bg-[#001000] border border-[#33ff33]">
+                      <div 
+                        className={`h-full ${cpuUsage < 20 ? 'bg-[#33ff33]' : cpuUsage < 60 ? 'bg-[#ffff33]' : 'bg-[#ff3333]'}`} 
+                        style={{ width: `${cpuUsage}%` }}
+                      ></div>
+                    </div>
+                    <span className="text-[#33ff33] text-xs">{cpuUsage}%</span>
+                  </div>
+                </div>
+                
+                <div className="mb-3">
+                  <div className="text-xs text-[#33ff33] font-bold uppercase mb-1">Memory Usage</div>
+                  <div className="h-20 bg-[#001000] border border-[#33ff33] p-1">
+                    {/* Memory heatmap visualization */}
+                    <div className="w-full h-full grid grid-cols-10 grid-rows-4 gap-px">
+                      {[...Array(40)].map((_, i) => {
+                        const intensity = Math.random();
+                        return (
+                          <div 
+                            key={i} 
+                            className="w-full h-full" 
+                            style={{ 
+                              backgroundColor: `rgba(51, 255, 51, ${intensity})`,
+                              opacity: intensity > 0.3 ? 1 : 0.7
+                            }}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        )}
-        
-        {/* Center area - Main document view */}
-        <div className="flex-grow flex flex-col overflow-hidden">
-          {/* Top info panel with location info */}
-          <div className="bg-[#001100] border-b border-[#22dd22] p-2 flex justify-between">
-            <div>
-              <div className="text-[#ff00ff] uppercase">Primary Location of Impact</div>
-              <div className="text-[#33ff33] text-sm">Hampton Roads, VA</div>
-            </div>
-            <div>
-              <div className="text-[#33ff33] uppercase text-right">World View</div>
-              <div className="text-[#33ff33] text-xs text-right">ENDPOINT: LAT/LON 36.9081°, -76.1911°</div>
-            </div>
-          </div>
           
-          {/* Main document visualization area */}
-          <div className="flex-grow relative">
-            <div className="absolute inset-0 text-center text-7xl font-bold text-[#ff00ff] flex items-center justify-center uppercase" style={{opacity: 0.1}}>
-              Document View
-            </div>
-            
-            {/* Tabs for selecting visualization mode */}
-            <div className="absolute top-0 right-0 z-10 p-2 bg-black bg-opacity-60">
-              <div className="flex space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className={`text-xs border-[#33ff33] ${documentViewMode === 'map' ? 'bg-[#002200] text-[#33ff33]' : 'bg-transparent text-[#33ff33]'}`}
-                  onClick={() => setDocumentViewMode('map')}
-                >
-                  <Map className="h-3 w-3 mr-1" />
-                  Map
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className={`text-xs border-[#33ff33] ${documentViewMode === 'graph' ? 'bg-[#002200] text-[#33ff33]' : 'bg-transparent text-[#33ff33]'}`}
-                  onClick={() => setDocumentViewMode('graph')}
-                >
-                  <Network className="h-3 w-3 mr-1" />
-                  Graph
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  className={`text-xs border-[#33ff33] ${documentViewMode === 'documents' ? 'bg-[#002200] text-[#33ff33]' : 'bg-transparent text-[#33ff33]'}`}
-                  onClick={() => setDocumentViewMode('documents')}
-                >
-                  <FileText className="h-3 w-3 mr-1" />
-                  Docs
-                </Button>
-              </div>
-            </div>
-            
-            {/* The actual visualization components */}
-            <div className={`absolute inset-0 transition-opacity duration-300 ${documentViewMode === 'map' ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
-              <MapView />
-            </div>
-            
-            <div className={`absolute inset-0 transition-opacity duration-300 ${documentViewMode === 'graph' ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
-              <KnowledgeGraph />
-            </div>
-            
-            <div className={`absolute inset-0 transition-opacity duration-300 ${documentViewMode === 'documents' ? 'opacity-100 z-20' : 'opacity-0 z-10'}`}>
-              <DocumentViewer />
-            </div>
-          </div>
-          
-          {/* Document selection tabs */}
-          <div className="bg-[#001100] border-t border-[#22dd22] p-2">
-            <div className="text-[#ff00ff] text-sm mb-1">Document Selection Tabs</div>
-            <Tabs defaultValue="all" onValueChange={setActiveDocTab} className="w-full">
-              <TabsList className="bg-black border border-[#33ff33] p-1">
-                <TabsTrigger 
-                  value="all" 
-                  className={`text-xs px-2 py-1 data-[state=active]:bg-[#002200] data-[state=active]:text-[#33ff33] text-[#33ff33]`}
-                >
-                  All
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="research" 
-                  className={`text-xs px-2 py-1 data-[state=active]:bg-[#002200] data-[state=active]:text-[#33ff33] text-[#33ff33]`}
-                >
-                  Research
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="patents" 
-                  className={`text-xs px-2 py-1 data-[state=active]:bg-[#002200] data-[state=active]:text-[#33ff33] text-[#33ff33]`}
-                >
-                  Patents
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="drawings" 
-                  className={`text-xs px-2 py-1 data-[state=active]:bg-[#002200] data-[state=active]:text-[#33ff33] text-[#33ff33]`}
-                >
-                  Drawings
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </div>
-        </div>
-        
-        {/* Right sidebar - Document metrics and info */}
-        <div className="w-[250px] border-l border-[#22dd22] bg-[#001100] overflow-y-auto">
-          <div className="p-2 border-b border-[#22dd22]">
-            <h3 className="text-[#33ff33] text-xs uppercase mb-2">Document Correlation Strength</h3>
-            <div className="flex items-center space-x-1">
-              <div className="h-4 flex-grow bg-[#002200]">
-                <div className="h-full bg-[#33ff33]" style={{ width: `${60}%` }}></div>
-              </div>
-              <span className="text-[#33ff33] text-xs">60%</span>
-            </div>
-          </div>
-          
-          <div className="p-2 border-b border-[#22dd22]">
-            <h3 className="text-[#33ff33] text-xs uppercase mb-2">CPU Usage</h3>
-            <div className="flex items-center space-x-1">
-              <div className="h-4 flex-grow bg-[#002200]">
-                <div 
-                  className={`h-full ${cpuUsage < 20 ? 'bg-[#33ff33]' : cpuUsage < 60 ? 'bg-[#ffff33]' : 'bg-[#ff3333]'}`} 
-                  style={{ width: `${cpuUsage}%` }}
-                ></div>
-              </div>
-              <span className="text-[#33ff33] text-xs">{cpuUsage}%</span>
-            </div>
-          </div>
-          
-          <div className="p-2 border-b border-[#22dd22]">
-            <h3 className="text-[#33ff33] text-xs uppercase mb-2">Memory Usage</h3>
-            <div className="flex flex-col space-y-1">
-              <div className="grid grid-cols-3 text-[10px] text-[#33ff33]">
-                <div>Memory</div>
-                <div>Used</div>
-                <div>Max</div>
-              </div>
-              <div className="bg-[#002200] p-1 grid grid-cols-3 text-[10px] text-[#33ff33]">
-                <div>Main</div>
-                <div>1.8G</div>
-                <div>8.0G</div>
-              </div>
-              <div className="bg-[#002200] p-1 grid grid-cols-3 text-[10px] text-[#33ff33]">
-                <div>Swap</div>
-                <div>0.0</div>
-                <div>2.0G</div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="p-2 border-b border-[#22dd22]">
-            <h3 className="text-[#33ff33] text-xs uppercase mb-2">Network Traffic</h3>
-            <div className="flex justify-between text-[10px] text-[#33ff33] mb-1">
-              <span>Upload: 0.3 MB/s</span>
-              <span>Download: 1.2 MB/s</span>
-            </div>
-            <div className="h-20 bg-[#002200] relative overflow-hidden">
-              {/* Network traffic visualization - simple bar chart */}
-              {[...Array(20)].map((_, i) => (
-                <div 
-                  key={i} 
-                  className="absolute bottom-0 bg-[#33ff33]" 
-                  style={{
-                    left: `${i * 5}%`, 
-                    width: '4%', 
-                    height: `${Math.random() * 70 + 10}%`,
-                    opacity: 0.7
-                  }}
-                ></div>
-              ))}
-            </div>
-          </div>
-          
-          <div className="p-2 border-b border-[#22dd22]">
-            <h3 className="text-[#33ff33] text-xs uppercase mb-2">Top Processes</h3>
-            <div className="text-[10px] text-[#33ff33] bg-[#002200]">
-              <div className="grid grid-cols-4 p-1 border-b border-[#22dd22]">
-                <div>PID</div>
-                <div>Name</div>
-                <div>CPU</div>
-                <div>Mem</div>
-              </div>
-              <div className="grid grid-cols-4 p-1">
-                <div>15612</div>
-                <div>edge-ui</div>
-                <div>6.2%</div>
-                <div>4.1%</div>
-              </div>
-              <div className="grid grid-cols-4 p-1">
-                <div>15608</div>
-                <div>edge-map</div>
-                <div>3.5%</div>
-                <div>2.8%</div>
-              </div>
-              <div className="grid grid-cols-4 p-1">
-                <div>15617</div>
-                <div>edge-db</div>
-                <div>3.3%</div>
-                <div>1.6%</div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="p-2">
-            <h3 className="text-[#33ff33] text-xs uppercase mb-2">Key Role Players</h3>
-            <div className="h-32 bg-[#002200] relative">
-              {/* Simple knowledge graph visualization */}
-              <svg className="w-full h-full">
-                <circle cx="50%" cy="30%" r="5" fill="#33ff33" />
-                <circle cx="30%" cy="60%" r="5" fill="#33ff33" />
-                <circle cx="70%" cy="70%" r="5" fill="#33ff33" />
-                <circle cx="80%" cy="40%" r="5" fill="#33ff33" />
-                <circle cx="20%" cy="40%" r="5" fill="#33ff33" />
+          {/* Terminal section */}
+          {showTerminal && (
+            <div className="border-t border-[#22dd22] bg-black">
+              <div className="flex items-center justify-between border-b border-[#22dd22] p-1 bg-black">
+                <div className="flex items-center">
+                  <Terminal className="h-4 w-4 mr-2 text-[#33ff33]" />
+                  <span className="text-xs font-medium text-[#33ff33]">Terminal</span>
+                </div>
                 
-                <line x1="50%" y1="30%" x2="30%" y2="60%" stroke="#33ff33" strokeWidth="1" />
-                <line x1="50%" y1="30%" x2="70%" y2="70%" stroke="#33ff33" strokeWidth="1" />
-                <line x1="50%" y1="30%" x2="80%" y2="40%" stroke="#33ff33" strokeWidth="1" />
-                <line x1="50%" y1="30%" x2="20%" y2="40%" stroke="#33ff33" strokeWidth="1" />
-                <line x1="30%" y1="60%" x2="70%" y2="70%" stroke="#33ff33" strokeWidth="1" />
-                <line x1="80%" y1="40%" x2="70%" y2="70%" stroke="#33ff33" strokeWidth="1" />
-              </svg>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-6 px-2 py-0 text-[#33ff33] hover:bg-[#001800] text-xs border border-[#33ff33]"
+                  onClick={toggleTerminal}
+                >
+                  Hide Terminal
+                </Button>
+              </div>
+              
+              <div className="p-2 h-20 overflow-y-auto font-mono text-xs text-[#33ff33]">
+                <div className="text-[#33ff33]">{'>'} Initialized Hampton Roads document visualization</div>
+                <div className="text-[#33ff33]">{'>'} Loaded 7 localities and 15 document references</div>
+                <div className="text-[#33ff33]">{'>'} Network graph initialized with 11 nodes and 13 connections</div>
+                <div className="text-[#ffff33]">{'>'} Warning: Some document metadata is incomplete</div>
+                <div className="text-[#33ff33]">{'>'} System ready</div>
+                <div className="flex items-center mt-2">
+                  <span className="text-[#33ff33] mr-1">{'>'}</span>
+                  <Input 
+                    className="h-6 py-1 px-2 bg-transparent border-none text-xs text-[#33ff33] focus-visible:ring-0 focus-visible:ring-offset-0"
+                    placeholder="Enter command..."
+                  />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Terminal section */}
-      {showTerminal && (
-        <div 
-          className="border-t border-[#22dd22] bg-black overflow-hidden" 
-          style={{ height: `${terminalHeight}px` }}
-        >
-          <div className="flex items-center justify-between border-b border-[#22dd22] p-1 bg-[#001100]">
-            <div className="flex items-center">
-              <Terminal className="h-4 w-4 mr-2 text-[#33ff33]" />
-              <span className="text-xs font-medium text-[#33ff33]">Terminal</span>
-            </div>
-            
-            <div className="flex items-center">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 w-6 p-0 text-[#33ff33] hover:bg-[#002200]"
-                onClick={() => setTerminalHeight(prev => Math.min(prev + 50, 400))}
-              >
-                <ChevronUp className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 w-6 p-0 text-[#33ff33] hover:bg-[#002200]"
-                onClick={() => setTerminalHeight(prev => Math.max(prev - 50, 120))}
-              >
-                <ChevronDown className="h-4 w-4" />
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="h-6 w-6 p-0 text-[#33ff33] hover:bg-[#002200]"
-                onClick={toggleTerminal}
-              >
-                <Minimize className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-          
-          <div className="p-2 h-[calc(100%-32px)] overflow-y-auto font-mono text-xs text-[#33ff33]">
-            <div className="text-[#33ff33]">{'>'} Initialized Hampton Roads document visualization</div>
-            <div className="text-[#33ff33]">{'>'} Loaded 7 localities and 15 document references</div>
-            <div className="text-[#33ff33]">{'>'} Network graph initialized with 11 nodes and 13 connections</div>
-            <div className="text-[#ffff33]">{'>'} Warning: Some document metadata is incomplete</div>
-            <div className="text-[#33ff33]">{'>'} Calculating spatial relationships between documents</div>
-            <div className="text-[#33ff33]">{'>'} Map view ready</div>
-            <div className="text-[#33ff33]">{'>'} System ready</div>
-            <div className="flex items-center mt-2">
-              <span className="text-[#33ff33] mr-1">{'>'}</span>
-              <Input 
-                className="h-6 py-1 px-2 bg-transparent border-none text-xs text-[#33ff33] focus-visible:ring-0 focus-visible:ring-offset-0"
-                placeholder="Enter command..."
-              />
-            </div>
-          </div>
-        </div>
-      )}
-      
-      {/* Mobile controls */}
-      {isMobile && (
-        <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
-          {!showTerminal && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-black border-[#33ff33] text-[#33ff33]"
-              onClick={toggleTerminal}
-            >
-              <Terminal className="h-4 w-4 mr-1" />
-              Terminal
-            </Button>
           )}
           
-          <Button
-            variant="outline"
-            size="sm"
-            className="bg-black border-[#33ff33] text-[#33ff33]"
-            onClick={toggleFileExplorer}
-          >
-            <FileText className="h-4 w-4 mr-1" />
-            {showFileExplorer ? 'Hide' : 'Files'}
-          </Button>
-        </div>
-      )}
-      
-      {/* Status bar */}
-      <div className="bg-[#001100] border-t border-[#22dd22] py-1 px-2 text-[10px] text-[#33ff33] flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div>APR 30 20:45 linux wired</div>
-          <div>MANUFACTURER: SEACORE CHASSIS</div>
-          <div>CPU USAGE: {cpuUsage}%</div>
-        </div>
-        
-        <div className="flex items-center space-x-2">
-          {/* Virtual keyboard indicator */}
-          <div className="flex space-x-1">
-            {['ESC', 'Z', '&', '§', '€', 'R', 'T', 'Y', 'U', 'I', 'O'].map((key, i) => (
-              <div key={i} className="border border-[#33ff33] px-1">{key}</div>
-            ))}
+          {/* Footer status bar */}
+          <div className="bg-black border-t border-[#22dd22] py-1 px-2 text-[10px] text-[#33ff33] flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div>APR 30 20:45 linux wired</div>
+              <div>MANUFACTURER: SEACORE CHASSIS</div>
+              <div>CPU USAGE: {cpuUsage}%</div>
+            </div>
+            
+            <div className="flex items-center">
+              <div className="mr-3 uppercase text-[#33ff33]">Back</div>
+              {/* Virtual keyboard indicator - On Mobile Keyboard main system */}
+              <div id="keyboard" className="flex flex-col">
+                <div className="flex mb-1 justify-center">
+                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">ESC</div>
+                  <div className="flex space-x-1">
+                    {['Z', '&', 'É', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].map((key, i) => (
+                      <div key={i} className="border border-[#33ff33] w-6 h-6 flex items-center justify-center">{key}</div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex mb-1 justify-center">
+                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">TAB</div>
+                  <div className="flex space-x-1">
+                    {['A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'].map((key, i) => (
+                      <div key={i} className="border border-[#33ff33] w-6 h-6 flex items-center justify-center">{key}</div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex mb-1 justify-center">
+                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">CAPS</div>
+                  <div className="flex space-x-1">
+                    {['Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'].map((key, i) => (
+                      <div key={i} className="border border-[#33ff33] w-6 h-6 flex items-center justify-center">{key}</div>
+                    ))}
+                  </div>
+                </div>
+                
+                <div className="flex mb-1 justify-center">
+                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">SHIFT</div>
+                  <div className="flex space-x-1">
+                    {['<', 'W', 'X', 'C', 'V', 'B', 'N', ',', '.', '/'].map((key, i) => (
+                      <div key={i} className="border border-[#33ff33] w-6 h-6 flex items-center justify-center">{key}</div>
+                    ))}
+                  </div>
+                  <div className="border border-[#33ff33] px-2 py-0.5 ml-1 text-center">SHIFT</div>
+                </div>
+                
+                <div className="flex justify-center">
+                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">CTRL</div>
+                  <div className="border border-[#33ff33] px-2 py-0.5 mr-1 text-center">FN</div>
+                  <div className="border border-[#33ff33] px-16 py-0.5 text-center">keyboard trigger event</div>
+                  <div className="border border-[#33ff33] px-2 py-0.5 ml-1 text-center">ALT GR</div>
+                  <div className="border border-[#33ff33] px-2 py-0.5 ml-1 text-center">CTRL</div>
+                </div>
+                
+                <div className="text-center text-[8px] mt-1 text-[#33ff33]">
+                  On desktop mode this is the terminal. Keyboard leaves when bluetooth or wired keyboard is enabled
+                </div>
+              </div>
+            </div>
           </div>
-          <div className="border border-[#33ff33] px-2">ENTER</div>
         </div>
       </div>
     </div>
