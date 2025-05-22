@@ -5,6 +5,8 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Search, Filter, ZoomIn, ZoomOut, RotateCcw, Maximize, Minimize, ChevronDown } from 'lucide-react';
 import * as d3 from 'd3';
+import { select } from 'd3-selection';
+import { zoom } from 'd3-zoom';
 
 // Sample data for the knowledge graph
 const sampleNodes = [

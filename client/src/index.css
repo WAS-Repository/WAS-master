@@ -3,49 +3,61 @@
 @tailwind utilities;
 
 :root {
-      --background: 0 0% 100%;
---foreground: 20 14.3% 4.1%;
---muted: 60 4.8% 95.9%;
---muted-foreground: 25 5.3% 44.7%;
---popover: 0 0% 100%;
---popover-foreground: 20 14.3% 4.1%;
---card: 0 0% 100%;
---card-foreground: 20 14.3% 4.1%;
---border: 20 5.9% 90%;
---input: 20 5.9% 90%;
---primary: 207 90% 54%;
---primary-foreground: 211 100% 99%;
---secondary: 60 4.8% 95.9%;
---secondary-foreground: 24 9.8% 10%;
---accent: 60 4.8% 95.9%;
---accent-foreground: 24 9.8% 10%;
---destructive: 0 84.2% 60.2%;
---destructive-foreground: 60 9.1% 97.8%;
---ring: 20 14.3% 4.1%;
---radius: 0.5rem;
-  }
-  .dark {
-      --background: 240 10% 3.9%;
---foreground: 0 0% 98%;
---muted: 240 3.7% 15.9%;
---muted-foreground: 240 5% 64.9%;
---popover: 240 10% 3.9%;
---popover-foreground: 0 0% 98%;
---card: 240 10% 3.9%;
---card-foreground: 0 0% 98%;
---border: 240 3.7% 15.9%;
---input: 240 3.7% 15.9%;
---primary: 207 90% 54%;
---primary-foreground: 211 100% 99%;
---secondary: 240 3.7% 15.9%;
---secondary-foreground: 0 0% 98%;
---accent: 240 3.7% 15.9%;
---accent-foreground: 0 0% 98%;
---destructive: 0 62.8% 30.6%;
---destructive-foreground: 0 0% 98%;
---ring: 240 4.9% 83.9%;
---radius: 0.5rem;
-  }
+  /* Base theme colors */
+  --background: 0 0% 0%; /* Pure black */
+  --foreground: 120 100% 50%; /* Bright green */
+  --muted: 120 100% 10%;
+  --muted-foreground: 120 100% 60%;
+  --popover: 120 5% 5%;
+  --popover-foreground: 120 100% 50%;
+  --card: 120 5% 5%;
+  --card-foreground: 120 100% 50%;
+  --border: 120 100% 25%;
+  --input: 120 100% 10%;
+  --primary: 120 100% 40%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 120 100% 20%;
+  --secondary-foreground: 120 100% 80%;
+  --accent: 300 100% 50%; /* Magenta for accents */
+  --accent-foreground: 0 0% 0%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 0%;
+  --ring: 120 100% 50%;
+  --radius: 0.2rem;
+
+  /* Terminal theme specific colors */
+  --terminal-green: #33ff33;
+  --terminal-dark-green: #002200;
+  --terminal-magenta: #ff00ff;
+  --terminal-yellow: #ffff33;
+  --terminal-red: #ff3333;
+  --terminal-border: #22dd22;
+  --terminal-bg: #000000;
+  --terminal-bg-alt: #001100;
+}
+
+/* Force dark mode for everyone */
+.dark {
+  --background: 0 0% 0%;
+  --foreground: 120 100% 50%;
+  --muted: 120 100% 10%;
+  --muted-foreground: 120 100% 60%;
+  --popover: 120 5% 5%;
+  --popover-foreground: 120 100% 50%;
+  --card: 120 5% 5%;
+  --card-foreground: 120 100% 50%;
+  --border: 120 100% 25%;
+  --input: 120 100% 10%;
+  --primary: 120 100% 40%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 120 100% 20%;
+  --secondary-foreground: 120 100% 80%;
+  --accent: 300 100% 50%;
+  --accent-foreground: 0 0% 0%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 0 0% 0%;
+  --ring: 120 100% 50%;
+}
 
 @layer base {
   * {
@@ -53,6 +65,118 @@
   }
 
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-mono antialiased bg-black text-[#33ff33];
+  }
+
+  /* Terminal-style scrollbars */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #000000;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #22dd22;
+    border: 1px solid #33ff33;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #33ff33;
+  }
+
+  /* Remove default focus outlines and replace with terminal-style ones */
+  :focus {
+    outline: none !important;
+  }
+
+  :focus-visible {
+    outline: 1px solid #33ff33 !important;
+  }
+
+  /* Terminal text effect */
+  @keyframes textShadowPulse {
+    0% {
+      text-shadow: 0 0 2px rgba(51, 255, 51, 0.6);
+    }
+    50% {
+      text-shadow: 0 0 5px rgba(51, 255, 51, 0.8);
+    }
+    100% {
+      text-shadow: 0 0 2px rgba(51, 255, 51, 0.6);
+    }
+  }
+
+  .terminal-text {
+    animation: textShadowPulse 2s infinite;
+  }
+
+  /* Terminal scanline effect for backgrounds */
+  @keyframes scanline {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 0 100%;
+    }
+  }
+
+  .scanlines {
+    position: relative;
+  }
+
+  .scanlines::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 50%,
+      rgba(0, 17, 0, 0.1) 51%
+    );
+    background-size: 100% 4px;
+    pointer-events: none;
+    z-index: 100;
+    animation: scanline 10s linear infinite;
+  }
+}
+
+/* Custom component styles */
+@layer components {
+  .sci-fi-button {
+    @apply bg-transparent text-[#33ff33] border border-[#22dd22] px-2 py-1 text-xs hover:bg-[#002200] transition-colors;
+  }
+
+  .sci-fi-panel {
+    @apply bg-[#001100] border border-[#22dd22] p-2;
+  }
+
+  .sci-fi-heading {
+    @apply text-[#ff00ff] text-xs uppercase;
+  }
+
+  .sci-fi-input {
+    @apply bg-black border border-[#22dd22] text-[#33ff33] focus:border-[#33ff33] focus:ring-1 focus:ring-[#33ff33];
+  }
+  
+  .terminal-glow {
+    @apply relative;
+  }
+  
+  .terminal-glow::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: 0 0 10px 1px rgba(51, 255, 51, 0.3);
+    pointer-events: none;
+    z-index: 10;
   }
 }
