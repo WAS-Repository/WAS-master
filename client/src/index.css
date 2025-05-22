@@ -2,61 +2,89 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Base theme colors */
-  --background: 0 0% 0%; /* Pure black */
-  --foreground: 120 100% 50%; /* Bright green */
-  --muted: 120 100% 10%;
-  --muted-foreground: 120 100% 60%;
-  --popover: 120 5% 5%;
-  --popover-foreground: 120 100% 50%;
-  --card: 120 5% 5%;
-  --card-foreground: 120 100% 50%;
-  --border: 120 100% 25%;
-  --input: 120 100% 10%;
-  --primary: 120 100% 40%;
-  --primary-foreground: 0 0% 0%;
-  --secondary: 120 100% 20%;
-  --secondary-foreground: 120 100% 80%;
-  --accent: 300 100% 50%; /* Magenta for accents */
-  --accent-foreground: 0 0% 0%;
-  --destructive: 0 100% 50%;
-  --destructive-foreground: 0 0% 0%;
-  --ring: 120 100% 50%;
-  --radius: 0.2rem;
+/* Sacred-inspired font declarations */
+@font-face {
+  font-family: 'United Sans Medium';
+  src: url('/fonts/UnitedSansMedium.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
 
-  /* Terminal theme specific colors */
-  --terminal-green: #33ff33;
-  --terminal-dark-green: #002200;
-  --terminal-magenta: #ff00ff;
-  --terminal-yellow: #ffff33;
-  --terminal-red: #ff3333;
-  --terminal-border: #22dd22;
-  --terminal-bg: #000000;
-  --terminal-bg-alt: #001100;
+@font-face {
+  font-family: 'United Sans Light';
+  src: url('/fonts/UnitedSansLight.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Fira Mono';
+  src: url('/fonts/FiraMono-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Tron-inspired theme from Sacred */
+  --background: 217 100% 4%; /* #05080d */
+  --foreground: 184 18% 74%; /* #aacfd1 */
+  --muted: 214 38% 8%;
+  --muted-foreground: 184 18% 60%;
+  --popover: 214 38% 8%;
+  --popover-foreground: 184 18% 74%;
+  --card: 214 38% 8%;
+  --card-foreground: 184 18% 74%;
+  --border: 194 65% 65%;  /* #6fc3df */
+  --input: 214 38% 8%;
+  --primary: 194 65% 65%; /* #6fc3df */
+  --primary-foreground: 214 38% 8%;
+  --secondary: 214 38% 13%;
+  --secondary-foreground: 184 18% 74%;
+  --accent: 33 100% 50%; /* #ff9c00 */
+  --accent-foreground: 214 38% 8%;
+  --destructive: 0 100% 50%;
+  --destructive-foreground: 214 38% 8%;
+  --ring: 194 65% 65%;
+  --radius: 0px;
+
+  /* Sacred-inspired font variables */
+  --font-main: 'United Sans Medium', sans-serif;
+  --font-main-light: 'United Sans Light', sans-serif;
+  --font-mono: 'Fira Mono', monospace;
+
+  /* Tron theme colors */
+  --tron-blue: #6fc3df;
+  --tron-blue-light: #aacfd1;
+  --tron-orange: #ff9c00;
+  --tron-bg-dark: #05080d;
+  --tron-bg-light: #0b131c;
+  --tron-border: #6fc3df;
 }
 
 /* Force dark mode for everyone */
 .dark {
-  --background: 0 0% 0%;
-  --foreground: 120 100% 50%;
-  --muted: 120 100% 10%;
-  --muted-foreground: 120 100% 60%;
-  --popover: 120 5% 5%;
-  --popover-foreground: 120 100% 50%;
-  --card: 120 5% 5%;
-  --card-foreground: 120 100% 50%;
-  --border: 120 100% 25%;
-  --input: 120 100% 10%;
-  --primary: 120 100% 40%;
-  --primary-foreground: 0 0% 0%;
-  --secondary: 120 100% 20%;
-  --secondary-foreground: 120 100% 80%;
-  --accent: 300 100% 50%;
-  --accent-foreground: 0 0% 0%;
+  --background: 217 100% 4%;
+  --foreground: 184 18% 74%;
+  --muted: 214 38% 8%;
+  --muted-foreground: 184 18% 60%;
+  --popover: 214 38% 8%;
+  --popover-foreground: 184 18% 74%;
+  --card: 214 38% 8%;
+  --card-foreground: 184 18% 74%;
+  --border: 194 65% 65%;
+  --input: 214 38% 8%;
+  --primary: 194 65% 65%;
+  --primary-foreground: 214 38% 8%;
+  --secondary: 214 38% 13%;
+  --secondary-foreground: 184 18% 74%;
+  --accent: 33 100% 50%;
+  --accent-foreground: 214 38% 8%;
   --destructive: 0 100% 50%;
-  --destructive-foreground: 0 0% 0%;
-  --ring: 120 100% 50%;
+  --destructive-foreground: 214 38% 8%;
+  --ring: 194 65% 65%;
 }
 
 @layer base {
@@ -65,55 +93,70 @@
   }
 
   body {
-    @apply font-mono antialiased bg-black text-[#33ff33];
+    @apply antialiased bg-[#05080d] text-[#aacfd1];
+    font-family: var(--font-main);
+    letter-spacing: 0.025em;
   }
 
-  /* Terminal-style scrollbars */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-main);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  code, pre, .monospace {
+    font-family: var(--font-mono);
+  }
+
+  /* Sacred-inspired scrollbars */
   ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
   }
 
   ::-webkit-scrollbar-track {
-    background: #000000;
+    background: var(--tron-bg-dark);
   }
 
   ::-webkit-scrollbar-thumb {
-    background: #22dd22;
-    border: 1px solid #33ff33;
+    background: var(--tron-blue);
+    border-radius: 0;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: #33ff33;
+    background: var(--tron-blue-light);
   }
 
-  /* Remove default focus outlines and replace with terminal-style ones */
+  /* Sacred-inspired focus outlines */
   :focus {
     outline: none !important;
   }
 
   :focus-visible {
-    outline: 1px solid #33ff33 !important;
+    outline: 1px solid var(--tron-blue) !important;
   }
 
-  /* Terminal text effect */
-  @keyframes textShadowPulse {
+  /* Sacred-inspired terminal effects */
+  @keyframes glowPulse {
     0% {
-      text-shadow: 0 0 2px rgba(51, 255, 51, 0.6);
+      text-shadow: 0 0 1px rgba(170, 207, 209, 0.5);
+      box-shadow: 0 0 1px rgba(111, 195, 223, 0.5);
     }
     50% {
-      text-shadow: 0 0 5px rgba(51, 255, 51, 0.8);
+      text-shadow: 0 0 4px rgba(170, 207, 209, 0.8);
+      box-shadow: 0 0 4px rgba(111, 195, 223, 0.8);
     }
     100% {
-      text-shadow: 0 0 2px rgba(51, 255, 51, 0.6);
+      text-shadow: 0 0 1px rgba(170, 207, 209, 0.5);
+      box-shadow: 0 0 1px rgba(111, 195, 223, 0.5);
     }
   }
 
-  .terminal-text {
-    animation: textShadowPulse 2s infinite;
+  .tron-text {
+    animation: glowPulse 3s infinite;
   }
 
-  /* Terminal scanline effect for backgrounds */
+  /* Tron-inspired scanline effect */
   @keyframes scanline {
     0% {
       background-position: 0 0;
@@ -137,46 +180,98 @@
     background: linear-gradient(
       to bottom,
       transparent 50%,
-      rgba(0, 17, 0, 0.1) 51%
+      rgba(5, 8, 13, 0.15) 51%
     );
-    background-size: 100% 4px;
+    background-size: 100% 3px;
     pointer-events: none;
     z-index: 100;
-    animation: scanline 10s linear infinite;
+    animation: scanline 8s linear infinite;
   }
 }
 
-/* Custom component styles */
+/* Custom component styles inspired by Sacred */
 @layer components {
-  .sci-fi-button {
-    @apply bg-transparent text-[#33ff33] border border-[#22dd22] px-2 py-1 text-xs hover:bg-[#002200] transition-colors;
+  /* Buttons */
+  .sacred-button {
+    @apply bg-transparent text-[#aacfd1] border border-[#6fc3df] px-3 py-1.5 text-xs 
+      hover:bg-[#0b131c] transition-colors tracking-wider uppercase font-medium;
   }
 
-  .sci-fi-panel {
-    @apply bg-[#001100] border border-[#22dd22] p-2;
+  .sacred-button-accent {
+    @apply bg-transparent text-[#ff9c00] border border-[#ff9c00] px-3 py-1.5 text-xs 
+      hover:bg-[#0b131c] transition-colors tracking-wider uppercase font-medium;
   }
 
-  .sci-fi-heading {
-    @apply text-[#ff00ff] text-xs uppercase;
+  .sacred-button-small {
+    @apply bg-transparent text-[#aacfd1] border border-[#6fc3df] px-2 py-0.5 text-[10px] 
+      hover:bg-[#0b131c] transition-colors tracking-wider uppercase;
   }
 
-  .sci-fi-input {
-    @apply bg-black border border-[#22dd22] text-[#33ff33] focus:border-[#33ff33] focus:ring-1 focus:ring-[#33ff33];
+  /* Panels and containers */
+  .sacred-panel {
+    @apply bg-[#05080d] border border-[#6fc3df] p-3;
+  }
+
+  .sacred-panel-alt {
+    @apply bg-[#0b131c] border border-[#6fc3df] p-3;
+  }
+
+  .sacred-heading {
+    @apply text-[#ff9c00] text-xs uppercase tracking-wider font-medium;
+  }
+
+  .sacred-input {
+    @apply bg-[#05080d] border border-[#6fc3df] text-[#aacfd1] 
+      focus:border-[#aacfd1] focus:ring-1 focus:ring-[#aacfd1] px-3 py-1.5;
   }
   
-  .terminal-glow {
+  /* Tron-style glow effect */
+  .tron-glow {
     @apply relative;
   }
   
-  .terminal-glow::after {
+  .tron-glow::after {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    box-shadow: 0 0 10px 1px rgba(51, 255, 51, 0.3);
+    box-shadow: 0 0 8px 1px rgba(111, 195, 223, 0.3);
     pointer-events: none;
     z-index: 10;
+  }
+
+  /* Sacred-style grid layouts */
+  .sacred-grid {
+    @apply grid gap-[1px] border border-[#6fc3df];
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+
+  .sacred-grid-item {
+    @apply bg-[#0b131c] p-3 flex flex-col;
+  }
+
+  /* Sacred-style menu */
+  .sacred-menu {
+    @apply flex flex-col bg-[#05080d] border border-[#6fc3df];
+  }
+
+  .sacred-menu-item {
+    @apply px-3 py-2 border-b border-[#6fc3df] last:border-b-0 
+      hover:bg-[#0b131c] transition-colors text-[#aacfd1] uppercase tracking-wider text-xs;
+  }
+
+  /* Sacred-style tree */
+  .sacred-tree {
+    @apply flex flex-col space-y-1;
+  }
+
+  .sacred-tree-node {
+    @apply flex items-center text-xs text-[#aacfd1] hover:text-[#ff9c00] transition-colors;
+  }
+
+  .sacred-tree-node-active {
+    @apply text-[#ff9c00];
   }
 }
