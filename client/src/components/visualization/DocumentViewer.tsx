@@ -178,82 +178,11 @@ export default function DocumentViewer() {
   
   return (
     <div className="h-full flex relative">
-      {/* Document list sidebar */}
-      <div 
-        className={`${isMobile ? 'absolute z-10 h-full' : 'w-1/4'} border-r border-border-color bg-bg-panel overflow-y-auto transition-all ${showSidebar ? 'left-0' : isMobile ? '-left-full' : 'w-0 -ml-4 opacity-0'}`}
-        style={{ width: showSidebar ? (isMobile ? '85%' : '25%') : isMobile ? '0' : '0' }}
-      >
-        <div className="sticky top-0 bg-bg-panel border-b border-border-color p-2 flex items-center justify-between">
-          <div className="relative flex-grow">
-            <Input
-              type="text"
-              placeholder="Search documents..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-bg-dark border border-border-color rounded py-1 px-3 text-sm pr-8"
-            />
-            <Search className="h-4 w-4 absolute right-2 top-2 text-text-secondary" />
-          </div>
-          {isMobile && (
-            <Button size="sm" variant="ghost" className="ml-1 p-1" onClick={toggleSidebar}>
-              <X className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-        
-        <div className="p-2">
-          <h3 className="text-xs uppercase text-text-secondary mb-2">Research Papers</h3>
-          <div className="space-y-1">
-            {filteredDocuments.research_paper.map(doc => (
-              <div 
-                key={doc.id}
-                className={`p-2 rounded cursor-pointer ${selectedDocument.id === doc.id ? 'bg-bg-dark' : 'hover:bg-bg-dark'}`}
-                onClick={() => handleDocumentSelect(doc)}
-              >
-                <h4 className={`text-sm ${selectedDocument.id === doc.id ? 'font-medium' : ''}`}>{doc.title}</h4>
-                <p className="text-xs text-text-secondary">{doc.location} • {doc.year}</p>
-              </div>
-            ))}
-          </div>
-          
-          <h3 className="text-xs uppercase text-text-secondary mt-4 mb-2">Patents</h3>
-          <div className="space-y-1">
-            {filteredDocuments.patent.map(doc => (
-              <div 
-                key={doc.id}
-                className={`p-2 rounded cursor-pointer ${selectedDocument.id === doc.id ? 'bg-bg-dark' : 'hover:bg-bg-dark'}`}
-                onClick={() => handleDocumentSelect(doc)}
-              >
-                <h4 className={`text-sm ${selectedDocument.id === doc.id ? 'font-medium' : ''}`}>{doc.title}</h4>
-                <p className="text-xs text-text-secondary">{doc.location} • {doc.year}</p>
-              </div>
-            ))}
-          </div>
-          
-          <h3 className="text-xs uppercase text-text-secondary mt-4 mb-2">Engineering Drawings</h3>
-          <div className="space-y-1">
-            {filteredDocuments.engineering_drawing.map(doc => (
-              <div 
-                key={doc.id}
-                className={`p-2 rounded cursor-pointer ${selectedDocument.id === doc.id ? 'bg-bg-dark' : 'hover:bg-bg-dark'}`}
-                onClick={() => handleDocumentSelect(doc)}
-              >
-                <h4 className={`text-sm ${selectedDocument.id === doc.id ? 'font-medium' : ''}`}>{doc.title}</h4>
-                <p className="text-xs text-text-secondary">{doc.location} • {doc.year}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-      
       {/* Document content area */}
-      <div className={`flex-grow overflow-y-auto ${isMobile && showSidebar ? 'hidden' : 'block'}`}>
-        {/* Mobile header with document title and sidebar toggle */}
+      <div className="flex-grow overflow-y-auto">
+        {/* Mobile header with document title */}
         {isMobile && (
           <div className="sticky top-0 z-10 bg-bg-dark border-b border-border-color p-2 flex items-center">
-            <Button variant="ghost" size="sm" className="p-1 mr-2" onClick={toggleSidebar}>
-              <Menu className="h-4 w-4" />
-            </Button>
             <h2 className="text-sm font-medium truncate">{selectedDocument.title}</h2>
           </div>
         )}
