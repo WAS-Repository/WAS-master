@@ -1,6 +1,9 @@
 import { ReactNode, useState, useRef, useCallback, useEffect } from "react";
 import Terminal from "./Terminal";
-import { Sun, Moon, Settings, Menu, Grid3X3, X, Search, PlusCircle, Palette, Database, FileText, Shield } from "lucide-react";
+import { 
+  Sun, Moon, Settings, Menu, Grid3X3, X, Search, PlusCircle, Palette, 
+  Database, FileText, Shield, Maximize, Minimize 
+} from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -22,6 +25,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [isTerminalCollapsed, setTerminalCollapsed] = useState(isMobile);
   const [terminalHeight, setTerminalHeight] = useState(isMobile ? 150 : 200);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [focusMode, setFocusMode] = useState(false);
   
   const isDraggingTerminal = useRef(false);
   const initialY = useRef(0);
@@ -72,10 +76,19 @@ export default function AppLayout({ children }: AppLayoutProps) {
     setTerminalCollapsed(!isTerminalCollapsed);
   };
   
+  // Create class names based on focus mode
+  const headerClasses = focusMode 
+    ? "flex justify-between items-center px-3 py-2 bg-bg-panel border-b border-border-color opacity-0 hover:opacity-100 transition-opacity duration-300" 
+    : "flex justify-between items-center px-3 py-2 bg-bg-panel border-b border-border-color";
+    
+  const terminalControlClasses = focusMode
+    ? "flex justify-center opacity-0 hover:opacity-100 transition-opacity duration-300"
+    : "flex justify-center";
+    
   return (
-    <div className="flex flex-col h-screen">
+    <div className={`flex flex-col h-screen ${focusMode ? 'focus-mode' : ''}`}>
       {/* Header/Navbar */}
-      <div className="flex justify-between items-center px-3 py-2 bg-bg-panel border-b border-border-color">
+      <div className={headerClasses}>
         {/* Branding and Menu Button */}
         <div className="flex items-center">
           {isMobile && (
@@ -130,6 +143,18 @@ export default function AppLayout({ children }: AppLayoutProps) {
             <Shield className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
           <div className="h-6 w-[1px] bg-border mx-1 sm:mx-2"></div>
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => setFocusMode(!focusMode)} 
+            className="h-8 w-8 sm:h-9 sm:w-9" 
+            title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
+          >
+            {focusMode ? 
+              <Minimize className="h-4 w-4 sm:h-5 sm:w-5" /> : 
+              <Maximize className="h-4 w-4 sm:h-5 sm:w-5" />
+            }
+          </Button>
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 sm:h-9 sm:w-9" title="Toggle Theme">
             {theme === "dark" ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
           </Button>
@@ -173,7 +198,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
       </div>
       
       {/* Terminal Control */}
-      <div className="flex justify-center">
+      <div className={terminalControlClasses}>
         <button 
           className="px-3 py-0.5 text-xs bg-bg-panel rounded-t-md border-t border-l border-r border-border-color"
           onClick={toggleTerminal}
@@ -185,14 +210,18 @@ export default function AppLayout({ children }: AppLayoutProps) {
       {/* Terminal Resizer - Hide on Mobile */}
       {!isMobile && !isTerminalCollapsed && (
         <div 
-          className="h-1 cursor-row-resize bg-border-color hover:bg-primary transition-colors" 
+          className={`h-1 cursor-row-resize bg-border-color hover:bg-primary transition-colors ${
+            focusMode ? 'opacity-0 hover:opacity-100 transition-opacity duration-300' : ''
+          }`}
           onMouseDown={startTerminalResize}
         />
       )}
       
       {/* Terminal */}
       {!isTerminalCollapsed && (
-        <Terminal height={terminalHeight} />
+        <div className={focusMode ? 'opacity-30 hover:opacity-100 transition-opacity duration-300' : ''}>
+          <Terminal height={terminalHeight} />
+        </div>
       )}
     </div>
   );

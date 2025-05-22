@@ -146,6 +146,28 @@
     @apply bg-transparent text-[#aacfd1] border border-[#6fc3df] px-3 py-1.5 text-xs 
       hover:bg-[#0b131c] transition-colors tracking-wider uppercase font-medium;
   }
+  
+  /* Focus Mode Styles */
+  .focus-mode .main-content {
+    @apply pt-0;
+  }
+  
+  .focus-mode .content-area {
+    @apply border-none shadow-none;
+  }
+  
+  .focus-mode .content-header {
+    @apply opacity-0 hover:opacity-100 transition-opacity duration-300;
+  }
+  
+  /* Remove distracting borders and shadows in focus mode */
+  .focus-mode .border,
+  .focus-mode .border-t,
+  .focus-mode .border-b,
+  .focus-mode .border-l,
+  .focus-mode .border-r {
+    @apply border-opacity-50;
+  }
 
   .sacred-button-accent {
     @apply bg-transparent text-[#ff9c00] border border-[#ff9c00] px-3 py-1.5 text-xs 
