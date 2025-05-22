@@ -223,10 +223,7 @@ export default function TronLayout() {
                 </div>
                 
                 <div>
-                  <ViewMenu 
-                    onSelectWorkspace={handleWorkspaceChange}
-                    currentWorkspaceId={currentWorkspace.id}
-                  />
+                  {/* Removed duplicate ViewMenu here */}
                 </div>
               </div>
               
