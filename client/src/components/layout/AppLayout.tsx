@@ -12,7 +12,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator
+  DropdownMenuSeparator,
+  DropdownMenuCheckboxItem
 } from "@/components/ui/dropdown-menu";
 
 interface AppLayoutProps {
@@ -26,6 +27,8 @@ export default function AppLayout({ children }: AppLayoutProps) {
   const [terminalHeight, setTerminalHeight] = useState(isMobile ? 150 : 200);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
+  const [autoFocusEnabled, setAutoFocusEnabled] = useState(false);
+  const [autoFocusTimer, setAutoFocusTimer] = useState<number | null>(null);
   
   const isDraggingTerminal = useRef(false);
   const initialY = useRef(0);
@@ -37,6 +40,64 @@ export default function AppLayout({ children }: AppLayoutProps) {
       setTerminalCollapsed(true);
     }
   }, [isMobile]);
+  
+  // Setup keyboard shortcut for focus mode (F key)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Alt+F to toggle focus mode
+      if (e.altKey && e.key === 'f') {
+        setFocusMode(prev => !prev);
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+  
+  // Auto focus mode after period of inactivity
+  useEffect(() => {
+    // Only set up the timer if auto-focus is enabled and we're not already in focus mode
+    if (autoFocusEnabled && !focusMode) {
+      // Start a timer - after 5 minutes of inactivity, enter focus mode
+      const timer = window.setTimeout(() => {
+        setFocusMode(true);
+      }, 5 * 60 * 1000); // 5 minutes in milliseconds
+      
+      setAutoFocusTimer(timer);
+      
+      // Reset timer when user interacts with the page
+      const resetTimer = () => {
+        if (autoFocusTimer !== null) {
+          window.clearTimeout(autoFocusTimer);
+          
+          // Start a new timer
+          const newTimer = window.setTimeout(() => {
+            setFocusMode(true);
+          }, 5 * 60 * 1000);
+          
+          setAutoFocusTimer(newTimer);
+        }
+      };
+      
+      // Add event listeners for user activity
+      document.addEventListener('mousemove', resetTimer);
+      document.addEventListener('keydown', resetTimer);
+      document.addEventListener('click', resetTimer);
+      
+      return () => {
+        if (autoFocusTimer !== null) {
+          window.clearTimeout(autoFocusTimer);
+        }
+        document.removeEventListener('mousemove', resetTimer);
+        document.removeEventListener('keydown', resetTimer);
+        document.removeEventListener('click', resetTimer);
+      };
+    } else if (!autoFocusEnabled && autoFocusTimer !== null) {
+      // Clear the timer if auto-focus is disabled
+      window.clearTimeout(autoFocusTimer);
+      setAutoFocusTimer(null);
+    }
+  }, [autoFocusEnabled, autoFocusTimer, focusMode]);
 
   const startTerminalResize = useCallback((e: React.MouseEvent) => {
     if (isMobile) return;
@@ -148,7 +209,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
             size="icon" 
             onClick={() => setFocusMode(!focusMode)} 
             className="h-8 w-8 sm:h-9 sm:w-9" 
-            title={focusMode ? "Exit Focus Mode" : "Enter Focus Mode"}
+            title={focusMode ? "Exit Focus Mode (Alt+F)" : "Enter Focus Mode (Alt+F)"}
           >
             {focusMode ? 
               <Minimize className="h-4 w-4 sm:h-5 sm:w-5" /> : 

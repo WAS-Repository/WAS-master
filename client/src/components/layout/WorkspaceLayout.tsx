@@ -131,6 +131,7 @@ export default function WorkspaceLayout() {
   const [showColorPicker, setColorPicker] = useState(false);
   const [showSearchDialog, setShowSearchDialog] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [focusMode, setFocusMode] = useState(false);
   
   // Simulate real-time clock and changing metrics
   useEffect(() => {
@@ -174,9 +175,22 @@ export default function WorkspaceLayout() {
     ].join('/');
   };
 
+  // Effect to sync focus mode with parent component
+  useEffect(() => {
+    // Check if we can access the parent document to find focus-mode class
+    try {
+      const isFocusModeActive = document.documentElement.classList.contains('focus-mode');
+      if (isFocusModeActive !== focusMode) {
+        setFocusMode(isFocusModeActive);
+      }
+    } catch (e) {
+      // Ignore any errors that might occur when checking document
+    }
+  }, []);
+
   // Apply the main container background color from the color scheme
   return (
-    <div className="h-full flex flex-col overflow-hidden font-mono scanlines" 
+    <div className={`h-full flex flex-col overflow-hidden font-mono ${focusMode ? 'focus-mode-content' : ''}`} 
       style={{ 
         backgroundColor: colorScheme.bgColor,
         color: colorScheme.mainColor
@@ -188,13 +202,16 @@ export default function WorkspaceLayout() {
         {/* Main content grid layout */}
         <div className="flex-1 flex flex-col">
           {/* Header bar */}
-          <div className="flex bg-black border-b border-[#22dd22] p-2" style={{ borderColor: colorScheme.borderColor, backgroundColor: colorScheme.bgColor }}>
+          <div className={`flex p-2 border-b ${focusMode ? 'content-header' : ''}`} 
+            style={{ 
+              borderColor: colorScheme.borderColor, 
+              backgroundColor: colorScheme.bgColor 
+            }}>
             <div className="flex-1 flex justify-end items-center">
               {/* Empty header bar - theme button moved to AppLayout */}
             </div>
           </div>
           
-
           {/* Main visualization area */}
           <div className="flex flex-1">
             {/* Center area - Map/Graph visualization */}
@@ -213,11 +230,18 @@ export default function WorkspaceLayout() {
                 </div>
               </div>
               
-              {/* Toolbar controls have been removed - now handled by terminal */}
+              {/* In Focus Mode, we add a simple indicator in the top-right */}
+              {focusMode && (
+                <div className="absolute top-2 right-2 focus-mode-indicator">
+                  Focus Mode (Alt+F to exit)
+                </div>
+              )}
             </div>
             
-            {/* Right column - system monitors */}
-            <div className="w-64 border-l flex flex-col" style={{ 
+            {/* Right column - system monitors - collapses in focus mode */}
+            <div className={`border-l flex flex-col transition-all duration-300 ${
+              focusMode ? 'w-0 opacity-0 overflow-hidden' : 'w-64'
+            }`} style={{ 
               borderColor: colorScheme.borderColor,
               backgroundColor: colorScheme.bgColor
             }}>

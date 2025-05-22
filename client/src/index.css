@@ -168,6 +168,27 @@
   .focus-mode .border-r {
     @apply border-opacity-50;
   }
+  
+  /* Enhanced Focus Mode Styles */
+  .focus-mode-content {
+    @apply bg-black bg-opacity-95;
+  }
+  
+  /* Style the focus mode indicator */
+  .focus-mode-indicator {
+    @apply text-xs py-1 px-2 rounded-sm bg-primary text-primary-foreground opacity-70 
+      hover:opacity-100 transition-all duration-300 shadow-md;
+  }
+  
+  /* Focus mode transition effects */
+  .focus-mode * {
+    @apply transition-all duration-300;
+  }
+  
+  /* Create a cleaner text layout in focus mode */
+  .focus-mode .terminal-content {
+    @apply leading-relaxed;
+  }
 
   .sacred-button-accent {
     @apply bg-transparent text-[#ff9c00] border border-[#ff9c00] px-3 py-1.5 text-xs 
