@@ -1,7 +1,7 @@
 import { ReactNode, useState, useRef, useCallback, useEffect } from "react";
 import Sidebar from "./Sidebar";
 import Terminal from "./Terminal";
-import { Sun, Moon, Settings, Menu, Grid3X3, X, Search, PlusCircle } from "lucide-react";
+import { Sun, Moon, Settings, Menu, Grid3X3, X, Search, PlusCircle, Palette } from "lucide-react";
 import { useTheme } from "@/hooks/use-theme";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -162,6 +162,9 @@ export default function AppLayout({ children }: AppLayoutProps) {
         <div className="flex items-center space-x-1 sm:space-x-2">
           <Button variant="ghost" size="icon" onClick={toggleTheme} className="h-8 w-8 sm:h-9 sm:w-9">
             {theme === "dark" ? <Sun className="h-4 w-4 sm:h-5 sm:w-5" /> : <Moon className="h-4 w-4 sm:h-5 sm:w-5" />}
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
+            <Palette className="h-4 w-4 sm:h-5 sm:w-5" />
           </Button>
           <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-9 sm:w-9">
             <Settings className="h-4 w-4 sm:h-5 sm:w-5" />
