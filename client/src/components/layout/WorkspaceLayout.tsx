@@ -213,66 +213,7 @@ export default function WorkspaceLayout() {
                 </div>
               </div>
               
-              {/* Control overlay */}
-              <div className="absolute top-2 right-2 z-30 bg-opacity-70 rounded p-1 border" 
-                style={{ 
-                  backgroundColor: colorScheme.bgColor,
-                  borderColor: colorScheme.mainColor 
-                }}
-              >
-                <div className="flex items-center space-x-2">
-                  <button 
-                    className="p-1"
-                    style={{ 
-                      backgroundColor: documentViewMode === 'map' ? colorScheme.bgAltColor : 'transparent',
-                      color: colorScheme.mainColor 
-                    }}
-                    onClick={() => setDocumentViewMode('map')}
-                  >
-                    <Map className="h-4 w-4" />
-                  </button>
-                  <button 
-                    className="p-1"
-                    style={{ 
-                      backgroundColor: documentViewMode === 'graph' ? colorScheme.bgAltColor : 'transparent',
-                      color: colorScheme.mainColor 
-                    }}
-                    onClick={() => setDocumentViewMode('graph')}
-                  >
-                    <Network className="h-4 w-4" />
-                  </button>
-                  <button 
-                    className="p-1"
-                    style={{ 
-                      backgroundColor: documentViewMode === 'documents' ? colorScheme.bgAltColor : 'transparent',
-                      color: colorScheme.mainColor 
-                    }}
-                    onClick={() => setDocumentViewMode('documents')}
-                  >
-                    <FileText className="h-4 w-4" />
-                  </button>
-                  <div className="ml-2">
-                    <SearchFeature />
-                  </div>
-                </div>
-              </div>
-              
-              {/* Map zoom controls */}
-              <div className="absolute top-2 left-2 z-30 bg-opacity-70 rounded p-1 border"
-                style={{ 
-                  backgroundColor: colorScheme.bgColor,
-                  borderColor: colorScheme.mainColor 
-                }}
-              >
-                <div className="flex flex-col">
-                  <button className="p-1" style={{ color: colorScheme.mainColor }}>
-                    <Plus className="h-4 w-4" />
-                  </button>
-                  <button className="p-1" style={{ color: colorScheme.mainColor }}>
-                    <Minus className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
+              {/* Toolbar controls have been removed - now handled by terminal */}
             </div>
             
             {/* Right column - system monitors */}
