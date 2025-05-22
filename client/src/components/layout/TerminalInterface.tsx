@@ -228,13 +228,6 @@ export default function TerminalInterface() {
       {/* Header tabs */}
       <div className="flex border-b border-green-900">
         <button 
-          className={`px-4 py-2 border-r border-green-900 ${activeTab === 'terminal' ? 'bg-green-900 text-black' : ''}`}
-          onClick={() => setActiveTab('terminal')}
-        >
-          <TerminalIcon size={14} className="inline mr-1" />
-          TERMINAL
-        </button>
-        <button 
           className={`px-4 py-2 border-r border-green-900 ${activeTab === 'system' ? 'bg-green-900 text-black' : ''}`}
           onClick={() => setActiveTab('system')}
         >
