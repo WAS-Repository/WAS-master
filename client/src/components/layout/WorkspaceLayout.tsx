@@ -2,51 +2,15 @@ import { useState, useEffect } from 'react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { SearchFeature } from '@/components/search/SearchFeature';
 import { 
   Search, 
-  Maximize, 
-  Minimize, 
-  Terminal, 
-  Map, 
-  Network, 
-  FileText, 
-  ChevronUp, 
-  ChevronDown,
   Clock,
-  AlertTriangle,
-  Shield,
-  RefreshCw,
-  Cpu,
-  HardDrive,
-  BarChart,
-  Wifi,
-  ServerCrash,
-  ExternalLink,
-  Database,
-  MonitorSmartphone,
-  File,
-  Layers,
-  Plus,
-  Minus,
-  Menu,
-  Globe,
-  List,
-  Settings,
-  HelpCircle,
-  Edit,
-  Sun,
   Palette,
-  Check,
-  PlusCircle,
-  X
+  Check
 } from 'lucide-react';
-import MapView from '../visualization/MapView';
-import KnowledgeGraph from '../visualization/KnowledgeGraph';
-import DocumentViewer from '../visualization/DocumentViewer';
-import WorkspacePanels from './WorkspacePanels';
+import IDEWorkspace from '../workspace/IDEWorkspace';
 import {
   Popover,
   PopoverContent,
@@ -125,29 +89,14 @@ export default function WorkspaceLayout() {
   const [searchQuery, setSearchQuery] = useState('');
   const [focusMode, setFocusMode] = useState(false);
   
-  // Simulate real-time clock and changing metrics
+  // Simulate real-time clock
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-      // Simulate changing CPU usage
-      setCpuUsage((prev) => {
-        const change = Math.floor(Math.random() * 6) - 2; // -2 to +3 change
-        return Math.max(3, Math.min(40, prev + change)); // Keep between 3-40%
-      });
-      // Simulate changing network ping
-      setNetworkPing((prev) => {
-        const change = Math.floor(Math.random() * 10) - 4; // -4 to +5 change
-        return Math.max(15, Math.min(80, prev + change)); // Keep between 15-80ms
-      });
     }, 1000);
     
     return () => clearInterval(timer);
   }, []);
-  
-  // Toggle terminal visibility
-  const toggleTerminal = () => {
-    setShowTerminal(!showTerminal);
-  };
   
   // Format time as HH:MM:SS with leading zeros
   const formatTime = (date: Date) => {
@@ -207,8 +156,8 @@ export default function WorkspaceLayout() {
           {/* Multi-pane IDE-like Workspace */}
           <div className="flex flex-1">
             <div className="flex-1 relative">
-              {/* Flexible multi-pane workspace with document-centric default view */}
-              <WorkspacePanels />
+              {/* Import and use our new IDE workspace component */}
+              <IDEWorkspace />
               
               {/* In Focus Mode, we add a simple indicator in the top-right */}
               {focusMode && (
