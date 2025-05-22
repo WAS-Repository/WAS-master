@@ -16,13 +16,16 @@ import {
   ChevronRight,
   Eye,
   Download,
-  Save
+  Save,
+  HelpCircle,
+  FileCode,
+  Settings
 } from 'lucide-react';
 import DocumentViewer from '../visualization/DocumentViewer';
 import MapView from '../visualization/MapView';
 import KnowledgeGraph from '../visualization/KnowledgeGraph';
 import TerminalInterface from './TerminalInterface';
-import ResearchWorkspacesMenu, { ResearchWorkspace, researchWorkspaces } from '../workspace/ResearchWorkspaces';
+import ViewMenu, { ResearchWorkspace, researchWorkspaces } from './ViewMenu';
 
 export default function TronLayout() {
   const isMobile = useIsMobile();
@@ -94,8 +97,44 @@ export default function TronLayout() {
 
   return (
     <div className="h-full font-mono bg-black text-green-500 border border-green-900 rounded-md overflow-hidden">
+      {/* Top toolbar with View menu */}
+      <div className="bg-black text-green-500 border-b border-green-900 p-1 flex items-center text-xs">
+        <div className="font-mono text-sm font-bold mr-4">
+          HAMPTON ROADS RESEARCH INTERFACE
+        </div>
+        
+        <div className="flex items-center space-x-1">
+          <Button variant="ghost" className="h-8 px-2 text-green-500">
+            File
+          </Button>
+          
+          <Button variant="ghost" className="h-8 px-2 text-green-500">
+            Edit
+          </Button>
+          
+          <ViewMenu 
+            onSelectWorkspace={handleWorkspaceChange}
+            currentWorkspaceId={currentWorkspace.id}
+          />
+          
+          <Button variant="ghost" className="h-8 px-2 text-green-500">
+            Help
+          </Button>
+        </div>
+        
+        <div className="ml-auto flex items-center space-x-1">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500">
+            <FileCode className="h-4 w-4" />
+          </Button>
+          
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-green-500">
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+      
       {/* Header with system status */}
-      <div className="grid grid-cols-3 bg-black text-green-500 border-b border-green-900 p-2 text-xs">
+      <div className="grid grid-cols-4 bg-black text-green-500 border-b border-green-900 p-2 text-xs">
         <div>
           <div className="text-xl font-bold">{formatTime(currentTime)}</div>
           <div className="text-xs opacity-70">{formatDate(currentTime)}</div>
@@ -112,6 +151,19 @@ export default function TronLayout() {
             <div>{networkPing}ms</div>
             <div className="text-right text-green-300">ONLINE:</div>
             <div>96.22.220.83</div>
+          </div>
+        </div>
+        
+        <div className="text-center">
+          <div className="uppercase text-xs font-bold mb-1">Research Environment</div>
+          <div className="grid grid-cols-2 gap-1 text-xxs">
+            <div className="text-right text-green-300">Workspace:</div>
+            <div>{currentWorkspace.name}</div>
+            <div className="text-right text-green-300">Mode:</div>
+            <div>{currentWorkspace.layout.activePanel === 'map' ? 'Spatial' : 
+                  currentWorkspace.layout.activePanel === 'graph' ? 'Network' : 'Document'}</div>
+            <div className="text-right text-green-300">Focus:</div>
+            <div>{currentWorkspace.id === 'deep-focus' || currentWorkspace.id === 'night-owl' ? 'Enabled' : 'Disabled'}</div>
           </div>
         </div>
         
@@ -171,7 +223,7 @@ export default function TronLayout() {
                 </div>
                 
                 <div>
-                  <ResearchWorkspacesMenu 
+                  <ViewMenu 
                     onSelectWorkspace={handleWorkspaceChange}
                     currentWorkspaceId={currentWorkspace.id}
                   />
