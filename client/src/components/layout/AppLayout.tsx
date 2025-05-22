@@ -1,5 +1,4 @@
 import { ReactNode, useState, useRef, useCallback, useEffect } from "react";
-import Terminal from "./Terminal";
 import { 
   Sun, Moon, Settings, Menu, Grid3X3, X, Search, PlusCircle, Palette, 
   Database, FileText, Shield, Eye
@@ -23,23 +22,15 @@ interface AppLayoutProps {
 export default function AppLayout({ children }: AppLayoutProps) {
   const { theme, setTheme } = useTheme();
   const isMobile = useIsMobile();
-  const [isTerminalCollapsed, setTerminalCollapsed] = useState(isMobile);
-  const [terminalHeight, setTerminalHeight] = useState(isMobile ? 150 : 200);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [focusMode, setFocusMode] = useState(false);
   const [autoFocusEnabled, setAutoFocusEnabled] = useState(false);
   const [autoFocusTimer, setAutoFocusTimer] = useState<number | null>(null);
   const [activeView, setActiveView] = useState<'map' | 'graph' | 'document' | 'split' | 'funding'>('document');
-  
-  const isDraggingTerminal = useRef(false);
-  const initialY = useRef(0);
-  const initialHeight = useRef(0);
 
   // Update layout when screen size changes
   useEffect(() => {
-    if (isMobile) {
-      setTerminalCollapsed(true);
-    }
+    // Mobile-specific layout adjustments can go here if needed
   }, [isMobile]);
   
   // Setup keyboard shortcuts for focus mode and view changes
@@ -121,31 +112,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
     }
   }, [autoFocusEnabled, autoFocusTimer, focusMode]);
 
-  const startTerminalResize = useCallback((e: React.MouseEvent) => {
-    if (isMobile) return;
-    isDraggingTerminal.current = true;
-    initialY.current = e.clientY;
-    initialHeight.current = terminalHeight;
-    document.body.style.cursor = 'row-resize';
-    document.addEventListener('mousemove', handleTerminalResize);
-    document.addEventListener('mouseup', stopTerminalResize);
-    e.preventDefault();
-  }, [terminalHeight, isMobile]);
-
-  const handleTerminalResize = useCallback((e: MouseEvent) => {
-    if (isDraggingTerminal.current) {
-      const delta = initialY.current - e.clientY;
-      const newHeight = Math.max(40, Math.min(500, initialHeight.current + delta));
-      setTerminalHeight(newHeight);
-    }
-  }, []);
-
-  const stopTerminalResize = useCallback(() => {
-    isDraggingTerminal.current = false;
-    document.body.style.cursor = '';
-    document.removeEventListener('mousemove', handleTerminalResize);
-    document.removeEventListener('mouseup', stopTerminalResize);
-  }, [handleTerminalResize]);
+  // Terminal resize functionality has been moved to the integrated interface
   
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -155,18 +122,10 @@ export default function AppLayout({ children }: AppLayoutProps) {
     setMobileMenuOpen(!mobileMenuOpen);
   };
   
-  const toggleTerminal = () => {
-    setTerminalCollapsed(!isTerminalCollapsed);
-  };
-  
   // Create class names based on focus mode
   const headerClasses = focusMode 
     ? "flex justify-between items-center px-3 py-2 bg-bg-panel border-b border-border-color opacity-0 hover:opacity-100 transition-opacity duration-300" 
     : "flex justify-between items-center px-3 py-2 bg-bg-panel border-b border-border-color";
-    
-  const terminalControlClasses = focusMode
-    ? "flex justify-center opacity-0 hover:opacity-100 transition-opacity duration-300"
-    : "flex justify-center";
     
   return (
     <div className={`flex flex-col h-screen ${focusMode ? 'focus-mode' : ''}`}>
@@ -334,36 +293,7 @@ export default function AppLayout({ children }: AppLayoutProps) {
         {children}
       </div>
       
-      {/* Terminal Control */}
-      <div className={terminalControlClasses}>
-        <button 
-          className="px-3 py-0.5 text-xs bg-bg-panel rounded-t-md border-t border-l border-r border-border-color"
-          onClick={toggleTerminal}
-        >
-          {isTerminalCollapsed ? 'Show Terminal' : 'Hide Terminal'}
-        </button>
-      </div>
-      
-      {/* Terminal Resizer - Hide on Mobile */}
-      {!isMobile && !isTerminalCollapsed && (
-        <div 
-          className={`h-1 cursor-row-resize bg-border-color hover:bg-primary transition-colors ${
-            focusMode ? 'opacity-0 hover:opacity-100 transition-opacity duration-300' : ''
-          }`}
-          onMouseDown={startTerminalResize}
-        />
-      )}
-      
-      {/* Terminal */}
-      {!isTerminalCollapsed && (
-        <div className={focusMode ? 'opacity-30 hover:opacity-100 transition-opacity duration-300' : ''}>
-          <Terminal 
-            height={terminalHeight} 
-            focusMode={focusMode}
-            onToggleFocusMode={() => setFocusMode(!focusMode)}
-          />
-        </div>
-      )}
+      {/* Terminal now integrated into the main interface */}
     </div>
   );
 }
