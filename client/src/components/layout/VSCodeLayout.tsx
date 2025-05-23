@@ -269,16 +269,54 @@ const VSCodeLayout: React.FC = () => {
           }
           break;
         default:
-          setEntries(prev => [
-            ...prev,
-            { type: 'error', content: `Command not found: ${mainCommand}`, timestamp: new Date() }
-          ]);
+          showCommandNotFound(command);
       }
-    } catch (error) {
-      setEntries(prev => [
-        ...prev,
-        { type: 'error', content: `Error: ${(error as Error).message}`, timestamp: new Date() }
-      ]);
+    } else if (terminalMode === 'agent') {
+      // AI Agent mode commands
+      switch (command) {
+        case 'create-viz':
+          handleCreateVisualization(args.join(' '));
+          break;
+        case 'story-dashboard':
+          handleStoryDashboard(args.join(' '));
+          break;
+        case 'analyze':
+          handleAnalyze(args.join(' '));
+          break;
+        case 'search':
+          handleAgentSearch(args.join(' '));
+          break;
+        case 'help':
+          showAgentHelp();
+          break;
+        case 'clear':
+          clearTerminal();
+          break;
+        default:
+          handleNaturalLanguageQuery(fullCommand);
+      }
+    } else if (terminalMode === 'explorer') {
+      // Explorer mode commands
+      switch (command) {
+        case 'ls':
+        case 'dir':
+          listDirectory();
+          break;
+        case 'cd':
+          changeDirectory(args[0]);
+          break;
+        case 'pwd':
+          showCurrentPath();
+          break;
+        case 'clear':
+          clearTerminal();
+          break;
+        case 'help':
+          showHelp();
+          break;
+        default:
+          showCommandNotFound(command);
+      }
     }
 
     // Clear the input
