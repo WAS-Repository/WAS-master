@@ -51,7 +51,7 @@ type TerminalEntry = {
 };
 
 // Terminal mode type
-type TerminalMode = 'shell' | 'agent' | 'explorer';
+type TerminalMode = 'shell' | 'agent' | 'explorer' | 'data-source';
 
 // Sample file structure for explorer
 const fileSystemData: FileSystemItem[] = [
@@ -500,6 +500,133 @@ const CodeTerminal: React.FC<CodeTerminalProps> = ({ onOpenVisualization }) => {
       ...prev,
       { type: 'info', content: `Switched to ${mode} mode.`, timestamp: new Date() }
     ]);
+    
+    if (mode === 'data-source') {
+      setEntries(prev => [
+        ...prev,
+        { type: 'info', content: '🔍 Data Sourcing Agent activated - Finding relevant datasets...', timestamp: new Date() },
+        { type: 'success', content: 'Available commands:', timestamp: new Date() },
+        { type: 'info', content: '• source-noaa [locality] - NOAA weather & ocean data', timestamp: new Date() },
+        { type: 'info', content: '• source-usgs [locality] - USGS geological & water data', timestamp: new Date() },
+        { type: 'info', content: '• source-census [locality] - Census demographic data', timestamp: new Date() },
+        { type: 'info', content: '• source-local [locality] - Local government datasets', timestamp: new Date() },
+        { type: 'info', content: '• auto-discover [topic] - AI-powered dataset discovery', timestamp: new Date() },
+        { type: 'info', content: '• create-story [topic] - Generate data-driven narrative', timestamp: new Date() },
+        { type: 'info', content: 'Example: source-noaa Virginia Beach', timestamp: new Date() }
+      ]);
+    }
+  };
+
+  // Data sourcing command handlers
+  const handleSourceNOAA = async (locality: string) => {
+    setEntries(prev => [
+      ...prev,
+      { type: 'info', content: `🌊 Sourcing NOAA data for ${locality}...`, timestamp: new Date() },
+      { type: 'info', content: '📡 Connecting to NOAA Climate Data API...', timestamp: new Date() }
+    ]);
+
+    setTimeout(() => {
+      setEntries(prev => [
+        ...prev,
+        { type: 'success', content: '📊 NOAA datasets discovered:', timestamp: new Date() },
+        { type: 'output', content: '• Sea Level Trends (1970-2023): +3.2mm/year', timestamp: new Date() },
+        { type: 'output', content: '• Storm Events Database: 234 recorded events', timestamp: new Date() },
+        { type: 'output', content: '• Tide Gauge Data: Real-time + 50yr historical', timestamp: new Date() },
+        { type: 'output', content: '• Hurricane Track Database: 67 affecting region', timestamp: new Date() },
+        { type: 'output', content: '• Water Temperature Trends: +0.8°C since 1990', timestamp: new Date() },
+        { type: 'success', content: '💾 Data integrated into research database', timestamp: new Date() }
+      ]);
+    }, 2000);
+  };
+
+  const handleSourceUSGS = async (locality: string) => {
+    setEntries(prev => [
+      ...prev,
+      { type: 'info', content: `🏔️ Sourcing USGS data for ${locality}...`, timestamp: new Date() },
+      { type: 'info', content: '🔍 Accessing USGS Water & Geological APIs...', timestamp: new Date() }
+    ]);
+
+    setTimeout(() => {
+      setEntries(prev => [
+        ...prev,
+        { type: 'success', content: '📈 USGS datasets discovered:', timestamp: new Date() },
+        { type: 'output', content: '• Groundwater Levels: 12 monitoring wells', timestamp: new Date() },
+        { type: 'output', content: '• Stream Flow Data: 8 gauge stations', timestamp: new Date() },
+        { type: 'output', content: '• Land Subsidence: 2.1mm/year average', timestamp: new Date() },
+        { type: 'output', content: '• Earthquake Activity: 15 events (2010-2023)', timestamp: new Date() },
+        { type: 'output', content: '• Coastal Change: Shoreline position data', timestamp: new Date() },
+        { type: 'success', content: '💾 Geological data integrated successfully', timestamp: new Date() }
+      ]);
+    }, 2500);
+  };
+
+  const handleSourceCensus = async (locality: string) => {
+    setEntries(prev => [
+      ...prev,
+      { type: 'info', content: `📊 Sourcing Census data for ${locality}...`, timestamp: new Date() },
+      { type: 'info', content: '🏘️ Accessing Census Bureau APIs...', timestamp: new Date() }
+    ]);
+
+    setTimeout(() => {
+      setEntries(prev => [
+        ...prev,
+        { type: 'success', content: '👥 Census datasets discovered:', timestamp: new Date() },
+        { type: 'output', content: '• Population: 245,428 (2020 Census)', timestamp: new Date() },
+        { type: 'output', content: '• Housing Units: 112,367 total units', timestamp: new Date() },
+        { type: 'output', content: '• Median Income: $67,890 (2021 ACS)', timestamp: new Date() },
+        { type: 'output', content: '• Coastal Properties: 23,456 within 1km of shore', timestamp: new Date() },
+        { type: 'output', content: '• Age Demographics: 67% adults, 22% seniors', timestamp: new Date() },
+        { type: 'success', content: '💾 Demographic data integrated', timestamp: new Date() }
+      ]);
+    }, 1800);
+  };
+
+  const handleAutoDiscover = async (topic: string) => {
+    setEntries(prev => [
+      ...prev,
+      { type: 'info', content: `🤖 AI discovering datasets for "${topic}"...`, timestamp: new Date() },
+      { type: 'info', content: '🔍 Scanning 40+ data sources and APIs...', timestamp: new Date() }
+    ]);
+
+    setTimeout(() => {
+      setEntries(prev => [
+        ...prev,
+        { type: 'success', content: '🎯 Relevant datasets discovered:', timestamp: new Date() },
+        { type: 'output', content: '• EPA Air Quality Index: Hampton Roads region', timestamp: new Date() },
+        { type: 'output', content: '• VIMS Shoreline Studies: 25-year dataset', timestamp: new Date() },
+        { type: 'output', content: '• NASA Satellite Imagery: Land use change', timestamp: new Date() },
+        { type: 'output', content: '• HRPDC Transportation Data: Traffic patterns', timestamp: new Date() },
+        { type: 'output', content: '• Local Tourism Board: Economic impact data', timestamp: new Date() },
+        { type: 'success', content: '✨ Multi-source integration complete', timestamp: new Date() }
+      ]);
+    }, 3000);
+  };
+
+  const handleCreateStory = async (topic: string) => {
+    setEntries(prev => [
+      ...prev,
+      { type: 'info', content: `📖 Creating data-driven story for "${topic}"...`, timestamp: new Date() },
+      { type: 'info', content: '🧠 AI analyzing integrated datasets...', timestamp: new Date() },
+      { type: 'info', content: '📊 Generating narrative with visualizations...', timestamp: new Date() }
+    ]);
+
+    setTimeout(() => {
+      setEntries(prev => [
+        ...prev,
+        { type: 'success', content: '📚 Data story created: "Hampton Roads Resilience"', timestamp: new Date() },
+        { type: 'output', content: '• Chapter 1: Climate trends from NOAA data', timestamp: new Date() },
+        { type: 'output', content: '• Chapter 2: Infrastructure stress (USGS + local)', timestamp: new Date() },
+        { type: 'output', content: '• Chapter 3: Community impact (Census + surveys)', timestamp: new Date() },
+        { type: 'output', content: '• Chapter 4: Adaptation strategies (multi-source)', timestamp: new Date() },
+        { type: 'success', content: '🎬 Interactive story dashboard opening...', timestamp: new Date() }
+      ]);
+      
+      // Auto-open relevant visualizations for the story
+      if (onOpenVisualization) {
+        setTimeout(() => onOpenVisualization('timeline'), 500);
+        setTimeout(() => onOpenVisualization('map'), 1000);
+      }
+    }, 4000);
   };
 
   // Document database for intelligent search
@@ -1439,6 +1566,15 @@ This platform contains comprehensive research documents covering:
                   >
                     <FolderOpen size={12} className="mr-1" />
                     Explorer
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'data-source' ? 'bg-[#2d2d2d]' : 'hover:bg-[#2d2d2d]'}`}
+                    onClick={() => switchMode('data-source')}
+                  >
+                    <Search size={12} className="mr-1" />
+                    Data Source
                   </Button>
                 </div>
                 
