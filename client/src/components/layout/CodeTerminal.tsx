@@ -557,13 +557,99 @@ Select files from the file explorer or use the terminal below to execute researc
       {/* Top Menu Bar */}
       <div className="flex items-center h-7 bg-[#252526] px-2 text-xs">
         <div className="flex items-center space-x-3">
-          <span>File</span>
-          <span>Edit</span>
-          <span>Selection</span>
-          <span>View</span>
-          <span>Go</span>
-          <span>Terminal</span>
-          <span>Help</span>
+          <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">File</span>
+          <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">Edit</span>
+          <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">Selection</span>
+          
+          {/* View Menu with Dropdown */}
+          <div className="relative group">
+            <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">View</span>
+            <div className="absolute top-full left-0 mt-1 w-64 bg-[#252526] border border-[#3e3e3e] rounded shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+              <div className="py-1">
+                <div className="px-3 py-1 text-gray-400 text-xs font-semibold border-b border-[#3e3e3e]">Data Visualizations</div>
+                
+                <div 
+                  className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center"
+                  onClick={() => onOpenVisualization?.('map')}
+                >
+                  <Map size={14} className="mr-2 text-green-400" />
+                  Interactive Map (Leaflet.js)
+                </div>
+                
+                <div 
+                  className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center"
+                  onClick={() => onOpenVisualization?.('knowledge-graph')}
+                >
+                  <Search size={14} className="mr-2 text-blue-400" />
+                  Knowledge Graph (D3.js)
+                </div>
+                
+                <div 
+                  className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center"
+                  onClick={() => onOpenVisualization?.('force-directed')}
+                >
+                  <div className="w-3.5 h-3.5 mr-2 rounded-full bg-blue-500 flex items-center justify-center">
+                    <div className="w-1.5 h-1.5 rounded-full bg-white"></div>
+                  </div>
+                  Force-Directed Graph
+                </div>
+                
+                <div 
+                  className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center"
+                  onClick={() => onOpenVisualization?.('hierarchy')}
+                >
+                  <div className="w-3.5 h-3.5 mr-2 bg-green-500 flex items-center justify-center text-white text-xs font-bold">⟨⟩</div>
+                  Hierarchical Tree
+                </div>
+                
+                <div 
+                  className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center"
+                  onClick={() => onOpenVisualization?.('timeline')}
+                >
+                  <div className="w-3.5 h-3.5 mr-2 bg-purple-500 flex items-center justify-center text-white text-xs font-bold">⟶</div>
+                  Timeline Visualization
+                </div>
+                
+                <div className="border-t border-[#3e3e3e] my-1"></div>
+                
+                <div 
+                  className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center"
+                  onClick={() => onOpenVisualization?.('chord')}
+                >
+                  <div className="w-3.5 h-3.5 mr-2 bg-orange-500 rounded"></div>
+                  Chord Diagram
+                </div>
+                
+                <div 
+                  className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center"
+                  onClick={() => onOpenVisualization?.('sankey')}
+                >
+                  <div className="w-3.5 h-3.5 mr-2 bg-teal-500 rounded"></div>
+                  Sankey Diagram
+                </div>
+                
+                <div 
+                  className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center"
+                  onClick={() => onOpenVisualization?.('treemap')}
+                >
+                  <div className="w-3.5 h-3.5 mr-2 bg-pink-500 rounded"></div>
+                  Treemap
+                </div>
+                
+                <div 
+                  className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer flex items-center"
+                  onClick={() => onOpenVisualization?.('heatmap')}
+                >
+                  <div className="w-3.5 h-3.5 mr-2 bg-red-500 rounded"></div>
+                  Heat Map
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">Go</span>
+          <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">Terminal</span>
+          <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">Help</span>
         </div>
       </div>
       
