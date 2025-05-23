@@ -1397,10 +1397,11 @@ This platform contains comprehensive research documents covering:
         </div>
       </div>
       
-      {/* Main Content Area */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Enhanced Document Explorer */}
-        <div className="w-80 bg-[#252526] border-r border-[#3e3e3e] flex flex-col">
+      {/* Main Content Area - Resizable Layout */}
+      <ResizablePanelGroup direction="horizontal" className="flex-1">
+        {/* Document Explorer Panel */}
+        <ResizablePanel defaultSize={25} minSize={15} maxSize={40}>
+          <div className="h-full bg-[#252526] border-r border-[#3e3e3e] flex flex-col">
           {/* Explorer Header */}
           <div className="px-4 py-2 text-gray-400 font-semibold border-b border-[#3e3e3e] flex items-center justify-between">
             <span className="text-xs">DOCUMENT EXPLORER</span>
@@ -1535,16 +1536,23 @@ This platform contains comprehensive research documents covering:
             )}
           </div>
           
-          {/* Ubuntu-Style File Tree */}
-          <div className="flex-1 overflow-auto bg-[#1e1e1e]">
-            {renderFileTree(fileTreeData)}
+            {/* Ubuntu-Style File Tree */}
+            <div className="flex-1 overflow-auto bg-[#1e1e1e]">
+              {renderFileTree(fileTreeData)}
+            </div>
           </div>
-        </div>
-        
-        {/* Main Editor Area */}
-        <div className="flex-1 flex flex-col">
-          {/* Editor Tabs */}
-          <div className="h-9 bg-[#252526] flex border-b border-[#3e3e3e] overflow-auto">
+        </ResizablePanel>
+
+        <ResizableHandle className="w-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-col-resize" />
+
+        {/* Main Editor and Terminal Panel */}
+        <ResizablePanel defaultSize={75} minSize={60}>
+          <ResizablePanelGroup direction="vertical" className="h-full">
+            {/* Editor Panel */}
+            <ResizablePanel defaultSize={70} minSize={30}>
+              <div className="h-full flex flex-col">
+                {/* Editor Tabs */}
+                <div className="h-9 bg-[#252526] flex border-b border-[#3e3e3e] overflow-auto">
             {openFiles.length > 0 ? (
               openFiles.map((file) => (
                 <div 
@@ -1567,36 +1575,41 @@ This platform contains comprehensive research documents covering:
             )}
           </div>
           
-          {/* Editor Content */}
-          <div className="flex-1 overflow-auto bg-[#1e1e1e]">
-            {activeFile ? (
-              <div className="flex h-full">
-                {/* Line Numbers */}
-                <div className="text-gray-500 text-xs text-right pr-2 select-none bg-[#1e1e1e]">
-                  {Array.from({ length: 20 }).map((_, i) => (
-                    <div key={i} className="px-2 leading-6">{i+1}</div>
-                  ))}
+                {/* Editor Content */}
+                <div className="flex-1 overflow-auto bg-[#1e1e1e]">
+                  {activeFile ? (
+                    <div className="flex h-full">
+                      {/* Line Numbers */}
+                      <div className="text-gray-500 text-xs text-right pr-2 select-none bg-[#1e1e1e]">
+                        {Array.from({ length: 20 }).map((_, i) => (
+                          <div key={i} className="px-2 leading-6">{i+1}</div>
+                        ))}
+                      </div>
+                      
+                      {/* Code Content */}
+                      <pre className="text-white text-xs leading-6 flex-1 whitespace-pre-wrap p-2">
+                        {getFileContent(activeFile)}
+                      </pre>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-center">
+                      <div>
+                        <h2 className="text-lg mb-4">Hampton Roads Research Platform</h2>
+                        <p className="text-sm text-gray-400 mb-8">
+                          Select a file from the explorer or use the terminal below.
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                
-                {/* Code Content */}
-                <pre className="text-white text-xs leading-6 flex-1 whitespace-pre-wrap p-2">
-                  {getFileContent(activeFile)}
-                </pre>
               </div>
-            ) : (
-              <div className="flex items-center justify-center h-full text-center">
-                <div>
-                  <h2 className="text-lg mb-4">Hampton Roads Research Platform</h2>
-                  <p className="text-sm text-gray-400 mb-8">
-                    Select a file from the explorer or use the terminal below.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-          
-          {/* Terminal */}
-          <div className="h-1/3 border-t border-[#3e3e3e]">
+            </ResizablePanel>
+
+            <ResizableHandle className="h-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-row-resize" />
+
+            {/* Terminal Panel */}
+            <ResizablePanel defaultSize={30} minSize={20} maxSize={60}>
+              <div className="h-full border-t border-[#3e3e3e]">
             {/* Terminal Header */}
             <div className="flex justify-between items-center bg-[#252526] px-3 py-1 border-b border-[#3e3e3e]">
               <div className="flex items-center">
@@ -1663,11 +1676,12 @@ This platform contains comprehensive research documents covering:
                   className="flex-1 bg-transparent outline-none border-none text-white"
                   autoFocus
                 />
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+      </ResizablePanelGroup>
       
       {/* Status Bar */}
       <div className="h-5 bg-[#007acc] text-white text-xs flex justify-between items-center px-3">

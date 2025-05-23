@@ -1,18 +1,27 @@
 import { useState } from "react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import LandscapePrompt from "@/components/layout/LandscapePrompt";
-import CodeTerminal from "@/components/layout/CodeTerminal";
+import ResizableDashboard from "@/components/layout/ResizableDashboard";
 
 export default function Home() {
-  // Using the CodeTerminal for a VS Code-like interface
-  // This matches the reference image with VS Code styling
+  const [visualizationPanels, setVisualizationPanels] = useState<Array<{ id: string; type: string; title: string }>>([]);
+
+  const handleOpenVisualization = (type: string) => {
+    const newPanel = {
+      id: Date.now().toString(),
+      type,
+      title: type === 'chart' ? 'Data Visualization' : 'Story Dashboard'
+    };
+    setVisualizationPanels(prev => [...prev, newPanel]);
+  };
+
   return (
     <div className="h-full overflow-hidden">
       {/* Show landscape mode prompt for mobile users */}
       <LandscapePrompt />
       
-      {/* Main workspace with VS Code styling */}
-      <CodeTerminal />
+      {/* Main workspace with resizable dashboard tiles */}
+      <ResizableDashboard onOpenVisualization={handleOpenVisualization} />
     </div>
   );
 }
