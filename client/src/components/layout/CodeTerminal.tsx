@@ -51,7 +51,7 @@ type TerminalEntry = {
 };
 
 // Terminal mode type
-type TerminalMode = 'shell' | 'agent' | 'explorer';
+type TerminalMode = 'shell' | 'agent';
 
 // Sample file structure for explorer
 const fileSystemData: FileSystemItem[] = [
@@ -501,7 +501,7 @@ const CodeTerminal: React.FC<CodeTerminalProps> = ({ onOpenVisualization }) => {
       { type: 'info', content: `Switched to ${mode} mode.`, timestamp: new Date() }
     ]);
     
-    } else if (mode === 'agent') {
+    if (mode === 'agent') {
       setEntries(prev => [
         ...prev,
         { type: 'info', content: 'AI Agent mode activated - Microsoft Phi-3 model loading...', timestamp: new Date() },
@@ -1590,15 +1590,7 @@ This platform contains comprehensive research documents covering:
                     <MessageSquare size={12} className="mr-1" />
                     Agent
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'explorer' ? 'bg-[#2d2d2d]' : 'hover:bg-[#2d2d2d]'}`}
-                    onClick={() => switchMode('explorer')}
-                  >
-                    <FolderOpen size={12} className="mr-1" />
-                    Explorer
-                  </Button>
+
 
                 </div>
                 
