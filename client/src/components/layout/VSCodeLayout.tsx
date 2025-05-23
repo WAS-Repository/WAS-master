@@ -96,6 +96,8 @@ const VSCodeLayout: React.FC = () => {
   const isMobile = useIsMobile();
   const { theme, setTheme } = useTheme();
   const [fileSystem, setFileSystem] = useState<FileSystemItem[]>(fileSystemData);
+  const [activeVisualization, setActiveVisualization] = useState<string | null>(null);
+  const [visualizationPanes, setVisualizationPanes] = useState<{id: string, type: string, title: string}[]>([]);
   const [entries, setEntries] = useState<TerminalEntry[]>([
     { 
       type: 'info', 
@@ -1127,6 +1129,175 @@ const VSCodeLayout: React.FC = () => {
     ]);
   };
 
+  // Visualization pane management
+  const openVisualization = (type: string) => {
+    const visualizationTitles: Record<string, string> = {
+      'map': 'Interactive Map',
+      'knowledge-graph': 'Knowledge Graph',
+      'force-directed': 'Force-Directed Graph',
+      'hierarchy': 'Hierarchical Tree',
+      'timeline': 'Timeline Visualization',
+      'chord': 'Chord Diagram',
+      'sankey': 'Sankey Diagram',
+      'treemap': 'Treemap',
+      'heatmap': 'Heat Map',
+      'scatter-plot': 'Scatter Plot Matrix'
+    };
+
+    const paneId = `viz-${type}-${Date.now()}`;
+    const newPane = {
+      id: paneId,
+      type: type,
+      title: visualizationTitles[type] || type
+    };
+
+    setVisualizationPanes(prev => [...prev, newPane]);
+    setActiveVisualization(paneId);
+
+    // Log the visualization opening in terminal
+    setEntries(prev => [
+      ...prev,
+      { 
+        type: 'info', 
+        content: `Opening ${visualizationTitles[type]} visualization in new pane...`, 
+        timestamp: new Date() 
+      },
+      { 
+        type: 'success', 
+        content: `${visualizationTitles[type]} pane created successfully!`, 
+        timestamp: new Date() 
+      }
+    ]);
+  };
+
+  const closeVisualizationPane = (paneId: string) => {
+    setVisualizationPanes(prev => prev.filter(pane => pane.id !== paneId));
+    
+    // If closing the active pane, switch to another one or clear active
+    if (activeVisualization === paneId) {
+      const remainingPanes = visualizationPanes.filter(pane => pane.id !== paneId);
+      setActiveVisualization(remainingPanes.length > 0 ? remainingPanes[remainingPanes.length - 1].id : null);
+    }
+  };
+
+  const renderVisualizationContent = (type: string) => {
+    switch (type) {
+      case 'map':
+        return (
+          <div className="h-full w-full bg-[#1e1e1e] p-4">
+            <div className="h-full w-full border border-[#3e3e3e] rounded flex items-center justify-center">
+              <div className="text-center">
+                <Map className="h-12 w-12 mx-auto mb-4 text-green-400" />
+                <h3 className="text-lg font-semibold mb-2">Interactive Map (Leaflet.js)</h3>
+                <p className="text-gray-400 mb-4">Hampton Roads coastal region with research data overlay</p>
+                <div className="text-sm text-gray-500">
+                  <div>• Geographic boundaries of localities</div>
+                  <div>• Document location markers</div>
+                  <div>• Erosion data heat layer</div>
+                  <div>• Interactive zoom and pan controls</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'knowledge-graph':
+        return (
+          <div className="h-full w-full bg-[#1e1e1e] p-4">
+            <div className="h-full w-full border border-[#3e3e3e] rounded flex items-center justify-center">
+              <div className="text-center">
+                <Search className="h-12 w-12 mx-auto mb-4 text-blue-400" />
+                <h3 className="text-lg font-semibold mb-2">Knowledge Graph (D3.js)</h3>
+                <p className="text-gray-400 mb-4">Document relationships and research connections</p>
+                <div className="text-sm text-gray-500">
+                  <div>• Node-link diagram of document relationships</div>
+                  <div>• Interactive exploration of research topics</div>
+                  <div>• Citation and reference networks</div>
+                  <div>• Filterable by locality and document type</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'force-directed':
+        return (
+          <div className="h-full w-full bg-[#1e1e1e] p-4">
+            <div className="h-full w-full border border-[#3e3e3e] rounded flex items-center justify-center">
+              <div className="text-center">
+                <div className="h-12 w-12 mx-auto mb-4 rounded-full bg-blue-500 flex items-center justify-center">
+                  <div className="h-6 w-6 rounded-full bg-white"></div>
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Force-Directed Graph</h3>
+                <p className="text-gray-400 mb-4">Dynamic network visualization with physics simulation</p>
+                <div className="text-sm text-gray-500">
+                  <div>• Physics-based node positioning</div>
+                  <div>• Real-time interaction and manipulation</div>
+                  <div>• Clustering algorithms</div>
+                  <div>• Spring force simulation</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'hierarchy':
+        return (
+          <div className="h-full w-full bg-[#1e1e1e] p-4">
+            <div className="h-full w-full border border-[#3e3e3e] rounded flex items-center justify-center">
+              <div className="text-center">
+                <div className="h-12 w-12 mx-auto mb-4 bg-green-500 flex items-center justify-center">
+                  <div className="text-white font-bold">⟨⟩</div>
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Hierarchical Tree</h3>
+                <p className="text-gray-400 mb-4">Document categories and research topic hierarchies</p>
+                <div className="text-sm text-gray-500">
+                  <div>• Collapsible tree structure</div>
+                  <div>• Nested document categories</div>
+                  <div>• Radial and linear layouts</div>
+                  <div>• Zoom and pan capabilities</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'timeline':
+        return (
+          <div className="h-full w-full bg-[#1e1e1e] p-4">
+            <div className="h-full w-full border border-[#3e3e3e] rounded flex items-center justify-center">
+              <div className="text-center">
+                <div className="h-12 w-12 mx-auto mb-4 bg-purple-500 flex items-center justify-center">
+                  <div className="text-white font-bold">⟶</div>
+                </div>
+                <h3 className="text-lg font-semibold mb-2">Timeline Visualization</h3>
+                <p className="text-gray-400 mb-4">Chronological view of research and coastal events</p>
+                <div className="text-sm text-gray-500">
+                  <div>• Interactive timeline scrubbing</div>
+                  <div>• Event clustering by date</div>
+                  <div>• Multi-scale time navigation</div>
+                  <div>• Document publication timeline</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+
+      default:
+        return (
+          <div className="h-full w-full bg-[#1e1e1e] p-4">
+            <div className="h-full w-full border border-[#3e3e3e] rounded flex items-center justify-center">
+              <div className="text-center">
+                <div className="h-12 w-12 mx-auto mb-4 bg-gray-500 rounded"></div>
+                <h3 className="text-lg font-semibold mb-2">{type} Visualization</h3>
+                <p className="text-gray-400">Visualization pane ready for implementation</p>
+              </div>
+            </div>
+          </div>
+        );
+    }
+  };
+
   const switchMode = (mode: 'shell' | 'agent' | 'explorer') => {
     setTerminalMode(mode);
     setEntries(prev => [
@@ -1187,7 +1358,49 @@ const VSCodeLayout: React.FC = () => {
             <DropdownMenuTrigger asChild>
               <span className="cursor-pointer">View</span>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48 bg-[#1e1e1e] border-[#3e3e3e] text-white">
+            <DropdownMenuContent align="start" className="w-56 bg-[#1e1e1e] border-[#3e3e3e] text-white">
+              <DropdownMenuSub>
+                <DropdownMenuSubTrigger className="cursor-pointer hover:bg-[#2a2d2e]">
+                  <div className="flex items-center">
+                    <Map className="h-4 w-4 mr-2" />
+                    <span>Data Visualizations</span>
+                  </div>
+                </DropdownMenuSubTrigger>
+                <DropdownMenuSubContent className="bg-[#1e1e1e] border-[#3e3e3e] text-white w-64">
+                  <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]" onClick={() => openVisualization('map')}>
+                    <Map className="h-4 w-4 mr-2" /> Interactive Map (Leaflet.js)
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]" onClick={() => openVisualization('knowledge-graph')}>
+                    <Search className="h-4 w-4 mr-2" /> Knowledge Graph (D3.js)
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator className="bg-[#3e3e3e]" />
+                  <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]" onClick={() => openVisualization('force-directed')}>
+                    <div className="h-4 w-4 mr-2 rounded-full bg-blue-500"></div> Force-Directed Graph
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]" onClick={() => openVisualization('hierarchy')}>
+                    <div className="h-4 w-4 mr-2 bg-green-500"></div> Hierarchical Tree
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]" onClick={() => openVisualization('timeline')}>
+                    <div className="h-4 w-4 mr-2 bg-purple-500"></div> Timeline Visualization
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]" onClick={() => openVisualization('chord')}>
+                    <div className="h-4 w-4 mr-2 rounded-full bg-orange-500"></div> Chord Diagram
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]" onClick={() => openVisualization('sankey')}>
+                    <div className="h-4 w-4 mr-2 bg-teal-500"></div> Sankey Diagram
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]" onClick={() => openVisualization('treemap')}>
+                    <div className="h-4 w-4 mr-2 bg-red-500"></div> Treemap
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]" onClick={() => openVisualization('heatmap')}>
+                    <div className="h-4 w-4 mr-2 bg-yellow-500"></div> Heat Map
+                  </DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-[#2a2d2e]" onClick={() => openVisualization('scatter-plot')}>
+                    <div className="h-4 w-4 mr-2 bg-pink-500"></div> Scatter Plot Matrix
+                  </DropdownMenuItem>
+                </DropdownMenuSubContent>
+              </DropdownMenuSub>
+              <DropdownMenuSeparator className="bg-[#3e3e3e]" />
               <DropdownMenuSub>
                 <DropdownMenuSubTrigger className="cursor-pointer hover:bg-[#2a2d2e]">
                   <div className="flex items-center">
@@ -1250,26 +1463,70 @@ const VSCodeLayout: React.FC = () => {
         
         {/* Main Editor Area */}
         <div className="flex-1 flex flex-col">
-          {/* Editor Tabs */}
-          <div className="h-9 bg-[#252526] flex border-b border-[#3e3e3e]">
-            <div className="px-3 py-2 bg-[#1e1e1e] text-white text-xs flex items-center border-r border-[#3e3e3e]">
+          {/* Tabs Bar */}
+          <div className="h-9 bg-[#252526] flex border-b border-[#3e3e3e] overflow-auto">
+            {/* Welcome Tab */}
+            <div 
+              className={`px-3 py-2 text-white text-xs flex items-center border-r border-[#3e3e3e] cursor-pointer ${
+                !activeVisualization ? 'bg-[#1e1e1e]' : 'bg-[#2d2d2d] hover:bg-[#323233]'
+              }`}
+              onClick={() => setActiveVisualization(null)}
+            >
               <FileText size={14} className="mr-2" />
-              vCodeOpenFolder.reg
+              Welcome
             </div>
+            
+            {/* Visualization Pane Tabs */}
+            {visualizationPanes.map((pane) => (
+              <div 
+                key={pane.id}
+                className={`px-3 py-2 text-white text-xs flex items-center border-r border-[#3e3e3e] cursor-pointer ${
+                  activeVisualization === pane.id ? 'bg-[#1e1e1e]' : 'bg-[#2d2d2d] hover:bg-[#323233]'
+                }`}
+                onClick={() => setActiveVisualization(pane.id)}
+              >
+                <Map size={14} className="mr-2" />
+                {pane.title}
+                <span 
+                  className="ml-2 text-gray-400 hover:text-white"
+                  onClick={(e) => { e.stopPropagation(); closeVisualizationPane(pane.id); }}
+                >
+                  ×
+                </span>
+              </div>
+            ))}
           </div>
           
-          {/* Editor Content */}
+          {/* Content Area */}
           <div className="flex-1 overflow-auto bg-[#1e1e1e]">
-            <div className="flex">
-              {/* Line Numbers */}
-              <div className="text-gray-500 text-xs text-right pr-2 select-none bg-[#1e1e1e]">
-                {Array.from({ length: 22 }).map((_, i) => (
-                  <div key={i} className="px-2 leading-6">{i+1}</div>
-                ))}
+            {activeVisualization ? (
+              // Render active visualization pane
+              (() => {
+                const activePane = visualizationPanes.find(pane => pane.id === activeVisualization);
+                return activePane ? renderVisualizationContent(activePane.type) : null;
+              })()
+            ) : (
+              // Default welcome content
+              <div className="flex items-center justify-center h-full text-center">
+                <div>
+                  <h2 className="text-lg mb-4">Hampton Roads Research Platform</h2>
+                  <p className="text-sm text-gray-400 mb-8">
+                    Use the file explorer on the left to browse documents, or open a visualization from the View menu.
+                  </p>
+                  <div className="grid grid-cols-2 gap-4 max-w-md mx-auto text-left">
+                    <div className="border border-[#3e3e3e] p-3 rounded">
+                      <h3 className="font-semibold mb-2">📊 Data Science</h3>
+                      <p className="text-xs text-gray-400">Use pandas, matplotlib, and other libraries in the terminal</p>
+                    </div>
+                    <div className="border border-[#3e3e3e] p-3 rounded">
+                      <h3 className="font-semibold mb-2">🗺️ Visualizations</h3>
+                      <p className="text-xs text-gray-400">Interactive maps, graphs, and charts from the View menu</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-              
-              {/* Code Content */}
-              <pre className="text-white text-xs leading-6 flex-1">
+            )}
+          </div>
 {`Windows Registry Editor Version 5.00
 
 ; Open files
