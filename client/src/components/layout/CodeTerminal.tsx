@@ -90,7 +90,11 @@ const fileSystemData: FileSystemItem[] = [
   }
 ];
 
-const CodeTerminal: React.FC = () => {
+interface CodeTerminalProps {
+  onOpenVisualization?: (type: string) => void;
+}
+
+const CodeTerminal: React.FC<CodeTerminalProps> = ({ onOpenVisualization }) => {
   const { theme, setTheme } = useTheme();
   
   // File explorer state
@@ -488,43 +492,435 @@ const CodeTerminal: React.FC = () => {
     ]);
   };
   
-  // File content for document viewer
+  // Enhanced document content in markdown format for better editing
   const getFileContent = (path: string) => {
     if (path === '/documents/coastal-erosion.pdf') {
       return `# Coastal Erosion Impact Study
+*Published: August 15, 2023 | Virginia Institute of Marine Science*
 
 ## Executive Summary
-This study examines the impact of coastal erosion on Hampton Roads communities over the past decade.
+This comprehensive study examines accelerating coastal erosion rates across Hampton Roads, documenting critical infrastructure threats and providing evidence-based adaptation strategies for regional resilience planning.
 
 ## Key Findings
-- Erosion rates have increased 32% in vulnerable shoreline areas
-- Property damage estimated at $45M annually
-- Natural barriers reduced by 18% since 2010
 
-## Recommendations
-1. Implement enhanced shoreline protection measures
-2. Develop long-term coastal management strategy
-3. Invest in natural barrier restoration projects`;
+### Erosion Rate Analysis
+- **Virginia Beach**: 3-5 feet annually (2020-2023)
+- **Norfolk Shoreline**: 2-3 feet annually
+- **Chesapeake Bay**: 1-2 feet annually
+- **Overall regional increase**: 32% since 2010
+
+### Economic Impact Assessment
+\`\`\`
+Annual property damage: $45M
+Infrastructure repair costs: $23M
+Tourism revenue loss: $12M
+Total economic impact: $80M annually
+\`\`\`
+
+### Environmental Changes
+- Natural barrier reduction: 18% since 2010
+- Wetland habitat loss: 2,340 acres
+- Storm surge penetration: +15% inland reach
+
+## Methodology
+Our research employed multiple data collection approaches:
+
+1. **LiDAR Coastal Mapping** (2019-2023)
+2. **Satellite Imagery Analysis** (Landsat & Sentinel)
+3. **Field Monitoring Stations** (24 active sites)
+4. **Historical Records Review** (1970-present)
+
+## Geographic Risk Assessment
+
+| Location | Risk Level | Annual Loss Rate | Priority |
+|----------|------------|------------------|----------|
+| Virginia Beach Oceanfront | High | 4.2 ft/year | Critical |
+| Norfolk Naval Station | Moderate | 2.8 ft/year | High |
+| Portsmouth Waterfront | Moderate | 2.1 ft/year | Medium |
+| Chesapeake Bay Shore | Low-Moderate | 1.3 ft/year | Medium |
+
+## Adaptation Recommendations
+
+### Immediate Actions (0-2 years)
+1. **Enhanced Shoreline Protection**
+   - Living shoreline installations
+   - Dune restoration programs
+   - Breakwater construction
+
+2. **Policy Updates**
+   - Coastal setback revisions
+   - Building code modifications
+   - Flood insurance requirements
+
+### Long-term Strategy (3-10 years)
+1. **Regional Coastal Management Plan**
+   - Inter-jurisdictional coordination
+   - Funding mechanism establishment
+   - Performance monitoring system
+
+2. **Infrastructure Adaptation**
+   - Critical facility relocation
+   - Transportation corridor protection
+   - Utility system hardening
+
+## Data Sources & Validation
+- NOAA Coastal Change Analysis Program
+- USGS Coastal and Marine Geology Program
+- Virginia Department of Environmental Quality
+- Hampton Roads Planning District Commission
+
+---
+*Document format: Editable Markdown | Last updated: ${new Date().toLocaleDateString()}*`;
+
+    } else if (path === '/documents/tidal-patterns.pdf') {
+      return `# Tidal Pattern Analysis Report
+*Published: July 20, 2023 | NOAA Chesapeake Bay Office*
+
+## Overview
+Comprehensive analysis of tidal variations impacting Hampton Roads infrastructure and navigation over the past decade, revealing significant pattern shifts with implications for flood management.
+
+## Data Collection Network
+
+### Primary Monitoring Stations
+- **Norfolk**: NOAA Station 8638610
+- **Virginia Beach**: NOAA Station 8638863  
+- **Portsmouth**: Municipal Station PR-001
+- **Chesapeake**: Municipal Station CH-003
+
+### Data Quality Metrics
+\`\`\`
+Total observations: 847,320
+Data completeness: 97.3%
+Temporal resolution: 6-minute intervals
+Quality assurance: Automated + manual review
+\`\`\`
+
+## Tidal Pattern Changes
+
+### High Tide Trends (2010-2023)
+- Average increase: **2.3 inches**
+- Nuisance flooding events: **+45% frequency**
+- Storm-enhanced tides: **+67% correlation**
+- Peak seasonal impact: **October-March**
+
+### Mean Sea Level Variations
+| Station | 2010 Baseline | 2023 Current | Change |
+|---------|---------------|--------------|--------|
+| Norfolk | 0.47 ft MLLW | 0.66 ft MLLW | +0.19 ft |
+| Va Beach | 0.52 ft MLLW | 0.73 ft MLLW | +0.21 ft |
+| Portsmouth | 0.44 ft MLLW | 0.61 ft MLLW | +0.17 ft |
+
+## Infrastructure Impact Analysis
+
+### Norfolk Naval Station
+- Operational disruptions: **23% increase**
+- Pier accessibility: **Modified operating procedures**
+- Emergency response: **Enhanced protocols implemented**
+
+### Virginia Beach Oceanfront
+- Boardwalk flooding: **12 events annually** (vs 4 historic)
+- Business impacts: **$2.3M revenue loss estimates**
+- Public safety: **Enhanced warning systems**
+
+### Regional Transportation
+- Route 460 flooding: **67% increase in incidents**
+- Downtown Tunnel approaches: **Enhanced monitoring**
+- Airport runway drainage: **Capacity upgrades needed**
+
+## Predictive Modeling
+
+### 2030 Projections
+Based on current acceleration rates:
+\`\`\`python
+# Conservative estimates
+High tide increase: +1.8 to 2.4 inches
+Flood frequency: 200-300% above baseline
+Storm surge enhancement: 8-12% amplification
+\`\`\`
+
+### Model Confidence
+- **Statistical confidence**: 85%
+- **Scenario range**: Best/worst case bounds
+- **Update frequency**: Annual recalibration
+
+## Adaptation Strategies
+
+### Engineering Solutions
+1. **Automated Tide Gates**
+   - Real-time operation capability
+   - Storm surge protection
+   - Navigation compatibility
+
+2. **Enhanced Drainage Systems**
+   - Pump station upgrades
+   - Stormwater capacity expansion
+   - Green infrastructure integration
+
+### Early Warning Enhancements
+1. **Predictive Systems**
+   - 72-hour flood forecasting
+   - Mobile alert integration
+   - Public information portals
+
+2. **Monitoring Expansion**
+   - Additional gauge installations
+   - Real-time data sharing
+   - Emergency response integration
+
+---
+*Technical data available for download | Contact: tide.analysis@noaa.gov*`;
+
+    } else if (path === '/documents/storm-water.pdf') {
+      return `# Storm Water Management Implementation
+*Published: September 10, 2023 | Norfolk Public Works Department*
+
+## Project Summary
+Documentation of green infrastructure pilot program results across Norfolk's coastal zones, demonstrating 40% reduction in flooding incidents through innovative stormwater management solutions.
+
+## Green Infrastructure Solutions
+
+### Implemented Systems
+
+#### 1. Permeable Pavement Network
+\`\`\`
+Total area: 45,000 sq ft
+Installation sites: 12 locations
+Infiltration rate: 8.5 inches/hour
+Material type: Pervious concrete + porous asphalt
+\`\`\`
+
+**Performance Results:**
+- Surface runoff reduction: **35%**
+- Groundwater recharge: **+28%**
+- Urban heat reduction: **3-5°F**
+
+#### 2. Bioretention Areas
+- **Total capacity**: 2.3M gallons stormwater storage
+- **Plant species**: 23 native varieties selected
+- **Pollutant removal**: 67% average efficiency
+- **Maintenance frequency**: Monthly inspection, quarterly cleaning
+
+#### 3. Constructed Wetlands
+- **Coverage area**: 78 acres across 6 sites  
+- **Treatment capacity**: 12M gallons/day
+- **Wildlife enhancement**: 34 species documented
+- **Water quality improvement**: 73% pollutant reduction
+
+## Performance Metrics by Zone
+
+### Downtown Norfolk District
+| Metric | Before | After | Improvement |
+|--------|--------|-------|-------------|
+| Annual flood events | 23 | 14 | 39% reduction |
+| Property damage claims | $890K | $285K | 68% reduction |
+| Emergency responses | 67 | 41 | 39% reduction |
+| Water quality index | 3.2/10 | 7.8/10 | 144% improvement |
+
+### Ocean View Neighborhood  
+- **Drainage capacity**: 40% improvement
+- **Property values**: 12% average increase
+- **Community satisfaction**: 89% approval rating
+- **Maintenance costs**: 15% below traditional systems
+
+## Economic Analysis
+
+### Investment Summary
+\`\`\`
+Phase 1 Implementation: $23.4M
+  - Federal grants: $10.5M (45%)
+  - State funding: $7.0M (30%) 
+  - Municipal bonds: $5.9M (25%)
+
+Annual Operations: $890K
+  - Maintenance: $650K
+  - Monitoring: $140K
+  - Administration: $100K
+\`\`\`
+
+### Return on Investment
+- **Property damage avoided**: $12.2M annually
+- **Insurance savings**: $3.1M annually  
+- **ROI period**: 4.2 years
+- **20-year NPV**: $187M positive
+
+## Regional Expansion Plan
+
+### Phase 2: Portsmouth Waterfront (2024-2025)
+- **Investment**: $31.2M
+- **Timeline**: 18 months
+- **Expected impact**: 45% flood reduction
+
+### Phase 3: Virginia Beach Resort Area (2025-2026)  
+- **Investment**: $42.8M
+- **Timeline**: 24 months
+- **Tourism protection**: $89M annually
+
+### Phase 4: Chesapeake Industrial Zones (2026-2028)
+- **Investment**: $28.5M  
+- **Timeline**: 30 months
+- **Business continuity**: Enhanced resilience
+
+## Technical Specifications
+
+### Design Standards
+- **Storm capacity**: 25-year flood event protection
+- **Overflow systems**: Emergency bypass channels
+- **Material standards**: AASHTO/EPA compliance
+- **Monitoring systems**: IoT sensor networks
+
+### Maintenance Protocols
+1. **Monthly Inspections**
+   - Visual condition assessment
+   - Debris removal
+   - Plant health evaluation
+
+2. **Quarterly Maintenance**  
+   - Sediment removal
+   - Equipment calibration
+   - Performance testing
+
+3. **Annual Reviews**
+   - System performance analysis
+   - Cost-benefit assessment
+   - Expansion planning
+
+---
+*Engineering drawings and specifications available in project database*`;
+
     } else if (path === '/maps/norfolk-flood.map') {
-      return `[MAP VISUALIZATION: Norfolk Flood Zones]
+      return `# Norfolk Flood Risk Assessment Map
+*Updated: November 2023 | FEMA + Local Data Integration*
 
-This map displays the current flood risk zones for Norfolk based on the latest FEMA assessments and local monitoring data.
+## Map Overview
+Interactive flood risk visualization combining FEMA flood insurance rate maps with real-time monitoring data and predictive modeling results for comprehensive risk assessment.
 
-Legend:
-- Red: High risk (annual flood probability >20%)
-- Orange: Moderate risk (annual flood probability 5-20%) 
-- Yellow: Low risk (annual flood probability <5%)
+## Risk Zone Classifications
 
-Key vulnerable areas include:
-- Ghent
-- Ocean View
-- Downtown waterfront`;
+### High Risk Areas (Red) - Annual Probability >20%
+\`\`\`
+- Ghent District: 890 properties
+- Ocean View: 1,240 properties  
+- Downtown Waterfront: 340 commercial structures
+- Norfolk Naval Station: Critical infrastructure
+\`\`\`
+
+### Moderate Risk Areas (Orange) - Annual Probability 5-20%
+\`\`\`
+- Colonial Place: 650 properties
+- Larchmont: 420 properties
+- Willoughby: 780 properties
+- Norfolk Botanical Garden: Environmental concern
+\`\`\`
+
+### Low Risk Areas (Yellow) - Annual Probability <5%
+\`\`\`
+- Suburban areas: 12,400+ properties
+- Elevated developments: Generally protected
+- Industrial zones: Varies by specific location
+\`\`\`
+
+## Critical Infrastructure Assessment
+
+### Transportation Network
+- **I-64 corridor**: Moderate risk, enhanced drainage needed
+- **Norfolk Southern rail**: High risk sections identified
+- **Norfolk International Airport**: Low-moderate risk
+- **Downtown Tunnel**: Enhanced monitoring systems
+
+### Utilities & Services
+- **Power substations**: 3 high-risk, 7 moderate-risk facilities
+- **Water treatment**: Primary plant protected, 2 pump stations at risk
+- **Emergency services**: Station relocations recommended
+- **Hospital systems**: EVMS area enhanced protection needed
+
+## Historical Flood Events
+
+### Recent Significant Events
+| Date | Storm Type | Max Surge | Properties Affected |
+|------|------------|-----------|-------------------|
+| Sept 2019 | Hurricane Dorian | 4.2 ft | 2,340 |
+| Oct 2021 | Nor'easter | 3.8 ft | 1,890 |
+| Aug 2022 | Thunderstorm Complex | 2.9 ft | 1,120 |
+| Jan 2023 | King Tide + Storm | 3.1 ft | 1,450 |
+
+## Flood Protection Measures
+
+### Existing Infrastructure
+- **Sea wall systems**: 12.3 miles of protection
+- **Tide gates**: 8 automated structures
+- **Pump stations**: 15 active facilities
+- **Drainage channels**: 67 miles maintained
+
+### Planned Improvements (2024-2027)
+1. **Enhanced Tide Gates**: $45M investment
+2. **Pump Station Upgrades**: $23M capacity expansion  
+3. **Green Infrastructure**: $67M comprehensive program
+4. **Early Warning Systems**: $8M technology upgrade
+
+## Emergency Preparedness
+
+### Evacuation Routes
+- **Primary routes**: I-64 West, US-460 West
+- **Secondary routes**: Local arterials (condition-dependent)
+- **Emergency shelters**: 12 designated facilities
+- **Medical facilities**: Special needs accommodation
+
+### Community Resources
+- **Flood insurance**: 67% participation rate
+- **Emergency alerts**: Text/email notification system
+- **Sandbag distribution**: 8 pre-positioned sites
+- **Emergency supplies**: Community distribution centers
+
+## Data Sources & Updates
+- **FEMA Flood Insurance Rate Maps**: Base flood elevations
+- **NOAA Tide Gauges**: Real-time water levels
+- **Local monitoring**: 24 municipal stations
+- **Weather service**: Predictive storm surge modeling
+- **Update frequency**: Continuous data, quarterly map revisions
+
+---
+*Interactive version available at: norfolk.gov/flood-maps*`;
+
     } else {
-      return `# File: ${path}
+      return `# ${path.split('/').pop()?.replace(/\.[^/.]+$/, "") || "Research Document"}
+*Hampton Roads Research Platform | ${new Date().toLocaleDateString()}*
 
-This document is part of the Hampton Roads Research Platform collection.
+## Document Information
+- **File Path**: \`${path}\`
+- **Format**: Markdown (Editable)
+- **Status**: Available for collaboration
+- **Last Modified**: ${new Date().toLocaleString()}
 
-Select files from the file explorer or use the terminal below to execute research queries.`;
+## Document Features
+This document supports:
+- ✅ **Real-time editing**
+- ✅ **Markdown formatting**  
+- ✅ **Collaborative review**
+- ✅ **Version control**
+- ✅ **Export capabilities**
+
+## Getting Started
+1. **Browse documents** using the file explorer
+2. **Edit content** directly in this interface
+3. **Access visualizations** through the View menu
+4. **Run analysis** using the terminal commands
+
+## Research Tools Available
+- **Terminal commands**: Data analysis and visualization
+- **AI Agent mode**: Intelligent research assistance
+- **Visualization suite**: Maps, graphs, and dashboards
+- **Search capabilities**: Full-text document search
+
+## Hampton Roads Research Collection
+This platform contains comprehensive research documents covering:
+- Coastal erosion and sea level rise
+- Flood risk assessment and management
+- Infrastructure adaptation strategies
+- Economic impact analysis
+- Environmental monitoring data
+
+---
+*Select specific documents from the explorer to access full research content*`;
     }
   };
   
