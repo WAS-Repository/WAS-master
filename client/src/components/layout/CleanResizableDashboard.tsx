@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal, MessageSquare, FileText, Maximize2 } from 'lucide-react';
+import { Terminal, MessageSquare, FileText, Maximize2, Search, BookOpen, Palette, Code } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import UbuntuFileExplorer from './UbuntuFileExplorer';
 import VisualizationPanel from './VisualizationPanel';
+import ResearchNotepad from './ResearchNotepad';
+import StoryWhiteboard from './StoryWhiteboard';
+
+type WorkspaceMode = 'research' | 'story' | 'developer';
 
 interface ResizableDashboardProps {
   onOpenVisualization?: (type: string) => void;
@@ -16,9 +20,12 @@ export default function CleanResizableDashboard({
   visualizationPanels = [], 
   onCloseVisualization 
 }: ResizableDashboardProps) {
+  const [workspaceMode, setWorkspaceMode] = useState<WorkspaceMode>('research');
   const [terminalMode, setTerminalMode] = useState<'shell' | 'agent'>('shell');
   const [openFiles, setOpenFiles] = useState<Array<{ name: string; path: string }>>([]);
   const [activeFile, setActiveFile] = useState<string>('');
+  const [notepadContent, setNotepadContent] = useState<string>('# Research Notes\n\n## Key Findings\n- \n\n## Questions\n- \n\n## Next Steps\n- ');
+  const [whiteboardElements, setWhiteboardElements] = useState<Array<{ id: string; type: string; content: string; x: number; y: number }>>([]);
   const [entries, setEntries] = useState<Array<{
     type: 'input' | 'output' | 'info' | 'error' | 'success' | 'command';
     content: string;
@@ -207,11 +214,42 @@ Select different files from the explorer to view their specific content.`;
           <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">View</span>
           <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">Terminal</span>
         </div>
+        
+        {/* Workspace Mode Switcher */}
+        <div className="flex items-center space-x-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`h-6 px-2 py-0 rounded-sm text-xs ${workspaceMode === 'research' ? 'bg-[#007acc] text-white' : 'hover:bg-[#3e3e3e]'}`}
+            onClick={() => setWorkspaceMode('research')}
+          >
+            <Search size={12} className="mr-1" />
+            Research
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`h-6 px-2 py-0 rounded-sm text-xs ${workspaceMode === 'story' ? 'bg-[#007acc] text-white' : 'hover:bg-[#3e3e3e]'}`}
+            onClick={() => setWorkspaceMode('story')}
+          >
+            <Palette size={12} className="mr-1" />
+            Story
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className={`h-6 px-2 py-0 rounded-sm text-xs ${workspaceMode === 'developer' ? 'bg-[#007acc] text-white' : 'hover:bg-[#3e3e3e]'}`}
+            onClick={() => setWorkspaceMode('developer')}
+          >
+            <Code size={12} className="mr-1" />
+            Developer
+          </Button>
+        </div>
       </div>
       
-      {/* Resizable Main Content Area */}
+      {/* Resizable Main Content Area - Layout changes based on workspace mode */}
       <PanelGroup direction="horizontal" className="flex-1">
-        {/* Document Explorer Panel */}
+        {/* Left Panel - Always show file explorer */}
         <Panel defaultSize={25} minSize={15} maxSize={40}>
           <UbuntuFileExplorer onFileSelect={handleFileSelect} />
         </Panel>
@@ -219,7 +257,7 @@ Select different files from the explorer to view their specific content.`;
         <PanelResizeHandle className="w-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-col-resize" />
 
         {/* Main Content Area */}
-        <Panel defaultSize={hasVisualizationPanels ? 50 : 75} minSize={40}>
+        <Panel defaultSize={workspaceMode === 'research' ? 50 : workspaceMode === 'story' ? 60 : 75} minSize={40}>
           <PanelGroup direction="vertical" className="h-full">
             {/* Editor Panel */}
             <Panel defaultSize={70} minSize={30}>
@@ -356,16 +394,30 @@ Select different files from the explorer to view their specific content.`;
           </PanelGroup>
         </Panel>
 
-        {/* Visualization Panel - Conditionally Rendered */}
-        {hasVisualizationPanels && (
+        {/* Right Panel - Mode-specific content */}
+        {(workspaceMode === 'research' || workspaceMode === 'story' || hasVisualizationPanels) && (
           <>
             <PanelResizeHandle className="w-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-col-resize" />
             
             <Panel defaultSize={25} minSize={20} maxSize={50}>
-              <VisualizationPanel 
-                panels={visualizationPanels} 
-                onClose={onCloseVisualization || (() => {})} 
-              />
+              {workspaceMode === 'research' && (
+                <ResearchNotepad 
+                  content={notepadContent}
+                  onChange={setNotepadContent}
+                />
+              )}
+              {workspaceMode === 'story' && (
+                <StoryWhiteboard 
+                  elements={whiteboardElements}
+                  onChange={setWhiteboardElements}
+                />
+              )}
+              {workspaceMode === 'developer' && hasVisualizationPanels && (
+                <VisualizationPanel 
+                  panels={visualizationPanels} 
+                  onClose={onCloseVisualization || (() => {})} 
+                />
+              )}
             </Panel>
           </>
         )}
