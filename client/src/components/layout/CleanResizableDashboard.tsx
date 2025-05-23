@@ -25,7 +25,7 @@ export default function CleanResizableDashboard({
   const [openFiles, setOpenFiles] = useState<Array<{ name: string; path: string }>>([]);
   const [activeFile, setActiveFile] = useState<string>('');
   const [notepadContent, setNotepadContent] = useState<string>('# Research Notes\n\n## Key Findings\n- \n\n## Questions\n- \n\n## Next Steps\n- ');
-  const [whiteboardElements, setWhiteboardElements] = useState<Array<{ id: string; type: string; content: string; x: number; y: number }>>([]);
+  const [whiteboardElements, setWhiteboardElements] = useState<Array<{ id: string; type: 'text' | 'rectangle' | 'circle' | 'sticky'; content: string; x: number; y: number; width?: number; height?: number; color?: string }>>([]);
   const [entries, setEntries] = useState<Array<{
     type: 'input' | 'output' | 'info' | 'error' | 'success' | 'command';
     content: string;
@@ -257,73 +257,237 @@ Select different files from the explorer to view their specific content.`;
         <PanelResizeHandle className="w-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-col-resize" />
 
         {/* Main Content Area */}
-        <Panel defaultSize={workspaceMode === 'research' ? 50 : workspaceMode === 'story' ? 60 : 75} minSize={40}>
-          <PanelGroup direction="vertical" className="h-full">
-            {/* Editor Panel */}
-            <Panel defaultSize={70} minSize={30}>
-              <div className="h-full flex flex-col">
-                {/* Editor Tabs */}
-                <div className="h-9 bg-[#252526] flex border-b border-[#3e3e3e] overflow-auto">
-                  {openFiles.length > 0 ? (
-                    openFiles.map((file) => (
-                      <div 
-                        key={file.path}
-                        className={`px-3 py-2 text-white text-xs flex items-center border-r border-[#3e3e3e] cursor-pointer transition-colors hover:bg-[#2a2d2e] ${
-                          activeFile === file.path ? 'bg-[#1e1e1e] border-t-2 border-t-[#007acc]' : 'bg-[#2d2d2d]'
-                        }`}
-                        onClick={() => setActiveFile(file.path)}
-                      >
-                        <FileText size={14} className="mr-2" />
-                        <span className="truncate max-w-[120px]">{file.name}</span>
-                        <span 
-                          className="ml-2 text-gray-400 hover:text-white hover:bg-[#3e3e3e] rounded px-1" 
-                          onClick={(e) => { e.stopPropagation(); closeFile(file.path); }}
-                          title="Close"
+        <Panel defaultSize={workspaceMode === 'research' ? 50 : workspaceMode === 'story' ? 60 : 75} minSize={40} id="main-content">
+          {workspaceMode === 'developer' ? (
+            /* Developer Mode - Full IDE Layout */
+            <PanelGroup direction="vertical" className="h-full" id="dev-panels">
+              {/* IDE Editor Panel with Enhanced Features */}
+              <Panel defaultSize={70} minSize={30} id="ide-editor">
+                <div className="h-full flex flex-col">
+                  {/* Enhanced Editor Tabs with IDE Features */}
+                  <div className="h-9 bg-[#252526] flex justify-between border-b border-[#3e3e3e]">
+                    <div className="flex overflow-auto">
+                      {openFiles.length > 0 ? (
+                        openFiles.map((file) => (
+                          <div 
+                            key={file.path}
+                            className={`px-3 py-2 text-white text-xs flex items-center border-r border-[#3e3e3e] cursor-pointer transition-colors hover:bg-[#2a2d2e] ${
+                              activeFile === file.path ? 'bg-[#1e1e1e] border-t-2 border-t-[#007acc]' : 'bg-[#2d2d2d]'
+                            }`}
+                            onClick={() => setActiveFile(file.path)}
+                          >
+                            <FileText size={14} className="mr-2" />
+                            <span className="truncate max-w-[120px]">{file.name}</span>
+                            <span 
+                              className="ml-2 text-gray-400 hover:text-white hover:bg-[#3e3e3e] rounded px-1" 
+                              onClick={(e) => { e.stopPropagation(); closeFile(file.path); }}
+                              title="Close"
+                            >
+                              ×
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="px-3 py-2 text-gray-400 text-xs">No files open</div>
+                      )}
+                    </div>
+                    
+                    {/* IDE Action Buttons */}
+                    <div className="flex items-center px-2 space-x-1">
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" title="Split Editor">
+                        <div className="w-3 h-3 border border-gray-400"></div>
+                      </Button>
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0" title="Toggle Sidebar">
+                        <div className="w-3 h-3 bg-gray-400"></div>
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {/* Enhanced Editor Content with IDE Features */}
+                  <div className="flex-1 overflow-auto bg-[#1e1e1e]">
+                    {activeFile ? (
+                      <div className="flex h-full">
+                        <div className="text-gray-500 text-xs text-right pr-2 select-none bg-[#1e1e1e] border-r border-[#3e3e3e]">
+                          {Array.from({ length: 50 }).map((_, i) => (
+                            <div key={i} className="px-2 leading-6">{i+1}</div>
+                          ))}
+                        </div>
+                        <div className="flex-1 relative">
+                          <pre className="text-white text-xs leading-6 h-full whitespace-pre-wrap p-2 font-mono">
+                            {getFileContent(activeFile)}
+                          </pre>
+                          {/* IDE Features Overlay */}
+                          <div className="absolute top-2 right-2 text-xs text-gray-400">
+                            <div>🔧 IDE Mode Active</div>
+                            <div>Language: TypeScript</div>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-center">
+                        <div>
+                          <Code size={48} className="mx-auto mb-4 text-blue-400" />
+                          <h2 className="text-lg mb-4">Developer Mode IDE</h2>
+                          <p className="text-sm text-gray-400 mb-8">
+                            Full IDE experience with code intelligence and debugging
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            💡 WebIDE integration ready for enhanced development!
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Panel>
+
+              <PanelResizeHandle className="h-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-row-resize" />
+
+              {/* Enhanced Terminal Panel for Developer Mode */}
+              <Panel defaultSize={30} minSize={20} maxSize={60} id="dev-terminal">
+                <div className="h-full border-t border-[#3e3e3e]">
+                  {/* Enhanced Terminal Header with IDE Features */}
+                  <div className="flex justify-between items-center bg-[#252526] px-3 py-1 border-b border-[#3e3e3e]">
+                    <div className="flex items-center">
+                      <Terminal size={14} className="mr-2" />
+                      <span className="text-xs font-semibold">Developer Terminal</span>
+                    </div>
+                    
+                    <div className="flex items-center space-x-3">
+                      <div className="flex space-x-1">
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'shell' ? 'bg-[#2d2d2d]' : 'hover:bg-[#2d2d2d]'}`} 
+                          onClick={() => switchMode('shell')}
                         >
-                          ×
-                        </span>
+                          <Terminal size={12} className="mr-1" />
+                          Shell
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'agent' ? 'bg-[#2d2d2d]' : 'hover:bg-[#2d2d2d]'}`}
+                          onClick={() => switchMode('agent')}
+                        >
+                          <MessageSquare size={12} className="mr-1" />
+                          Agent
+                        </Button>
                       </div>
-                    ))
-                  ) : (
-                    <div className="px-3 py-2 text-gray-400 text-xs">No files open</div>
-                  )}
-                </div>
-                
-                {/* Editor Content */}
-                <div className="flex-1 overflow-auto bg-[#1e1e1e]">
-                  {activeFile ? (
-                    <div className="flex h-full">
-                      <div className="text-gray-500 text-xs text-right pr-2 select-none bg-[#1e1e1e]">
-                        {Array.from({ length: 20 }).map((_, i) => (
-                          <div key={i} className="px-2 leading-6">{i+1}</div>
-                        ))}
-                      </div>
-                      <pre className="text-white text-xs leading-6 flex-1 whitespace-pre-wrap p-2">
-                        {getFileContent(activeFile)}
-                      </pre>
+                      
+                      <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                        <Maximize2 size={12} />
+                      </Button>
                     </div>
-                  ) : (
-                    <div className="flex items-center justify-center h-full text-center">
-                      <div>
-                        <h2 className="text-lg mb-4">Hampton Roads Research Platform</h2>
-                        <p className="text-sm text-gray-400 mb-8">
-                          Select a file from the explorer or use the terminal below.
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          💡 Use Agent mode in terminal to create visualizations!
-                        </p>
+                  </div>
+                  
+                  {/* Enhanced Terminal Content */}
+                  <div 
+                    className="h-[calc(100%-28px)] bg-[#1e1e1e] text-white text-xs p-2 overflow-auto" 
+                    onClick={focusInput}
+                    ref={terminalRef}
+                  >
+                    {entries.map((entry, index) => (
+                      <div key={index} className={`
+                        ${entry.type === 'error' ? 'text-red-400' : ''} 
+                        ${entry.type === 'info' ? 'text-yellow-400' : ''}
+                        ${entry.type === 'success' ? 'text-green-400' : ''}
+                        ${entry.type === 'command' ? 'text-cyan-400' : ''}
+                      `}>
+                        {entry.type === 'command' && <span className="text-green-500 mr-1">$</span>}
+                        {entry.content}
                       </div>
+                    ))}
+                    <div className="flex items-center">
+                      <span className="text-green-500 mr-1">{currentPath}$</span>
+                      <input
+                        ref={inputRef}
+                        type="text"
+                        value={currentCommand}
+                        onChange={(e) => setCurrentCommand(e.target.value)}
+                        onKeyDown={handleKeyDown}
+                        className="flex-1 bg-transparent outline-none border-none text-white"
+                        autoFocus
+                      />
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-            </Panel>
+              </Panel>
+            </PanelGroup>
+          ) : (
+            /* Research and Story Modes - Simplified Layout */
+            <PanelGroup direction="vertical" className="h-full" id="basic-panels">
+              {/* Standard Editor Panel */}
+              <Panel defaultSize={70} minSize={30} id="basic-editor">
+                <div className="h-full flex flex-col">
+                  {/* Standard Editor Tabs */}
+                  <div className="h-9 bg-[#252526] flex border-b border-[#3e3e3e] overflow-auto">
+                    {openFiles.length > 0 ? (
+                      openFiles.map((file) => (
+                        <div 
+                          key={file.path}
+                          className={`px-3 py-2 text-white text-xs flex items-center border-r border-[#3e3e3e] cursor-pointer transition-colors hover:bg-[#2a2d2e] ${
+                            activeFile === file.path ? 'bg-[#1e1e1e] border-t-2 border-t-[#007acc]' : 'bg-[#2d2d2d]'
+                          }`}
+                          onClick={() => setActiveFile(file.path)}
+                        >
+                          <FileText size={14} className="mr-2" />
+                          <span className="truncate max-w-[120px]">{file.name}</span>
+                          <span 
+                            className="ml-2 text-gray-400 hover:text-white hover:bg-[#3e3e3e] rounded px-1" 
+                            onClick={(e) => { e.stopPropagation(); closeFile(file.path); }}
+                            title="Close"
+                          >
+                            ×
+                          </span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="px-3 py-2 text-gray-400 text-xs">No files open</div>
+                    )}
+                  </div>
+                  
+                  {/* Standard Editor Content */}
+                  <div className="flex-1 overflow-auto bg-[#1e1e1e]">
+                    {activeFile ? (
+                      <div className="flex h-full">
+                        <div className="text-gray-500 text-xs text-right pr-2 select-none bg-[#1e1e1e]">
+                          {Array.from({ length: 20 }).map((_, i) => (
+                            <div key={i} className="px-2 leading-6">{i+1}</div>
+                          ))}
+                        </div>
+                        <pre className="text-white text-xs leading-6 flex-1 whitespace-pre-wrap p-2">
+                          {getFileContent(activeFile)}
+                        </pre>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-center">
+                        <div>
+                          {workspaceMode === 'research' && <Search size={48} className="mx-auto mb-4 text-blue-400" />}
+                          {workspaceMode === 'story' && <Palette size={48} className="mx-auto mb-4 text-purple-400" />}
+                          <h2 className="text-lg mb-4">
+                            {workspaceMode === 'research' && 'Research Mode'}
+                            {workspaceMode === 'story' && 'Story Mode'}
+                          </h2>
+                          <p className="text-sm text-gray-400 mb-8">
+                            {workspaceMode === 'research' && 'Document analysis with research notepad'}
+                            {workspaceMode === 'story' && 'Visual storytelling with interactive whiteboard'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            💡 Use the {workspaceMode === 'research' ? 'notepad' : 'whiteboard'} panel to enhance your workflow!
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Panel>
 
-            <PanelResizeHandle className="h-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-row-resize" />
+              <PanelResizeHandle className="h-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-row-resize" />
 
-            {/* Terminal Panel */}
-            <Panel defaultSize={30} minSize={20} maxSize={60}>
-              <div className="h-full border-t border-[#3e3e3e]">
+              {/* Standard Terminal Panel */}
+              <Panel defaultSize={30} minSize={20} maxSize={60} id="basic-terminal">
+                <div className="h-full border-t border-[#3e3e3e]">
                 {/* Terminal Header */}
                 <div className="flex justify-between items-center bg-[#252526] px-3 py-1 border-b border-[#3e3e3e]">
                   <div className="flex items-center">
@@ -389,9 +553,10 @@ Select different files from the explorer to view their specific content.`;
                     />
                   </div>
                 </div>
-              </div>
-            </Panel>
-          </PanelGroup>
+                </div>
+              </Panel>
+            </PanelGroup>
+          )}
         </Panel>
 
         {/* Right Panel - Mode-specific content */}
