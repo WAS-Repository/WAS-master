@@ -628,86 +628,119 @@ const CodeTerminal: React.FC<CodeTerminalProps> = ({ onOpenVisualization }) => {
     }, 4000);
   };
 
-  // Enhanced document and dataset database for intelligent search
-  const documentDatabase = [
-    {
-      id: 1,
-      name: 'Coastal Erosion Impact Study',
-      path: '/documents/coastal-erosion.pdf',
-      type: 'research',
-      location: 'virginia-beach',
-      year: '2023',
-      topic: 'erosion',
-      content: 'coastal erosion Hampton Roads Virginia Beach Norfolk sea level rise storm surge infrastructure damage property loss adaptation strategies',
-      summary: 'Comprehensive study examining accelerating coastal erosion rates across Hampton Roads region'
-    },
-    {
-      id: 2,
-      name: 'Tidal Pattern Analysis Report',
-      path: '/documents/tidal-patterns.pdf', 
-      type: 'technical',
-      location: 'norfolk',
-      year: '2023',
-      topic: 'flooding',
-      content: 'tidal patterns flooding Norfolk Virginia Beach NOAA monitoring stations infrastructure impact nuisance flooding high tide',
-      summary: 'Analysis of tidal variations impacting Hampton Roads infrastructure and navigation'
-    },
-    {
-      id: 3,
-      name: 'Storm Water Management Implementation',
-      path: '/documents/storm-water.pdf',
-      type: 'technical',
-      location: 'norfolk',
-      year: '2023', 
-      topic: 'storm-water',
-      content: 'storm water management green infrastructure Norfolk flooding bioretention permeable pavement constructed wetlands drainage',
-      summary: 'Documentation of green infrastructure pilot program results across Norfolk coastal zones'
-    },
-    {
-      id: 4,
-      name: 'Norfolk Flood Risk Assessment Map',
-      path: '/maps/norfolk-flood.map',
-      type: 'map',
-      location: 'norfolk',
-      year: '2023',
-      topic: 'flooding',
-      content: 'flood risk map Norfolk FEMA zones infrastructure emergency planning evacuation routes high risk moderate risk',
-      summary: 'Interactive flood risk visualization combining FEMA maps with real-time monitoring data'
-    },
-    {
-      id: 5,
-      name: 'NOAA Sea Level Trends Dataset',
-      path: '/datasets/noaa-sea-level.csv',
-      type: 'dataset',
-      location: 'norfolk',
-      year: '2023',
-      topic: 'climate',
-      content: 'NOAA sea level rise trends Norfolk Virginia Beach tide gauge data 1970-2023 3.2mm per year increase storm surge',
-      summary: 'NOAA tide gauge measurements showing 3.2mm/year sea level rise trend for Hampton Roads'
-    },
-    {
-      id: 6,
-      name: 'USGS Coastal Change Database',
-      path: '/datasets/usgs-coastal-change.geojson',
-      type: 'dataset',
-      location: 'virginia-beach',
-      year: '2023',
-      topic: 'erosion',
-      content: 'USGS shoreline position coastal change erosion rates Virginia Beach Norfolk subsidence geological monitoring',
-      summary: 'USGS shoreline position data documenting coastal erosion rates and geological changes'
-    },
-    {
-      id: 7,
-      name: 'Census Demographics Hampton Roads',
-      path: '/datasets/census-demographics.json',
-      type: 'dataset',
-      location: 'norfolk',
-      year: '2020',
-      topic: 'demographics',
-      content: 'US Census population housing demographics Norfolk Virginia Beach Portsmouth Chesapeake median income coastal properties',
-      summary: 'Census Bureau demographic and housing data for Hampton Roads metropolitan area'
-    }
-  ];
+  // File tree structure for Ubuntu-style explorer
+  const fileTreeData = {
+    name: 'Hampton Roads Research',
+    type: 'folder' as const,
+    expanded: true,
+    children: [
+      {
+        name: 'Documents',
+        type: 'folder' as const,
+        expanded: true,
+        children: [
+          {
+            name: 'Research Reports',
+            type: 'folder' as const,
+            expanded: false,
+            children: [
+              {
+                name: 'Coastal Erosion Impact Study.pdf',
+                type: 'file' as const,
+                path: '/documents/research/coastal-erosion.pdf',
+                icon: '📄',
+                metadata: { location: 'virginia-beach', year: '2023', topic: 'erosion' }
+              },
+              {
+                name: 'Tidal Pattern Analysis Report.pdf',
+                type: 'file' as const,
+                path: '/documents/research/tidal-patterns.pdf',
+                icon: '📄',
+                metadata: { location: 'norfolk', year: '2023', topic: 'flooding' }
+              }
+            ]
+          },
+          {
+            name: 'Technical Reports',
+            type: 'folder' as const,
+            expanded: false,
+            children: [
+              {
+                name: 'Storm Water Management Implementation.pdf',
+                type: 'file' as const,
+                path: '/documents/technical/storm-water.pdf',
+                icon: '📋',
+                metadata: { location: 'norfolk', year: '2023', topic: 'storm-water' }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Maps',
+        type: 'folder' as const,
+        expanded: false,
+        children: [
+          {
+            name: 'Norfolk Flood Risk Assessment.map',
+            type: 'file' as const,
+            path: '/maps/norfolk-flood.map',
+            icon: '🗺️',
+            metadata: { location: 'norfolk', year: '2023', topic: 'flooding' }
+          }
+        ]
+      },
+      {
+        name: 'Datasets',
+        type: 'folder' as const,
+        expanded: false,
+        children: [
+          {
+            name: 'NOAA',
+            type: 'folder' as const,
+            expanded: false,
+            children: [
+              {
+                name: 'sea-level-trends.csv',
+                type: 'file' as const,
+                path: '/datasets/noaa/sea-level.csv',
+                icon: '📊',
+                metadata: { location: 'norfolk', year: '2023', topic: 'climate' }
+              }
+            ]
+          },
+          {
+            name: 'USGS',
+            type: 'folder' as const,
+            expanded: false,
+            children: [
+              {
+                name: 'coastal-change-database.geojson',
+                type: 'file' as const,
+                path: '/datasets/usgs/coastal-change.geojson',
+                icon: '🌍',
+                metadata: { location: 'virginia-beach', year: '2023', topic: 'erosion' }
+              }
+            ]
+          },
+          {
+            name: 'Census',
+            type: 'folder' as const,
+            expanded: false,
+            children: [
+              {
+                name: 'demographics-hampton-roads.json',
+                type: 'file' as const,
+                path: '/datasets/census/demographics.json',
+                icon: '👥',
+                metadata: { location: 'norfolk', year: '2020', topic: 'demographics' }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  };
 
   // NLP-powered search suggestions
   const getNLPSuggestions = (query: string): string[] => {
@@ -734,75 +767,77 @@ const CodeTerminal: React.FC<CodeTerminalProps> = ({ onOpenVisualization }) => {
     return suggestions.slice(0, 4); // Limit to 4 suggestions
   };
 
-  // Advanced filtering and search logic
-  const filteredDocuments = documentDatabase.filter(doc => {
-    // Text search across content and metadata
-    const searchMatch = !searchQuery || 
-      doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      doc.summary.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Filter by document type
-    const typeMatch = !filters.documentType || doc.type === filters.documentType;
-    
-    // Filter by location
-    const locationMatch = !filters.location || doc.location === filters.location;
-    
-    // Filter by year
-    const yearMatch = !filters.year || doc.year === filters.year;
-    
-    // Filter by topic
-    const topicMatch = !filters.topic || doc.topic === filters.topic;
-    
-    return searchMatch && typeMatch && locationMatch && yearMatch && topicMatch;
-  });
+  // State for file tree expansion
+  const [expandedFolders, setExpandedFolders] = useState<Set<string>>(new Set(['Hampton Roads Research', 'Documents']));
 
-  // Render filtered document results
-  const renderFilteredDocuments = () => {
-    if (filteredDocuments.length === 0) {
+  // Toggle folder expansion
+  const toggleFolder = (folderPath: string) => {
+    setExpandedFolders(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(folderPath)) {
+        newSet.delete(folderPath);
+      } else {
+        newSet.add(folderPath);
+      }
+      return newSet;
+    });
+  };
+
+  // Helper to open a file in the editor
+  const openFile = (file: any) => {
+    const newFile = { name: file.name, path: file.path };
+    if (!openFiles.find(f => f.path === file.path)) {
+      setOpenFiles(prev => [...prev, newFile]);
+    }
+    setActiveFile(file.path);
+  };
+
+  // Render Ubuntu-style file tree recursively
+  const renderFileTree = (node: any, depth: number = 0, parentPath: string = ''): JSX.Element => {
+    const fullPath = parentPath ? `${parentPath}/${node.name}` : node.name;
+    const isExpanded = expandedFolders.has(fullPath);
+    
+    if (node.type === 'folder') {
       return (
-        <div className="p-4 text-center text-gray-400">
-          <Search size={24} className="mx-auto mb-2 opacity-50" />
-          <div className="text-xs">No documents match your search criteria</div>
-          <div className="text-xs mt-1">Try adjusting your filters or search terms</div>
+        <div key={fullPath}>
+          <div 
+            className="flex items-center py-1 px-2 hover:bg-[#37373d] cursor-pointer text-xs text-white transition-colors"
+            style={{ paddingLeft: `${8 + depth * 16}px` }}
+            onClick={() => toggleFolder(fullPath)}
+          >
+            <span className="mr-2 text-orange-400">
+              {isExpanded ? '📂' : '📁'}
+            </span>
+            <span className="flex-1 font-medium">{node.name}</span>
+            <span className="text-gray-500 text-[10px] ml-2">
+              {isExpanded ? '▼' : '▶'}
+            </span>
+          </div>
+          {isExpanded && node.children && (
+            <div>
+              {node.children.map((child: any) => renderFileTree(child, depth + 1, fullPath))}
+            </div>
+          )}
+        </div>
+      );
+    } else {
+      return (
+        <div 
+          key={fullPath}
+          className="flex items-center py-1 px-2 hover:bg-[#37373d] cursor-pointer text-xs text-white group transition-colors"
+          style={{ paddingLeft: `${8 + depth * 16}px` }}
+          onClick={() => openFile(node)}
+        >
+          <span className="mr-2 text-blue-400">{node.icon}</span>
+          <span className="flex-1 truncate">{node.name}</span>
+          {node.metadata && (
+            <span className="text-gray-500 text-[10px] ml-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              {node.metadata.year}
+            </span>
+          )}
         </div>
       );
     }
-
-    return (
-      <div className="space-y-1 p-2">
-        {filteredDocuments.map((doc) => (
-          <div 
-            key={doc.id}
-            onClick={() => openFile(doc.path, doc.name)}
-            className={`p-3 rounded cursor-pointer border border-transparent hover:border-[#464647] hover:bg-[#2d2d2d] ${
-              activeFile === doc.path ? 'bg-[#37373d] border-[#464647]' : ''
-            }`}
-          >
-            <div className="flex items-start justify-between mb-1">
-              <div className="text-xs font-medium text-white truncate flex-1">{doc.name}</div>
-              <div className="flex space-x-1 ml-2">
-                <span className="text-xs px-1.5 py-0.5 bg-[#464647] rounded text-gray-300">
-                  {doc.type}
-                </span>
-              </div>
-            </div>
-            <div className="text-xs text-gray-400 mb-2 line-clamp-2">{doc.summary}</div>
-            <div className="flex items-center justify-between text-xs text-gray-500">
-              <span className="capitalize">{doc.location.replace('-', ' ')}</span>
-              <span>{doc.year}</span>
-            </div>
-            
-            {/* Highlight search matches */}
-            {searchQuery && (
-              <div className="mt-2 text-xs text-yellow-400">
-                Matches: {searchQuery}
-              </div>
-            )}
-          </div>
-        ))}
-      </div>
-    );
   };
   
   // Enhanced document content in markdown format for better editing
@@ -1389,7 +1424,7 @@ This platform contains comprehensive research documents covering:
             {/* Advanced Search Toggle */}
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-400">
-                {filteredDocuments.length} documents found
+                File Explorer
               </span>
               <button
                 onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
@@ -1500,9 +1535,9 @@ This platform contains comprehensive research documents covering:
             )}
           </div>
           
-          {/* Document List */}
-          <div className="flex-1 overflow-auto">
-            {renderFilteredDocuments()}
+          {/* Ubuntu-Style File Tree */}
+          <div className="flex-1 overflow-auto bg-[#1e1e1e]">
+            {renderFileTree(fileTreeData)}
           </div>
         </div>
         
