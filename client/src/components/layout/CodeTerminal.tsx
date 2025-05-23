@@ -51,7 +51,7 @@ type TerminalEntry = {
 };
 
 // Terminal mode type
-type TerminalMode = 'shell' | 'agent' | 'explorer' | 'data-source';
+type TerminalMode = 'shell' | 'agent' | 'explorer';
 
 // Sample file structure for explorer
 const fileSystemData: FileSystemItem[] = [
@@ -501,18 +501,17 @@ const CodeTerminal: React.FC<CodeTerminalProps> = ({ onOpenVisualization }) => {
       { type: 'info', content: `Switched to ${mode} mode.`, timestamp: new Date() }
     ]);
     
-    if (mode === 'data-source') {
+    } else if (mode === 'agent') {
       setEntries(prev => [
         ...prev,
-        { type: 'info', content: '🔍 Data Sourcing Agent activated - Finding relevant datasets...', timestamp: new Date() },
+        { type: 'info', content: 'AI Agent mode activated - Microsoft Phi-3 model loading...', timestamp: new Date() },
         { type: 'success', content: 'Available commands:', timestamp: new Date() },
-        { type: 'info', content: '• source-noaa [locality] - NOAA weather & ocean data', timestamp: new Date() },
-        { type: 'info', content: '• source-usgs [locality] - USGS geological & water data', timestamp: new Date() },
-        { type: 'info', content: '• source-census [locality] - Census demographic data', timestamp: new Date() },
-        { type: 'info', content: '• source-local [locality] - Local government datasets', timestamp: new Date() },
-        { type: 'info', content: '• auto-discover [topic] - AI-powered dataset discovery', timestamp: new Date() },
-        { type: 'info', content: '• create-story [topic] - Generate data-driven narrative', timestamp: new Date() },
-        { type: 'info', content: 'Example: source-noaa Virginia Beach', timestamp: new Date() }
+        { type: 'info', content: '• create-viz [topic] - Generate data visualization', timestamp: new Date() },
+        { type: 'info', content: '• story-dashboard [topic] - Create narrative dashboard', timestamp: new Date() },
+        { type: 'info', content: '• analyze [query] - Analyze documents and data', timestamp: new Date() },
+        { type: 'info', content: '• search [locality] - Find relevant research documents', timestamp: new Date() },
+        { type: 'info', content: '• source-data [locality/topic] - Find and integrate datasets', timestamp: new Date() },
+        { type: 'info', content: 'Example: create-viz coastal erosion Virginia Beach', timestamp: new Date() }
       ]);
     }
   };
@@ -629,7 +628,7 @@ const CodeTerminal: React.FC<CodeTerminalProps> = ({ onOpenVisualization }) => {
     }, 4000);
   };
 
-  // Document database for intelligent search
+  // Enhanced document and dataset database for intelligent search
   const documentDatabase = [
     {
       id: 1,
@@ -674,6 +673,39 @@ const CodeTerminal: React.FC<CodeTerminalProps> = ({ onOpenVisualization }) => {
       topic: 'flooding',
       content: 'flood risk map Norfolk FEMA zones infrastructure emergency planning evacuation routes high risk moderate risk',
       summary: 'Interactive flood risk visualization combining FEMA maps with real-time monitoring data'
+    },
+    {
+      id: 5,
+      name: 'NOAA Sea Level Trends Dataset',
+      path: '/datasets/noaa-sea-level.csv',
+      type: 'dataset',
+      location: 'norfolk',
+      year: '2023',
+      topic: 'climate',
+      content: 'NOAA sea level rise trends Norfolk Virginia Beach tide gauge data 1970-2023 3.2mm per year increase storm surge',
+      summary: 'NOAA tide gauge measurements showing 3.2mm/year sea level rise trend for Hampton Roads'
+    },
+    {
+      id: 6,
+      name: 'USGS Coastal Change Database',
+      path: '/datasets/usgs-coastal-change.geojson',
+      type: 'dataset',
+      location: 'virginia-beach',
+      year: '2023',
+      topic: 'erosion',
+      content: 'USGS shoreline position coastal change erosion rates Virginia Beach Norfolk subsidence geological monitoring',
+      summary: 'USGS shoreline position data documenting coastal erosion rates and geological changes'
+    },
+    {
+      id: 7,
+      name: 'Census Demographics Hampton Roads',
+      path: '/datasets/census-demographics.json',
+      type: 'dataset',
+      location: 'norfolk',
+      year: '2020',
+      topic: 'demographics',
+      content: 'US Census population housing demographics Norfolk Virginia Beach Portsmouth Chesapeake median income coastal properties',
+      summary: 'Census Bureau demographic and housing data for Hampton Roads metropolitan area'
     }
   ];
 
@@ -1567,15 +1599,7 @@ This platform contains comprehensive research documents covering:
                     <FolderOpen size={12} className="mr-1" />
                     Explorer
                   </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'data-source' ? 'bg-[#2d2d2d]' : 'hover:bg-[#2d2d2d]'}`}
-                    onClick={() => switchMode('data-source')}
-                  >
-                    <Search size={12} className="mr-1" />
-                    Data Source
-                  </Button>
+
                 </div>
                 
                 <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
