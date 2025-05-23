@@ -37,9 +37,44 @@ export default function ResizableDashboard({ onOpenVisualization }: ResizableDas
 
   // Close file tab
   const closeFile = (path: string) => {
-    setOpenFiles(prev => prev.filter(f => f.path !== path));
+    const updatedFiles = openFiles.filter(f => f.path !== path);
+    setOpenFiles(updatedFiles);
+    
     if (activeFile === path) {
-      setActiveFile(openFiles.length > 1 ? openFiles[0].path : '');
+      // Set active file to the next available tab, or empty if none
+      if (updatedFiles.length > 0) {
+        const currentIndex = openFiles.findIndex(f => f.path === path);
+        const nextIndex = currentIndex > 0 ? currentIndex - 1 : 0;
+        setActiveFile(updatedFiles[nextIndex]?.path || '');
+      } else {
+        setActiveFile('');
+      }
+    }
+  };
+
+  // Drag and drop for tab reordering
+  const handleTabDragStart = (e: React.DragEvent, draggedPath: string) => {
+    e.dataTransfer.setData('text/plain', draggedPath);
+  };
+
+  const handleTabDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleTabDrop = (e: React.DragEvent, targetPath: string) => {
+    e.preventDefault();
+    const draggedPath = e.dataTransfer.getData('text/plain');
+    
+    if (draggedPath !== targetPath) {
+      const draggedIndex = openFiles.findIndex(f => f.path === draggedPath);
+      const targetIndex = openFiles.findIndex(f => f.path === targetPath);
+      
+      if (draggedIndex !== -1 && targetIndex !== -1) {
+        const newFiles = [...openFiles];
+        const [removed] = newFiles.splice(draggedIndex, 1);
+        newFiles.splice(targetIndex, 0, removed);
+        setOpenFiles(newFiles);
+      }
     }
   };
 
@@ -153,31 +188,206 @@ export default function ResizableDashboard({ onOpenVisualization }: ResizableDas
     }
   };
 
-  // Get file content
+  // Get file content based on file path
   const getFileContent = (path: string) => {
-    if (path.includes('coastal-erosion')) {
-      return `# Coastal Erosion Impact Study
+    const contentMap: Record<string, string> = {
+      '/Documents/Research Reports/coastal-erosion-study.md': `# Coastal Erosion Impact Study
 ## Hampton Roads Region Analysis
 
 ### Executive Summary
-This comprehensive study examines the accelerating coastal erosion rates across the Hampton Roads metropolitan area...
+This comprehensive study examines the accelerating coastal erosion rates across the Hampton Roads metropolitan area, analyzing the intersection of sea-level rise, storm surge intensity, and human development patterns.
 
 ### Key Findings
-- Sea level rise: 3.2mm/year (NOAA data)
+- Sea level rise: 3.2mm/year (NOAA tide gauge data)
 - Erosion rate increase: 15% since 2010
-- Infrastructure at risk: $2.3B value
+- Infrastructure at risk: $2.3B total value
+- Critical facilities affected: 12 wastewater treatment plants, 3 hospitals
+- Population in high-risk zones: 45,000 residents
+
+### Methodology
+1. **Data Collection**: LIDAR surveys, satellite imagery analysis
+2. **Modeling**: SWAN wave model integration with ADCIRC storm surge
+3. **Risk Assessment**: Monte Carlo simulations for 100-year projections
 
 ### Recommendations
-1. Implement adaptive shoreline management
-2. Enhance early warning systems
-3. Develop resilient infrastructure standards`;
-    }
-    
-    return `# Hampton Roads Research Document
-## Loading content...
+1. Implement adaptive shoreline management strategies
+2. Enhance early warning systems with IoT sensor networks
+3. Develop resilient infrastructure standards for new construction
+4. Establish managed retreat protocols for highest-risk areas
 
-This document contains research data and analysis for the Hampton Roads coastal resilience project.
-Select a specific document from the file explorer to view its contents.`;
+### Data Sources
+- NOAA National Ocean Service
+- USGS Coastal Change and Transport
+- Virginia Institute of Marine Science`,
+
+      '/Documents/Research Reports/infrastructure-assessment.md': `# Infrastructure Vulnerability Assessment
+## Hampton Roads Critical Infrastructure Analysis
+
+### Overview
+Systematic evaluation of infrastructure vulnerability to sea-level rise and extreme weather events across the Hampton Roads metropolitan region.
+
+### Critical Infrastructure Categories
+1. **Transportation Networks**
+   - Interstate highways: I-64, I-264, I-664
+   - Port facilities: Norfolk International Terminals
+   - Airports: Norfolk International, Newport News/Williamsburg
+
+2. **Utilities & Energy**
+   - Power generation facilities: 4 major plants
+   - Natural gas infrastructure: 200+ miles of pipeline
+   - Water treatment facilities: 18 regional plants
+
+3. **Emergency Services**
+   - Hospitals: 12 facilities in flood-prone areas
+   - Fire stations: 8 requiring elevation/relocation
+   - Emergency shelters: Capacity analysis for 50,000 residents
+
+### Risk Matrix Analysis
+- **High Risk**: Tunnels, low-lying roads, pump stations
+- **Medium Risk**: Elevated highways, substations
+- **Low Risk**: Elevated facilities, redundant systems
+
+### Adaptation Strategies
+1. Flood-proofing critical facilities
+2. Infrastructure redundancy planning
+3. Smart monitoring systems deployment
+4. Emergency response protocol updates`,
+
+      '/Documents/Research Reports/climate-projection-analysis.md': `# Climate Projection Analysis
+## 21st Century Climate Scenarios for Hampton Roads
+
+### Projection Models
+- **Global Models**: CMIP6 ensemble (15 models)
+- **Regional Downscaling**: WRF 4km resolution
+- **Scenarios**: SSP1-2.6, SSP2-4.5, SSP5-8.5
+
+### Temperature Projections (2050)
+- Average increase: 2.1°C - 3.8°C
+- Summer heat days (>90°F): +25-45 days annually
+- Winter freeze days: -15 to -30 days annually
+
+### Precipitation Changes
+- Annual total: +5% to +15%
+- Extreme events (>50mm/day): +20% frequency
+- Drought periods: Extended duration, increased intensity
+
+### Sea Level Rise Projections
+- 2050: 0.3m - 0.6m above 2000 baseline
+- 2100: 0.8m - 2.1m above 2000 baseline
+- Uncertainty ranges include ice sheet dynamics
+
+### Storm Surge Analysis
+- Category 3+ hurricane frequency: +15% by 2050
+- Maximum surge heights: +0.5m to +1.2m
+- Storm timing shifts: Peak season extension
+
+### Confidence Levels
+- Temperature: High confidence (>90%)
+- Precipitation: Medium confidence (70-80%)
+- Extreme events: Medium-low confidence (60-70%)`,
+
+      '/Documents/Technical Reports/sea-level-monitoring.pdf': `# Sea Level Monitoring Technical Report
+## NOAA Tide Gauge Network Analysis
+
+### Monitoring Network
+- **Primary Stations**: Sewells Point, Chesapeake Bay Bridge Tunnel
+- **Secondary Stations**: 8 regional gauges
+- **Data Period**: 1927-2023 (96 years continuous)
+
+### Technical Specifications
+- **Instrument Type**: Acoustic tide gauges
+- **Sampling Rate**: 6-minute intervals
+- **Accuracy**: ±1mm vertical resolution
+- **Data Transmission**: Real-time satellite uplink
+
+### Quality Control Procedures
+1. Automated range checks
+2. Inter-station comparisons
+3. Manual verification protocols
+4. Datum adjustments (NAVD88)
+
+### Key Measurements (2023)
+- Mean Sea Level: 1.47m above MLLW
+- Highest Recorded: 2.89m (Hurricane Ian)
+- Lowest Recorded: -0.43m (Winter storm)
+- Annual Rate of Change: +3.4mm/year
+
+### Data Applications
+- Navigation safety
+- Flood warning systems
+- Climate research
+- Infrastructure planning`,
+
+      '/Datasets/NOAA/sea-level-data-2023.csv': `# NOAA Sea Level Data 2023
+## Tide Gauge Measurements - Sewells Point Station
+
+Date,Time,Water_Level_m,Temperature_C,Barometric_Pressure_mb
+2023-01-01,00:00,1.234,8.2,1013.2
+2023-01-01,00:06,1.245,8.1,1013.4
+2023-01-01,00:12,1.251,8.0,1013.3
+2023-01-01,00:18,1.248,7.9,1013.5
+...
+
+## Data Description
+- 87,600 measurements (6-minute intervals)
+- Quality flags: 0=good, 1=questionable, 9=missing
+- Vertical datum: NAVD88
+- Coordinates: 36.9467°N, 76.3303°W
+
+## Statistics
+- Mean: 1.47m
+- Standard Deviation: 0.68m
+- Maximum: 2.89m (Oct 15, Hurricane)
+- Minimum: -0.43m (Feb 23, Cold front)
+
+## Usage Notes
+- Data gaps during maintenance: Mar 15-17, Aug 3-5
+- Instrument upgrade: June 2023 (improved accuracy)
+- Verified against backup pressure sensor`,
+
+      '/Maps/hampton-roads-base.geojson': `{
+  "type": "FeatureCollection",
+  "name": "Hampton Roads Base Map",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Norfolk",
+        "population": 238005,
+        "area_sq_mi": 96.3,
+        "elevation_ft": 12
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-76.335, 36.947],
+          [-76.198, 36.947],
+          [-76.198, 36.815],
+          [-76.335, 36.815],
+          [-76.335, 36.947]
+        ]]
+      }
+    }
+  ]
+}`
+    };
+
+    return contentMap[path] || `# ${path.split('/').pop()}
+## Document Content
+
+This document is part of the Hampton Roads Research Platform.
+
+**File Path**: ${path}
+**Type**: ${path.split('.').pop()?.toUpperCase() || 'Unknown'}
+
+Select different files from the explorer to view their specific content.
+Each document contains research data, analysis, and findings related to coastal resilience in the Hampton Roads region.
+
+### Available Documents
+- Research reports with detailed analysis
+- Technical specifications and monitoring data  
+- GIS datasets and mapping information
+- Climate projections and risk assessments`;
   };
 
   // Focus terminal input
@@ -227,14 +437,21 @@ Select a specific document from the file explorer to view its contents.`;
                     openFiles.map((file) => (
                       <div 
                         key={file.path}
-                        className={`px-3 py-2 text-white text-xs flex items-center border-r border-[#3e3e3e] cursor-pointer ${activeFile === file.path ? 'bg-[#1e1e1e]' : 'bg-[#2d2d2d]'}`}
+                        draggable
+                        onDragStart={(e) => handleTabDragStart(e, file.path)}
+                        onDragOver={handleTabDragOver}
+                        onDrop={(e) => handleTabDrop(e, file.path)}
+                        className={`px-3 py-2 text-white text-xs flex items-center border-r border-[#3e3e3e] cursor-pointer transition-colors hover:bg-[#2a2d2e] ${
+                          activeFile === file.path ? 'bg-[#1e1e1e] border-t-2 border-t-[#007acc]' : 'bg-[#2d2d2d]'
+                        }`}
                         onClick={() => setActiveFile(file.path)}
                       >
                         <FileText size={14} className="mr-2" />
-                        {file.name}
+                        <span className="truncate max-w-[120px]">{file.name}</span>
                         <span 
-                          className="ml-2 text-gray-400 hover:text-white" 
+                          className="ml-2 text-gray-400 hover:text-white hover:bg-[#3e3e3e] rounded px-1" 
                           onClick={(e) => { e.stopPropagation(); closeFile(file.path); }}
+                          title="Close"
                         >
                           ×
                         </span>
