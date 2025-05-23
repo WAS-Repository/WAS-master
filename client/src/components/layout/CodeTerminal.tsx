@@ -102,6 +102,16 @@ const CodeTerminal: React.FC<CodeTerminalProps> = ({ onOpenVisualization }) => {
   const [openFiles, setOpenFiles] = useState<{path: string, name: string}[]>([]);
   const [activeFile, setActiveFile] = useState<string | null>(null);
   
+  // Enhanced search state
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showAdvancedSearch, setShowAdvancedSearch] = useState(false);
+  const [filters, setFilters] = useState({
+    documentType: '',
+    location: '',
+    year: '',
+    topic: ''
+  });
+  
   // Terminal state
   const [entries, setEntries] = useState<TerminalEntry[]>([
     { 
@@ -490,6 +500,150 @@ const CodeTerminal: React.FC<CodeTerminalProps> = ({ onOpenVisualization }) => {
       ...prev,
       { type: 'info', content: `Switched to ${mode} mode.`, timestamp: new Date() }
     ]);
+  };
+
+  // Document database for intelligent search
+  const documentDatabase = [
+    {
+      id: 1,
+      name: 'Coastal Erosion Impact Study',
+      path: '/documents/coastal-erosion.pdf',
+      type: 'research',
+      location: 'virginia-beach',
+      year: '2023',
+      topic: 'erosion',
+      content: 'coastal erosion Hampton Roads Virginia Beach Norfolk sea level rise storm surge infrastructure damage property loss adaptation strategies',
+      summary: 'Comprehensive study examining accelerating coastal erosion rates across Hampton Roads region'
+    },
+    {
+      id: 2,
+      name: 'Tidal Pattern Analysis Report',
+      path: '/documents/tidal-patterns.pdf', 
+      type: 'technical',
+      location: 'norfolk',
+      year: '2023',
+      topic: 'flooding',
+      content: 'tidal patterns flooding Norfolk Virginia Beach NOAA monitoring stations infrastructure impact nuisance flooding high tide',
+      summary: 'Analysis of tidal variations impacting Hampton Roads infrastructure and navigation'
+    },
+    {
+      id: 3,
+      name: 'Storm Water Management Implementation',
+      path: '/documents/storm-water.pdf',
+      type: 'technical',
+      location: 'norfolk',
+      year: '2023', 
+      topic: 'storm-water',
+      content: 'storm water management green infrastructure Norfolk flooding bioretention permeable pavement constructed wetlands drainage',
+      summary: 'Documentation of green infrastructure pilot program results across Norfolk coastal zones'
+    },
+    {
+      id: 4,
+      name: 'Norfolk Flood Risk Assessment Map',
+      path: '/maps/norfolk-flood.map',
+      type: 'map',
+      location: 'norfolk',
+      year: '2023',
+      topic: 'flooding',
+      content: 'flood risk map Norfolk FEMA zones infrastructure emergency planning evacuation routes high risk moderate risk',
+      summary: 'Interactive flood risk visualization combining FEMA maps with real-time monitoring data'
+    }
+  ];
+
+  // NLP-powered search suggestions
+  const getNLPSuggestions = (query: string): string[] => {
+    const lowerQuery = query.toLowerCase();
+    const suggestions: string[] = [];
+    
+    // Semantic search based on common research terms
+    if (lowerQuery.includes('flood') || lowerQuery.includes('water')) {
+      suggestions.push('flooding and tidal patterns', 'storm water management', 'flood risk assessment');
+    }
+    if (lowerQuery.includes('coast') || lowerQuery.includes('erosion')) {
+      suggestions.push('coastal erosion impacts', 'shoreline protection', 'sea level rise');
+    }
+    if (lowerQuery.includes('norfolk') || lowerQuery.includes('virginia')) {
+      suggestions.push('Norfolk infrastructure', 'Virginia Beach coastline', 'Hampton Roads region');
+    }
+    if (lowerQuery.includes('storm') || lowerQuery.includes('surge')) {
+      suggestions.push('storm water systems', 'storm surge protection', 'infrastructure resilience');
+    }
+    if (lowerQuery.includes('infra') || lowerQuery.includes('manage')) {
+      suggestions.push('infrastructure adaptation', 'management strategies', 'green infrastructure');
+    }
+    
+    return suggestions.slice(0, 4); // Limit to 4 suggestions
+  };
+
+  // Advanced filtering and search logic
+  const filteredDocuments = documentDatabase.filter(doc => {
+    // Text search across content and metadata
+    const searchMatch = !searchQuery || 
+      doc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      doc.summary.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Filter by document type
+    const typeMatch = !filters.documentType || doc.type === filters.documentType;
+    
+    // Filter by location
+    const locationMatch = !filters.location || doc.location === filters.location;
+    
+    // Filter by year
+    const yearMatch = !filters.year || doc.year === filters.year;
+    
+    // Filter by topic
+    const topicMatch = !filters.topic || doc.topic === filters.topic;
+    
+    return searchMatch && typeMatch && locationMatch && yearMatch && topicMatch;
+  });
+
+  // Render filtered document results
+  const renderFilteredDocuments = () => {
+    if (filteredDocuments.length === 0) {
+      return (
+        <div className="p-4 text-center text-gray-400">
+          <Search size={24} className="mx-auto mb-2 opacity-50" />
+          <div className="text-xs">No documents match your search criteria</div>
+          <div className="text-xs mt-1">Try adjusting your filters or search terms</div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-1 p-2">
+        {filteredDocuments.map((doc) => (
+          <div 
+            key={doc.id}
+            onClick={() => openFile(doc.path, doc.name)}
+            className={`p-3 rounded cursor-pointer border border-transparent hover:border-[#464647] hover:bg-[#2d2d2d] ${
+              activeFile === doc.path ? 'bg-[#37373d] border-[#464647]' : ''
+            }`}
+          >
+            <div className="flex items-start justify-between mb-1">
+              <div className="text-xs font-medium text-white truncate flex-1">{doc.name}</div>
+              <div className="flex space-x-1 ml-2">
+                <span className="text-xs px-1.5 py-0.5 bg-[#464647] rounded text-gray-300">
+                  {doc.type}
+                </span>
+              </div>
+            </div>
+            <div className="text-xs text-gray-400 mb-2 line-clamp-2">{doc.summary}</div>
+            <div className="flex items-center justify-between text-xs text-gray-500">
+              <span className="capitalize">{doc.location.replace('-', ' ')}</span>
+              <span>{doc.year}</span>
+            </div>
+            
+            {/* Highlight search matches */}
+            {searchQuery && (
+              <div className="mt-2 text-xs text-yellow-400">
+                Matches: {searchQuery}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
   };
   
   // Enhanced document content in markdown format for better editing
@@ -1051,11 +1205,145 @@ This platform contains comprehensive research documents covering:
       
       {/* Main Content Area */}
       <div className="flex flex-1 overflow-hidden">
-        {/* File Explorer */}
-        <div className="w-60 bg-[#252526] border-r border-[#3e3e3e] flex flex-col">
-          <div className="text-xs px-4 py-2 text-gray-400 font-semibold border-b border-[#3e3e3e]">EXPLORER</div>
+        {/* Enhanced Document Explorer */}
+        <div className="w-80 bg-[#252526] border-r border-[#3e3e3e] flex flex-col">
+          {/* Explorer Header */}
+          <div className="px-4 py-2 text-gray-400 font-semibold border-b border-[#3e3e3e] flex items-center justify-between">
+            <span className="text-xs">DOCUMENT EXPLORER</span>
+            <Search size={12} />
+          </div>
+          
+          {/* Search Section */}
+          <div className="p-3 border-b border-[#3e3e3e] space-y-3">
+            {/* Basic Search */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search documents..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-[#3e3e3e] text-white text-xs px-3 py-2 rounded border border-[#464647] focus:border-[#007acc] outline-none"
+              />
+              <Search size={12} className="absolute right-2 top-2 text-gray-400" />
+            </div>
+            
+            {/* Advanced Search Toggle */}
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-400">
+                {filteredDocuments.length} documents found
+              </span>
+              <button
+                onClick={() => setShowAdvancedSearch(!showAdvancedSearch)}
+                className="text-xs text-[#007acc] hover:text-[#1177bb] flex items-center"
+              >
+                Advanced
+                <ChevronDown size={10} className={`ml-1 transition-transform ${showAdvancedSearch ? 'rotate-180' : ''}`} />
+              </button>
+            </div>
+            
+            {/* Advanced Search Panel */}
+            {showAdvancedSearch && (
+              <div className="space-y-2 pt-2 border-t border-[#464647]">
+                {/* Document Type Filter */}
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Document Type</label>
+                  <select
+                    value={filters.documentType}
+                    onChange={(e) => setFilters({...filters, documentType: e.target.value})}
+                    className="w-full bg-[#3e3e3e] text-white text-xs px-2 py-1 rounded border border-[#464647]"
+                  >
+                    <option value="">All Types</option>
+                    <option value="research">Research Report</option>
+                    <option value="technical">Technical Report</option>
+                    <option value="analysis">Analysis</option>
+                    <option value="map">Map Data</option>
+                  </select>
+                </div>
+                
+                {/* Location Filter */}
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Location</label>
+                  <select
+                    value={filters.location}
+                    onChange={(e) => setFilters({...filters, location: e.target.value})}
+                    className="w-full bg-[#3e3e3e] text-white text-xs px-2 py-1 rounded border border-[#464647]"
+                  >
+                    <option value="">All Locations</option>
+                    <option value="norfolk">Norfolk</option>
+                    <option value="virginia-beach">Virginia Beach</option>
+                    <option value="portsmouth">Portsmouth</option>
+                    <option value="chesapeake">Chesapeake</option>
+                  </select>
+                </div>
+                
+                {/* Date Range */}
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Publication Year</label>
+                  <select
+                    value={filters.year}
+                    onChange={(e) => setFilters({...filters, year: e.target.value})}
+                    className="w-full bg-[#3e3e3e] text-white text-xs px-2 py-1 rounded border border-[#464647]"
+                  >
+                    <option value="">Any Year</option>
+                    <option value="2023">2023</option>
+                    <option value="2022">2022</option>
+                    <option value="2021">2021</option>
+                    <option value="2020">2020</option>
+                  </select>
+                </div>
+                
+                {/* Topic Filter */}
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1">Research Topic</label>
+                  <select
+                    value={filters.topic}
+                    onChange={(e) => setFilters({...filters, topic: e.target.value})}
+                    className="w-full bg-[#3e3e3e] text-white text-xs px-2 py-1 rounded border border-[#464647]"
+                  >
+                    <option value="">All Topics</option>
+                    <option value="erosion">Coastal Erosion</option>
+                    <option value="flooding">Flooding</option>
+                    <option value="infrastructure">Infrastructure</option>
+                    <option value="storm-water">Storm Water</option>
+                    <option value="climate">Climate Change</option>
+                  </select>
+                </div>
+                
+                {/* Clear Filters */}
+                <button
+                  onClick={() => {
+                    setFilters({documentType: '', location: '', year: '', topic: ''});
+                    setSearchQuery('');
+                  }}
+                  className="text-xs text-gray-400 hover:text-white mt-2"
+                >
+                  Clear all filters
+                </button>
+              </div>
+            )}
+            
+            {/* NLP Search Suggestions */}
+            {searchQuery.length > 3 && (
+              <div className="text-xs text-gray-400">
+                <div className="font-medium mb-1">Smart suggestions:</div>
+                <div className="space-y-1">
+                  {getNLPSuggestions(searchQuery).map((suggestion, index) => (
+                    <div
+                      key={index}
+                      onClick={() => setSearchQuery(suggestion)}
+                      className="cursor-pointer hover:text-white px-2 py-1 rounded hover:bg-[#3e3e3e]"
+                    >
+                      {suggestion}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+          
+          {/* Document List */}
           <div className="flex-1 overflow-auto">
-            {renderFileExplorer(fileSystem)}
+            {renderFilteredDocuments()}
           </div>
         </div>
         
