@@ -14,6 +14,17 @@ export default function StoryWhiteboard({ elements, onChange }: StoryWhiteboardP
     shapeUtils: defaultShapeUtils
   }));
 
+  // Auto-save when tldraw store changes
+  React.useEffect(() => {
+    const handleStoreChange = () => {
+      const snapshot = store.getSnapshot();
+      onChange([snapshot]); // Save the tldraw snapshot
+    };
+
+    const unsubscribe = store.listen(handleStoreChange);
+    return () => unsubscribe();
+  }, [store, onChange]);
+
   const handleSaveStoryboard = () => {
     const snapshot = store.getSnapshot();
     const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });

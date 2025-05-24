@@ -8,6 +8,7 @@ import ResearchNotepad from './ResearchNotepad';
 import StoryWhiteboard from './StoryWhiteboard';
 import TheiaIDE from './TheiaIDE';
 import WasVersionControl from './WasVersionControl';
+import { sessionPersistence } from '@/lib/sessionPersistence';
 
 type WorkspaceMode = 'research' | 'story' | 'developer';
 
@@ -28,6 +29,46 @@ export default function CleanResizableDashboard({
   const [activeFile, setActiveFile] = useState<string>('');
   const [notepadContent, setNotepadContent] = useState<string>('# Research Notes\n\n## Key Findings\n- \n\n## Questions\n- \n\n## Next Steps\n- ');
   const [whiteboardElements, setWhiteboardElements] = useState<Array<{ id: string; type: 'text' | 'rectangle' | 'circle' | 'sticky'; content: string; x: number; y: number; width?: number; height?: number; color?: string }>>([]);
+
+  // Initialize session on component mount
+  useEffect(() => {
+    const initSession = async () => {
+      const userId = 'user-' + Date.now(); // In real app, get from auth
+      const session = await sessionPersistence.initializeSession(userId);
+      
+      // Restore workspace data
+      setWorkspaceMode(session.currentWorkspaceMode);
+      setNotepadContent(session.workspaceData.research.notepadContent);
+      setOpenFiles(session.workspaceData.research.openFiles);
+      setActiveFile(session.workspaceData.research.activeFile);
+      setWhiteboardElements(session.workspaceData.story.whiteboardElements);
+    };
+    initSession();
+  }, []);
+
+  // Auto-save workspace mode changes
+  const handleWorkspaceModeChange = async (mode: WorkspaceMode) => {
+    setWorkspaceMode(mode);
+    await sessionPersistence.setWorkspaceMode(mode);
+  };
+
+  // Auto-save research data changes
+  const handleNotepadChange = async (content: string) => {
+    setNotepadContent(content);
+    await sessionPersistence.updateResearchData({ 
+      notepadContent: content,
+      openFiles,
+      activeFile 
+    });
+  };
+
+  // Auto-save story data changes
+  const handleWhiteboardChange = async (elements: any[]) => {
+    setWhiteboardElements(elements);
+    await sessionPersistence.updateStoryData({ 
+      whiteboardElements: elements 
+    });
+  };
   const [entries, setEntries] = useState<Array<{
     type: 'input' | 'output' | 'info' | 'error' | 'success' | 'command';
     content: string;
@@ -223,7 +264,7 @@ Select different files from the explorer to view their specific content.`;
             variant="ghost"
             size="sm"
             className={`h-6 px-2 py-0 rounded-sm text-xs ${workspaceMode === 'research' ? 'bg-[#007acc] text-white' : 'hover:bg-[#3e3e3e]'}`}
-            onClick={() => setWorkspaceMode('research')}
+            onClick={() => handleWorkspaceModeChange('research')}
           >
             <Search size={12} className="mr-1" />
             Research
@@ -232,7 +273,7 @@ Select different files from the explorer to view their specific content.`;
             variant="ghost"
             size="sm"
             className={`h-6 px-2 py-0 rounded-sm text-xs ${workspaceMode === 'story' ? 'bg-[#007acc] text-white' : 'hover:bg-[#3e3e3e]'}`}
-            onClick={() => setWorkspaceMode('story')}
+            onClick={() => handleWorkspaceModeChange('story')}
           >
             <Palette size={12} className="mr-1" />
             Story
@@ -241,7 +282,7 @@ Select different files from the explorer to view their specific content.`;
             variant="ghost"
             size="sm"
             className={`h-6 px-2 py-0 rounded-sm text-xs ${workspaceMode === 'developer' ? 'bg-[#007acc] text-white' : 'hover:bg-[#3e3e3e]'}`}
-            onClick={() => setWorkspaceMode('developer')}
+            onClick={() => handleWorkspaceModeChange('developer')}
           >
             <Code size={12} className="mr-1" />
             Developer
@@ -424,7 +465,7 @@ Select different files from the explorer to view their specific content.`;
                   <Panel defaultSize={50} minSize={30}>
                     <ResearchNotepad 
                       content={notepadContent}
-                      onChange={setNotepadContent}
+                      onChange={handleNotepadChange}
                     />
                   </Panel>
                   <PanelResizeHandle className="h-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-row-resize" />
@@ -440,7 +481,7 @@ Select different files from the explorer to view their specific content.`;
               {workspaceMode === 'story' && (
                 <StoryWhiteboard 
                   elements={whiteboardElements}
-                  onChange={setWhiteboardElements}
+                  onChange={handleWhiteboardChange}
                 />
               )}
               {workspaceMode === 'developer' && hasVisualizationPanels && (
