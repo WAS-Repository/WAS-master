@@ -51,6 +51,46 @@ export const searchQueries = pgTable("search_queries", {
   resultCount: integer("result_count"),
 });
 
+// User sessions for workspace persistence
+export const userSessions = pgTable("user_sessions", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull().unique(),
+  userId: text("user_id").notNull(),
+  workspaceMode: text("workspace_mode").notNull(),
+  researchData: jsonb("research_data"),
+  storyData: jsonb("story_data"),
+  developerData: jsonb("developer_data"),
+  wasRepositories: jsonb("was_repositories"),
+  lastAccessed: timestamp("last_accessed").defaultNow().notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+// Session documents for cross-workspace persistence
+export const sessionDocuments = pgTable("session_documents", {
+  id: serial("id").primaryKey(),
+  sessionId: text("session_id").notNull(),
+  documentPath: text("document_path").notNull(),
+  content: text("content").notNull(),
+  lastModified: timestamp("last_modified").defaultNow().notNull(),
+  workspaceMode: text("workspace_mode").notNull(),
+});
+
+// WAS commit history for version control persistence
+export const wasCommitHistory = pgTable("was_commit_history", {
+  id: serial("id").primaryKey(),
+  commitId: text("commit_id").notNull().unique(),
+  sessionId: text("session_id").notNull(),
+  documentPath: text("document_path").notNull(),
+  content: text("content").notNull(),
+  message: text("message").notNull(),
+  author: text("author").notNull(),
+  email: text("email").notNull(),
+  contentHash: text("content_hash").notNull(),
+  parentCommitId: text("parent_commit_id"),
+  changes: jsonb("changes").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
 // Insert schemas
 export const insertDocumentSchema = createInsertSchema(documents)
   .omit({ id: true });
@@ -62,6 +102,15 @@ export const insertDocumentRelationshipSchema = createInsertSchema(documentRelat
   .omit({ id: true });
 
 export const insertSearchQuerySchema = createInsertSchema(searchQueries)
+  .omit({ id: true, timestamp: true });
+
+export const insertUserSessionSchema = createInsertSchema(userSessions)
+  .omit({ id: true, lastAccessed: true, createdAt: true });
+
+export const insertSessionDocumentSchema = createInsertSchema(sessionDocuments)
+  .omit({ id: true, lastModified: true });
+
+export const insertWasCommitHistorySchema = createInsertSchema(wasCommitHistory)
   .omit({ id: true, timestamp: true });
 
 // Types
@@ -76,3 +125,12 @@ export type InsertDocumentRelationship = z.infer<typeof insertDocumentRelationsh
 
 export type SearchQuery = typeof searchQueries.$inferSelect;
 export type InsertSearchQuery = z.infer<typeof insertSearchQuerySchema>;
+
+export type UserSession = typeof userSessions.$inferSelect;
+export type InsertUserSession = z.infer<typeof insertUserSessionSchema>;
+
+export type SessionDocument = typeof sessionDocuments.$inferSelect;
+export type InsertSessionDocument = z.infer<typeof insertSessionDocumentSchema>;
+
+export type WasCommitHistory = typeof wasCommitHistory.$inferSelect;
+export type InsertWasCommitHistory = z.infer<typeof insertWasCommitHistorySchema>;

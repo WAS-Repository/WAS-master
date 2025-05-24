@@ -26,6 +26,14 @@ export interface IStorage {
   // Search operations
   saveSearchQuery(query: InsertSearchQuery): Promise<SearchQuery>;
   getRecentSearchQueries(limit?: number): Promise<SearchQuery[]>;
+  
+  // Session persistence operations
+  createOrUpdateSession(session: InsertUserSession): Promise<UserSession>;
+  getLatestSession(userId: string): Promise<UserSession | undefined>;
+  saveSessionDocument(doc: InsertSessionDocument): Promise<SessionDocument>;
+  getSessionDocument(sessionId: string, documentPath: string, workspaceMode: string): Promise<SessionDocument | undefined>;
+  saveWasCommit(commit: InsertWasCommitHistory): Promise<WasCommitHistory>;
+  getWasCommits(sessionId: string): Promise<WasCommitHistory[]>;
 }
 
 export class MemStorage implements IStorage {
