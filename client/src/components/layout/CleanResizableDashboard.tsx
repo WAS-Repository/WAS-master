@@ -7,6 +7,7 @@ import VisualizationPanel from './VisualizationPanel';
 import ResearchNotepad from './ResearchNotepad';
 import StoryWhiteboard from './StoryWhiteboard';
 import TheiaIDE from './TheiaIDE';
+import WasVersionControl from './WasVersionControl';
 
 type WorkspaceMode = 'research' | 'story' | 'developer';
 
@@ -419,10 +420,22 @@ Select different files from the explorer to view their specific content.`;
             
             <Panel defaultSize={25} minSize={20} maxSize={50}>
               {workspaceMode === 'research' && (
-                <ResearchNotepad 
-                  content={notepadContent}
-                  onChange={setNotepadContent}
-                />
+                <PanelGroup direction="vertical">
+                  <Panel defaultSize={50} minSize={30}>
+                    <ResearchNotepad 
+                      content={notepadContent}
+                      onChange={setNotepadContent}
+                    />
+                  </Panel>
+                  <PanelResizeHandle className="h-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-row-resize" />
+                  <Panel defaultSize={50} minSize={30}>
+                    <WasVersionControl 
+                      currentDocument={activeFile}
+                      documentContent={notepadContent}
+                      onDocumentLoad={setNotepadContent}
+                    />
+                  </Panel>
+                </PanelGroup>
               )}
               {workspaceMode === 'story' && (
                 <StoryWhiteboard 
