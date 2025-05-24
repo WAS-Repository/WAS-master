@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Palette, Plus, Square, Circle, Type, Move, Save, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Tldraw, createTLStore, defaultShapeUtils, defaultTools } from 'tldraw';
+import { Tldraw, createTLStore, defaultShapeUtils, getSnapshot } from 'tldraw';
 import 'tldraw/tldraw.css';
 
 interface StoryWhiteboardProps {
@@ -17,7 +17,7 @@ export default function StoryWhiteboard({ elements, onChange }: StoryWhiteboardP
   // Auto-save when tldraw store changes
   React.useEffect(() => {
     const handleStoreChange = () => {
-      const snapshot = store.getSnapshot();
+      const snapshot = getSnapshot(store);
       onChange([snapshot]); // Save the tldraw snapshot
     };
 
@@ -26,7 +26,7 @@ export default function StoryWhiteboard({ elements, onChange }: StoryWhiteboardP
   }, [store, onChange]);
 
   const handleSaveStoryboard = () => {
-    const snapshot = store.getSnapshot();
+    const snapshot = getSnapshot(store);
     const blob = new Blob([JSON.stringify(snapshot, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     

@@ -9,6 +9,7 @@ import StoryWhiteboard from './StoryWhiteboard';
 import TheiaIDE from './TheiaIDE';
 import WasVersionControl from './WasVersionControl';
 import { sessionPersistence } from '@/lib/sessionPersistence';
+import { visualizationManager, availableVisualizations } from '@/lib/visualizations';
 
 type WorkspaceMode = 'research' | 'story' | 'developer';
 
@@ -29,6 +30,7 @@ export default function CleanResizableDashboard({
   const [activeFile, setActiveFile] = useState<string>('');
   const [notepadContent, setNotepadContent] = useState<string>('# Research Notes\n\n## Key Findings\n- \n\n## Questions\n- \n\n## Next Steps\n- ');
   const [whiteboardElements, setWhiteboardElements] = useState<Array<{ id: string; type: 'text' | 'rectangle' | 'circle' | 'sticky'; content: string; x: number; y: number; width?: number; height?: number; color?: string }>>([]);
+  const [showViewMenu, setShowViewMenu] = useState(false);
 
   // Initialize session on component mount
   useEffect(() => {
@@ -157,14 +159,51 @@ export default function CleanResizableDashboard({
     if (cmd === 'ls' || cmd === 'dir') {
       setEntries(prev => [
         ...prev,
-        { type: 'output', content: 'Documents/  Maps/  Datasets/  README.md', timestamp: new Date() }
+        { type: 'output', content: 'Documents/  Maps/  Datasets/  visualizations/  README.md', timestamp: new Date() }
       ]);
     } else if (cmd === 'clear') {
       setEntries([]);
+    } else if (cmd === 'help') {
+      setEntries(prev => [
+        ...prev,
+        { type: 'info', content: 'Available commands:\n  Shell: ls, clear, help, pwd, date\n  D3 Visualizations: viz help, viz list, viz create [type]', timestamp: new Date() }
+      ]);
+    } else if (cmd === 'pwd') {
+      setEntries(prev => [
+        ...prev,
+        { type: 'output', content: '/home/hampton-roads-research', timestamp: new Date() }
+      ]);
+    } else if (cmd === 'date') {
+      setEntries(prev => [
+        ...prev,
+        { type: 'output', content: new Date().toString(), timestamp: new Date() }
+      ]);
+    } else if (command.startsWith('viz ')) {
+      // D3 Visualization Commands
+      try {
+        const result = visualizationManager.executeTerminalCommand(command);
+        setEntries(prev => [
+          ...prev,
+          { type: result.success ? 'success' : 'error', content: result.message, timestamp: new Date() }
+        ]);
+        
+        // If a visualization was created and we have the callback, open it
+        if (result.success && result.instanceId && onOpenVisualization) {
+          const instance = visualizationManager.getVisualization(result.instanceId);
+          if (instance) {
+            setTimeout(() => onOpenVisualization(instance.configId), 500);
+          }
+        }
+      } catch (error) {
+        setEntries(prev => [
+          ...prev,
+          { type: 'error', content: 'Error executing visualization command: ' + error.message, timestamp: new Date() }
+        ]);
+      }
     } else {
       setEntries(prev => [
         ...prev,
-        { type: 'error', content: `Command not found: ${command}`, timestamp: new Date() }
+        { type: 'error', content: `Command not found: ${command}. Try 'help' for available commands.`, timestamp: new Date() }
       ]);
     }
   };
@@ -254,7 +293,109 @@ Select different files from the explorer to view their specific content.`;
         <div className="flex items-center space-x-4">
           <span className="font-semibold">Hampton Roads Research Platform</span>
           <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">File</span>
-          <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">View</span>
+          <div className="relative">
+            <span 
+              className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer"
+              onClick={() => setShowViewMenu(!showViewMenu)}
+            >
+              View
+            </span>
+            {showViewMenu && (
+              <div className="absolute top-full left-0 mt-1 bg-[#252526] border border-[#3e3e3e] rounded shadow-lg z-50 w-80 max-h-96 overflow-auto">
+                <div className="p-2 border-b border-[#3e3e3e]">
+                  <div className="text-xs font-semibold text-gray-300 mb-2">D3 Visualizations Available</div>
+                </div>
+                
+                {/* Coastal Visualizations */}
+                <div className="p-2">
+                  <div className="text-xs font-semibold text-blue-400 mb-1">🌊 COASTAL</div>
+                  {availableVisualizations.filter(viz => viz.category === 'coastal').map(viz => (
+                    <div 
+                      key={viz.id}
+                      className="py-1 px-2 hover:bg-[#3e3e3e] rounded cursor-pointer text-xs"
+                      onClick={() => {
+                        if (onOpenVisualization) onOpenVisualization(viz.id);
+                        setShowViewMenu(false);
+                      }}
+                    >
+                      <div className="text-white font-medium">{viz.name}</div>
+                      <div className="text-gray-400 text-xs">{viz.description}</div>
+                      {viz.terminalCommand && (
+                        <div className="text-green-400 text-xs mt-1">Terminal: {viz.terminalCommand}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Environmental Visualizations */}
+                <div className="p-2">
+                  <div className="text-xs font-semibold text-green-400 mb-1">🌿 ENVIRONMENTAL</div>
+                  {availableVisualizations.filter(viz => viz.category === 'environmental').map(viz => (
+                    <div 
+                      key={viz.id}
+                      className="py-1 px-2 hover:bg-[#3e3e3e] rounded cursor-pointer text-xs"
+                      onClick={() => {
+                        if (onOpenVisualization) onOpenVisualization(viz.id);
+                        setShowViewMenu(false);
+                      }}
+                    >
+                      <div className="text-white font-medium">{viz.name}</div>
+                      <div className="text-gray-400 text-xs">{viz.description}</div>
+                      {viz.terminalCommand && (
+                        <div className="text-green-400 text-xs mt-1">Terminal: {viz.terminalCommand}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Infrastructure Visualizations */}
+                <div className="p-2">
+                  <div className="text-xs font-semibold text-orange-400 mb-1">🏗️ INFRASTRUCTURE</div>
+                  {availableVisualizations.filter(viz => viz.category === 'infrastructure').map(viz => (
+                    <div 
+                      key={viz.id}
+                      className="py-1 px-2 hover:bg-[#3e3e3e] rounded cursor-pointer text-xs"
+                      onClick={() => {
+                        if (onOpenVisualization) onOpenVisualization(viz.id);
+                        setShowViewMenu(false);
+                      }}
+                    >
+                      <div className="text-white font-medium">{viz.name}</div>
+                      <div className="text-gray-400 text-xs">{viz.description}</div>
+                      {viz.terminalCommand && (
+                        <div className="text-green-400 text-xs mt-1">Terminal: {viz.terminalCommand}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Additional Categories */}
+                <div className="p-2">
+                  <div className="text-xs font-semibold text-purple-400 mb-1">👥 DEMOGRAPHIC & 💰 ECONOMIC</div>
+                  {availableVisualizations.filter(viz => viz.category === 'demographic' || viz.category === 'economic').map(viz => (
+                    <div 
+                      key={viz.id}
+                      className="py-1 px-2 hover:bg-[#3e3e3e] rounded cursor-pointer text-xs"
+                      onClick={() => {
+                        if (onOpenVisualization) onOpenVisualization(viz.id);
+                        setShowViewMenu(false);
+                      }}
+                    >
+                      <div className="text-white font-medium">{viz.name}</div>
+                      <div className="text-gray-400 text-xs">{viz.description}</div>
+                      {viz.terminalCommand && (
+                        <div className="text-green-400 text-xs mt-1">Terminal: {viz.terminalCommand}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="p-2 border-t border-[#3e3e3e] text-xs text-gray-400">
+                  💡 Use Developer Mode terminal with "viz" commands to customize visualizations
+                </div>
+              </div>
+            )}
+          </div>
           <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">Terminal</span>
         </div>
         
