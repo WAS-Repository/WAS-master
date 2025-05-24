@@ -31,6 +31,7 @@ export default function CleanResizableDashboard({
   const [notepadContent, setNotepadContent] = useState<string>('# Research Notes\n\n## Key Findings\n- \n\n## Questions\n- \n\n## Next Steps\n- ');
   const [whiteboardElements, setWhiteboardElements] = useState<Array<{ id: string; type: 'text' | 'rectangle' | 'circle' | 'sticky'; content: string; x: number; y: number; width?: number; height?: number; color?: string }>>([]);
   const [showViewMenu, setShowViewMenu] = useState(false);
+  const viewMenuRef = useRef<HTMLDivElement>(null);
 
   // Initialize session on component mount
   useEffect(() => {
@@ -197,7 +198,7 @@ export default function CleanResizableDashboard({
       } catch (error) {
         setEntries(prev => [
           ...prev,
-          { type: 'error', content: 'Error executing visualization command: ' + error.message, timestamp: new Date() }
+          { type: 'error', content: 'Error executing visualization command: ' + (error as Error).message, timestamp: new Date() }
         ]);
       }
     } else {
@@ -293,7 +294,7 @@ Select different files from the explorer to view their specific content.`;
         <div className="flex items-center space-x-4">
           <span className="font-semibold">Hampton Roads Research Platform</span>
           <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">File</span>
-          <div className="relative">
+          <div className="relative" ref={viewMenuRef}>
             <span 
               className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer"
               onClick={() => setShowViewMenu(!showViewMenu)}

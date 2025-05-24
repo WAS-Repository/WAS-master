@@ -358,7 +358,7 @@ ${availableVisualizations.map(viz => `  ${viz.id} - ${viz.name}`).join('\n')}
   }
 
   private getVisualizationsList(): string {
-    const categories = [...new Set(availableVisualizations.map(viz => viz.category))];
+    const categories = Array.from(new Set(availableVisualizations.map(viz => viz.category)));
     
     let output = 'Available Visualizations:\n\n';
     
