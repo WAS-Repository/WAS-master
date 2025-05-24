@@ -167,7 +167,7 @@ export default function CleanResizableDashboard({
     } else if (cmd === 'help') {
       setEntries(prev => [
         ...prev,
-        { type: 'info', content: 'Available commands:\n  Shell: ls, clear, help, pwd, date\n  D3 Visualizations: viz help, viz list, viz create [type]', timestamp: new Date() }
+        { type: 'info', content: 'Available commands:\n  Shell: ls, clear, help, pwd, date\n  D3 Visualizations: viz help, viz list, viz create [type]\n  WAS Protocol: was create [type], was help, was list', timestamp: new Date() }
       ]);
     } else if (cmd === 'pwd') {
       setEntries(prev => [
@@ -179,10 +179,13 @@ export default function CleanResizableDashboard({
         ...prev,
         { type: 'output', content: new Date().toString(), timestamp: new Date() }
       ]);
-    } else if (command.startsWith('viz ')) {
-      // D3 Visualization Commands
+    } else if (command.startsWith('viz ') || command.startsWith('was ')) {
+      // D3 Visualization Commands (supports both 'viz' and 'was' prefixes)
       try {
-        const result = visualizationManager.executeTerminalCommand(command);
+        // Convert 'was' commands to 'viz' commands for compatibility
+        const normalizedCommand = command.startsWith('was ') ? command.replace('was ', 'viz ') : command;
+        const result = visualizationManager.executeTerminalCommand(normalizedCommand);
+        
         setEntries(prev => [
           ...prev,
           { type: result.success ? 'success' : 'error', content: result.message, timestamp: new Date() }
