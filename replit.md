@@ -143,6 +143,7 @@ For local development, the server runs in development mode with:
 - Added research sources section with document management, folder creation, file compression capabilities, and sample datasets for handling large research data.
 - Enhanced file explorer with drag-and-drop capabilities and established master/workspace relationship where workspace modes show subset file trees from the master explorer.
 - Implemented VS Code-style welcome screen that adapts to current workspace mode (Research/Story/Developer) with mode-specific actions, recent files, and walkthroughs - displays when no files are open.
+- Revamped View menu to match VS Code structure with workspace mode switcher, appearance options, panel controls, and visualization shortcuts - consolidated workspace modes into organized menu.
 
 ## Notes for Implementation
 

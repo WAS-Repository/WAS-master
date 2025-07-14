@@ -478,97 +478,120 @@ Select different files from the explorer to view their specific content.`;
               View
             </span>
             {showViewMenu && (
-              <div className="absolute top-full left-0 mt-1 bg-[#252526] border border-[#3e3e3e] rounded shadow-lg z-50 w-80 max-h-96 overflow-auto">
-                <div className="p-2 border-b border-[#3e3e3e]">
-                  <div className="text-xs font-semibold text-gray-300 mb-2">D3 Visualizations Available</div>
-                </div>
-                
-                {/* Coastal Visualizations */}
-                <div className="p-2">
-                  <div className="text-xs font-semibold text-blue-400 mb-1">🌊 COASTAL</div>
-                  {availableVisualizations.filter(viz => viz.category === 'coastal').map(viz => (
-                    <div 
-                      key={viz.id}
-                      className="py-1 px-2 hover:bg-[#3e3e3e] rounded cursor-pointer text-xs"
-                      onClick={() => {
-                        if (onOpenVisualization) onOpenVisualization(viz.id);
-                        setShowViewMenu(false);
-                      }}
-                    >
-                      <div className="text-white font-medium">{viz.name}</div>
-                      <div className="text-gray-400 text-xs">{viz.description}</div>
-                      {viz.terminalCommand && (
-                        <div className="text-green-400 text-xs mt-1">Terminal: {viz.terminalCommand}</div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Environmental Visualizations */}
-                <div className="p-2">
-                  <div className="text-xs font-semibold text-green-400 mb-1">🌿 ENVIRONMENTAL</div>
-                  {availableVisualizations.filter(viz => viz.category === 'environmental').map(viz => (
-                    <div 
-                      key={viz.id}
-                      className="py-1 px-2 hover:bg-[#3e3e3e] rounded cursor-pointer text-xs"
-                      onClick={() => {
-                        if (onOpenVisualization) onOpenVisualization(viz.id);
-                        setShowViewMenu(false);
-                      }}
-                    >
-                      <div className="text-white font-medium">{viz.name}</div>
-                      <div className="text-gray-400 text-xs">{viz.description}</div>
-                      {viz.terminalCommand && (
-                        <div className="text-green-400 text-xs mt-1">Terminal: {viz.terminalCommand}</div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Infrastructure Visualizations */}
-                <div className="p-2">
-                  <div className="text-xs font-semibold text-orange-400 mb-1">🏗️ INFRASTRUCTURE</div>
-                  {availableVisualizations.filter(viz => viz.category === 'infrastructure').map(viz => (
-                    <div 
-                      key={viz.id}
-                      className="py-1 px-2 hover:bg-[#3e3e3e] rounded cursor-pointer text-xs"
-                      onClick={() => {
-                        if (onOpenVisualization) onOpenVisualization(viz.id);
-                        setShowViewMenu(false);
-                      }}
-                    >
-                      <div className="text-white font-medium">{viz.name}</div>
-                      <div className="text-gray-400 text-xs">{viz.description}</div>
-                      {viz.terminalCommand && (
-                        <div className="text-green-400 text-xs mt-1">Terminal: {viz.terminalCommand}</div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                {/* Additional Categories */}
-                <div className="p-2">
-                  <div className="text-xs font-semibold text-purple-400 mb-1">👥 DEMOGRAPHIC & 💰 ECONOMIC</div>
-                  {availableVisualizations.filter(viz => viz.category === 'demographic' || viz.category === 'economic').map(viz => (
-                    <div 
-                      key={viz.id}
-                      className="py-1 px-2 hover:bg-[#3e3e3e] rounded cursor-pointer text-xs"
-                      onClick={() => {
-                        if (onOpenVisualization) onOpenVisualization(viz.id);
-                        setShowViewMenu(false);
-                      }}
-                    >
-                      <div className="text-white font-medium">{viz.name}</div>
-                      <div className="text-gray-400 text-xs">{viz.description}</div>
-                      {viz.terminalCommand && (
-                        <div className="text-green-400 text-xs mt-1">Terminal: {viz.terminalCommand}</div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                <div className="p-2 border-t border-[#3e3e3e] text-xs text-gray-400">
-                  💡 Use Developer Mode terminal with "viz" commands to customize visualizations
+              <div className="absolute top-full left-0 mt-1 bg-[#252526] border border-[#3e3e3e] rounded shadow-lg z-50 w-64">
+                <div className="py-1">
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Command Palette...</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+P</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Open View...
+                  </div>
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  
+                  {/* Workspace Mode Section */}
+                  <div className="px-3 py-1 text-xs font-semibold text-gray-300">Workspace Mode</div>
+                  <div 
+                    className={`px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex items-center ${workspaceMode === 'research' ? 'bg-[#094771]' : ''}`}
+                    onClick={() => { handleWorkspaceModeChange('research'); setShowViewMenu(false); }}
+                  >
+                    <Search size={14} className="mr-2" />
+                    Research Mode
+                    {workspaceMode === 'research' && <span className="ml-auto text-blue-400">●</span>}
+                  </div>
+                  <div 
+                    className={`px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex items-center ${workspaceMode === 'story' ? 'bg-[#094771]' : ''}`}
+                    onClick={() => { handleWorkspaceModeChange('story'); setShowViewMenu(false); }}
+                  >
+                    <Palette size={14} className="mr-2" />
+                    Story Mode
+                    {workspaceMode === 'story' && <span className="ml-auto text-purple-400">●</span>}
+                  </div>
+                  <div 
+                    className={`px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex items-center ${workspaceMode === 'developer' ? 'bg-[#094771]' : ''}`}
+                    onClick={() => { handleWorkspaceModeChange('developer'); setShowViewMenu(false); }}
+                  >
+                    <Code size={14} className="mr-2" />
+                    Developer Mode
+                    {workspaceMode === 'developer' && <span className="ml-auto text-green-400">●</span>}
+                  </div>
+                  
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  
+                  {/* Standard View Options */}
+                  <div className="px-3 py-1 text-xs font-semibold text-gray-300">Appearance</div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Editor Layout →
+                  </div>
+                  
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Explorer</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+E</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Search</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+F</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Source Control</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+G</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Run</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+D</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Extensions</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+X</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Testing
+                  </div>
+                  
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Problems</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+M</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Output</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+U</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Debug Console</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+Y</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Terminal</span>
+                    <span className="text-gray-400 text-xs">Ctrl+`</span>
+                  </div>
+                  
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Word Wrap</span>
+                    <span className="text-gray-400 text-xs">Alt+Z</span>
+                  </div>
+                  
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  
+                  {/* Visualizations Section */}
+                  <div className="px-3 py-1 text-xs font-semibold text-gray-300">D3 Visualizations</div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Coastal Visualizations →
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Environmental Data →
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Infrastructure Maps →
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Demographic Charts →
+                  </div>
                 </div>
               </div>
             )}
@@ -576,35 +599,13 @@ Select different files from the explorer to view their specific content.`;
           <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">Terminal</span>
         </div>
         
-        {/* Workspace Mode Switcher */}
-        <div className="flex items-center space-x-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`h-6 px-2 py-0 rounded-sm text-xs ${workspaceMode === 'research' ? 'bg-[#007acc] text-white' : 'hover:bg-[#3e3e3e]'}`}
-            onClick={() => handleWorkspaceModeChange('research')}
-          >
-            <Search size={12} className="mr-1" />
-            Research
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`h-6 px-2 py-0 rounded-sm text-xs ${workspaceMode === 'story' ? 'bg-[#007acc] text-white' : 'hover:bg-[#3e3e3e]'}`}
-            onClick={() => handleWorkspaceModeChange('story')}
-          >
-            <Palette size={12} className="mr-1" />
-            Story
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className={`h-6 px-2 py-0 rounded-sm text-xs ${workspaceMode === 'developer' ? 'bg-[#007acc] text-white' : 'hover:bg-[#3e3e3e]'}`}
-            onClick={() => handleWorkspaceModeChange('developer')}
-          >
-            <Code size={12} className="mr-1" />
-            Developer
-          </Button>
+        {/* Current Workspace Mode Indicator */}
+        <div className="flex items-center space-x-2">
+          <div className="flex items-center text-xs text-gray-300">
+            {workspaceMode === 'research' && <><Search size={12} className="mr-1" />Research</>}
+            {workspaceMode === 'story' && <><Palette size={12} className="mr-1" />Story</>}
+            {workspaceMode === 'developer' && <><Code size={12} className="mr-1" />Developer</>}
+          </div>
         </div>
       </div>
       
