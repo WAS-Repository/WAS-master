@@ -96,11 +96,11 @@ export default function CleanResizableDashboard({
     content: string;
     timestamp: Date;
   }>>([
-    { type: 'info', content: 'Hampton Roads Research Terminal initialized', timestamp: new Date() },
+    { type: 'info', content: 'World Archive System Terminal initialized', timestamp: new Date() },
     { type: 'info', content: 'Type commands or switch to Agent mode for AI assistance', timestamp: new Date() }
   ]);
   const [currentCommand, setCurrentCommand] = useState('');
-  const [currentPath] = useState('~/hampton-roads');
+  const [currentPath] = useState('~/world-archive');
   
   const terminalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -357,20 +357,20 @@ Select different files from the explorer to view their specific content.`;
   const hasVisualizationPanels = visualizationPanels.length > 0;
 
   return (
-    <div className="h-full flex flex-col text-white bg-[#1e1e1e]">
+    <div className="h-full flex flex-col text-[var(--color-text-primary)] bg-[var(--color-secondary)]">
       {/* Top Menu Bar */}
-      <div className="h-8 bg-[#2d2d2d] flex items-center justify-between px-4 text-xs border-b border-[#3e3e3e]">
+      <div className="h-8 bg-[var(--color-primary)] flex items-center justify-between px-4 text-xs border-b border-[var(--color-divider)]">
         <div className="flex items-center space-x-4">
-          <span className="font-semibold">Hampton Roads Research Platform</span>
+          <span className="font-semibold">World Archive System</span>
           <div className="relative" ref={fileMenuRef}>
             <span 
-              className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer"
+              className="hover:bg-[var(--color-hover)] px-2 py-1 rounded cursor-pointer"
               onClick={() => setShowFileMenu(!showFileMenu)}
             >
               File
             </span>
             {showFileMenu && (
-              <div className="absolute top-full left-0 mt-1 bg-[#252526] border border-[#3e3e3e] rounded shadow-lg z-50 w-64">
+              <div className="absolute top-full left-0 mt-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded shadow-lg z-50 w-64">
                 <div className="py-1">
                   <div 
                     className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center"
@@ -692,10 +692,10 @@ Select different files from the explorer to view their specific content.`;
                   </div>
                   
                   {/* Standard Editor Content */}
-                  <div className="flex-1 overflow-auto bg-[#1e1e1e]">
+                  <div className="flex-1 overflow-auto bg-[var(--color-secondary)]">
                     {activeFile ? (
                       <div className="flex h-full">
-                        <div className="text-gray-500 text-xs text-right pr-2 select-none bg-[#1e1e1e]">
+                        <div className="text-gray-500 text-xs text-right pr-2 select-none bg-[var(--color-secondary)]">
                           {Array.from({ length: 20 }).map((_, i) => (
                             <div key={i} className="px-2 leading-6">{i+1}</div>
                           ))}
@@ -718,12 +718,12 @@ Select different files from the explorer to view their specific content.`;
 
               {/* Standard Terminal Panel */}
               <Panel defaultSize={30} minSize={20} maxSize={60} id="basic-terminal">
-                <div className="h-full border-t border-[#3e3e3e]">
+                <div className="h-full border-t border-[var(--color-divider)]">
                 {/* Terminal Header */}
-                <div className="flex justify-between items-center bg-[#252526] px-3 py-1 border-b border-[#3e3e3e]">
+                <div className="flex justify-between items-center bg-[var(--color-surface)] px-3 py-1 border-b border-[var(--color-divider)]">
                   <div className="flex items-center">
                     <Terminal size={14} className="mr-2" />
-                    <span className="text-xs font-semibold">Hampton Roads Terminal</span>
+                    <span className="text-xs font-semibold">World Archive Terminal</span>
                   </div>
                   
                   <div className="flex items-center space-x-3">
@@ -731,7 +731,7 @@ Select different files from the explorer to view their specific content.`;
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'shell' ? 'bg-[#2d2d2d]' : 'hover:bg-[#2d2d2d]'}`} 
+                        className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'shell' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-primary)]'}`} 
                         onClick={() => switchMode('shell')}
                       >
                         <Terminal size={12} className="mr-1" />
@@ -740,7 +740,7 @@ Select different files from the explorer to view their specific content.`;
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'agent' ? 'bg-[#2d2d2d]' : 'hover:bg-[#2d2d2d]'}`}
+                        className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'agent' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-primary)]'}`}
                         onClick={() => switchMode('agent')}
                       >
                         <MessageSquare size={12} className="mr-1" />
@@ -756,7 +756,7 @@ Select different files from the explorer to view their specific content.`;
                 
                 {/* Terminal Content */}
                 <div 
-                  className="h-[calc(100%-28px)] bg-[#1e1e1e] text-white text-xs p-2 overflow-auto" 
+                  className="h-[calc(100%-28px)] bg-[var(--color-secondary)] text-[var(--color-text-primary)] text-xs p-2 overflow-auto" 
                   onClick={focusInput}
                   ref={terminalRef}
                 >
@@ -793,7 +793,7 @@ Select different files from the explorer to view their specific content.`;
         {/* Right Panel - Mode-specific content */}
         {(workspaceMode === 'research' || workspaceMode === 'story' || workspaceMode === 'geographic' || hasVisualizationPanels) && (
           <>
-            <PanelResizeHandle className="w-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-col-resize" />
+            <PanelResizeHandle className="w-1 bg-[var(--color-divider)] hover:bg-[var(--color-accent)] transition-colors cursor-col-resize" />
             
             <Panel defaultSize={25} minSize={20} maxSize={50}>
               {workspaceMode === 'research' && (
@@ -839,7 +839,7 @@ Select different files from the explorer to view their specific content.`;
                         <span className="text-gray-400">Coordinates:</span> Not selected
                       </div>
                       <div>
-                        <span className="text-gray-400">Region:</span> Hampton Roads
+                        <span className="text-gray-400">Region:</span> Global
                       </div>
                       <div>
                         <span className="text-gray-400">Data Sources:</span> 4 available
@@ -849,9 +849,9 @@ Select different files from the explorer to view their specific content.`;
                   <div className="p-4">
                     <h3 className="text-sm font-semibold text-white mb-2">Recent Searches</h3>
                     <div className="space-y-2 text-sm">
-                      <div className="text-gray-300 hover:text-white cursor-pointer">Sea level rise Norfolk</div>
-                      <div className="text-gray-300 hover:text-white cursor-pointer">Virginia Beach erosion</div>
-                      <div className="text-gray-300 hover:text-white cursor-pointer">Chesapeake Bay data</div>
+                      <div className="text-gray-300 hover:text-white cursor-pointer">Sea level rise Miami</div>
+                      <div className="text-gray-300 hover:text-white cursor-pointer">Pacific coast erosion</div>
+                      <div className="text-gray-300 hover:text-white cursor-pointer">Global climate data</div>
                     </div>
                   </div>
                 </div>
@@ -868,8 +868,8 @@ Select different files from the explorer to view their specific content.`;
       </PanelGroup>
       
       {/* Status Bar */}
-      <div className="h-5 bg-[#007acc] text-white text-xs flex justify-between items-center px-3">
-        <div>terminal: hampton-research</div>
+      <div className="h-5 bg-[var(--color-accent)] text-white text-xs flex justify-between items-center px-3">
+        <div>terminal: world-archive</div>
         <div className="flex items-center gap-3">
           <span>Line 1</span>
           <span>UTF-8</span>

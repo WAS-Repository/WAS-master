@@ -7,7 +7,7 @@ export function setupGeoJSONRoute(app: Express) {
   app.get('/api/geojson', (req: Request, res: Response) => {
     try {
       // Path to the GeoJSON file
-      const filePath = path.join(process.cwd(), 'attached_assets/hampton_roads_localities.geojson');
+      const filePath = path.join(process.cwd(), 'attached_assets/world_archive_locations.geojson');
       
       // Read the file
       const data = fs.readFileSync(filePath, 'utf8');

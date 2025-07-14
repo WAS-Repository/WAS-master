@@ -18,13 +18,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     // Check for saved theme
     const savedTheme = localStorage.getItem("theme") as Theme | null;
     
-    // Check for system preference if no saved theme
+    // Always default to dark theme for professional IDE look
     if (!savedTheme) {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      return prefersDark ? "dark" : "light";
+      return "dark";
     }
     
-    return savedTheme || "dark"; // Default to dark if all else fails
+    return savedTheme || "dark"; // Default to dark for professional IDE look
   });
 
   useEffect(() => {
