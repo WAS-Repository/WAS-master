@@ -439,7 +439,14 @@ Select different files from the explorer to view their specific content.`;
       <PanelGroup direction="horizontal" className="flex-1">
         {/* Left Panel - Always show file explorer */}
         <Panel defaultSize={25} minSize={15} maxSize={40}>
-          <UbuntuFileExplorer onFileSelect={handleFileSelect} />
+          <UbuntuFileExplorer 
+            onFileSelect={handleFileSelect} 
+            workspaceMode={workspaceMode}
+            onWorkspaceFileChange={(files) => {
+              // Handle workspace file changes based on mode
+              console.log('Workspace files updated:', files);
+            }}
+          />
         </Panel>
 
         <PanelResizeHandle className="w-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-col-resize" />
