@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/button';
 import { Globe, Map, Layers, Plus, Minus } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import { Viewer as CesiumViewer, Entity } from 'resium';
-import * as Cesium from 'cesium';
+import Cesium from '@/lib/cesiumConfig';
 const { Cartesian3, Cartesian2, Color, LabelStyle, VerticalOrigin } = Cesium;
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import 'cesium/Build/Cesium/Widgets/widgets.css';
 // Local storage helper
 const storage = {
   getItem: (key: string) => localStorage.getItem(key),
