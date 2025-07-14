@@ -121,6 +121,39 @@
   --ring: 207 65% 39%;
 }
 
+/* Force dark theme by default */
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: dark;
+  }
+}
+
+/* Apply dark theme to body by default */
+html {
+  background-color: #25292E;
+  color: #CECECE;
+}
+
+body {
+  background-color: #25292E;
+  color: #CECECE;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+}
+
+/* Force dark theme on root element */
+:root {
+  background-color: #25292E;
+}
+
+/* Apply dark styles to common elements */
+.dark,
+html.dark,
+body.dark {
+  background-color: #25292E !important;
+  color: #CECECE !important;
+}
+
 @layer base {
   * {
     @apply border-border;

@@ -32,9 +32,15 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     
     if (theme === "dark") {
       root.classList.add("dark");
+      document.body.classList.add("dark");
     } else {
       root.classList.remove("dark");
+      document.body.classList.remove("dark");
     }
+    
+    // Also apply dark theme styles directly
+    document.body.style.backgroundColor = theme === "dark" ? "#25292E" : "#F4F7FA";
+    document.body.style.color = theme === "dark" ? "#CECECE" : "#333333";
     
     // Save theme to localStorage
     localStorage.setItem("theme", theme);
