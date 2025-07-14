@@ -7,9 +7,12 @@
 // Now import Cesium after setting the base URL
 import * as Cesium from 'cesium';
 
-// Disable the default Cesium Ion token warning (optional)
-// We can use Cesium without an Ion account for basic functionality
-(Cesium as any).Ion.defaultAccessToken = undefined;
+// Disable Cesium Ion completely - we'll use open imagery sources
+Cesium.Ion.defaultAccessToken = undefined;
+// Prevent any Ion-related requests
+if (Cesium.Ion) {
+  Cesium.Ion.defaultServer = undefined;
+}
 
 // Make Cesium available globally for resium
 (window as any).Cesium = Cesium;

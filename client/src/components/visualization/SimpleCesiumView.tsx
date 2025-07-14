@@ -26,19 +26,31 @@ export default function SimpleCesiumView({ data = [] }: SimpleCesiumViewProps) {
     if (!cesiumContainerRef.current) return;
 
     try {
-      // Initialize Cesium viewer
+      // Initialize Cesium viewer with minimal configuration
       const viewer = new Cesium.Viewer(cesiumContainerRef.current, {
-        terrainProvider: undefined,
+        animation: false,
         baseLayerPicker: false,
+        fullscreenButton: false,
         geocoder: false,
         homeButton: false,
         sceneModePicker: false,
-        navigationHelpButton: false,
-        animation: false,
         timeline: false,
-        fullscreenButton: false,
+        navigationHelpButton: false,
         vrButton: false
       });
+
+      // Remove default imagery layers and add OpenStreetMap
+      viewer.imageryLayers.removeAll();
+      viewer.imageryLayers.addImageryProvider(
+        new Cesium.OpenStreetMapImageryProvider({
+          url: 'https://a.tile.openstreetmap.org/'
+        })
+      );
+
+      // Disable skybox and atmosphere to avoid rendering issues
+      viewer.scene.skyBox = undefined;
+      viewer.scene.skyAtmosphere.show = false;
+      viewer.scene.globe.enableLighting = false;
 
       // Set default view
       viewer.camera.setView({
