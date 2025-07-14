@@ -2,9 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Globe, Map, Layers, Plus, Minus } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import { Viewer as CesiumViewer, Entity } from 'resium';
-import Cesium from '@/lib/cesiumConfig';
-const { Cartesian3, Cartesian2, Color, LabelStyle, VerticalOrigin } = Cesium;
+import SimpleCesiumView from './SimpleCesiumView';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
@@ -74,7 +72,6 @@ function ZoomControl() {
 export default function EnhancedMapView({ data = [], onDataSelect }: EnhancedMapViewProps) {
   const [viewMode, setViewMode] = useState<'2d' | '3d'>('2d');
   const [selectedPoint, setSelectedPoint] = useState<MapDataPoint | null>(null);
-  const cesiumViewerRef = useRef<any>(null);
 
   // Sample data if none provided
   const mapData: MapDataPoint[] = data.length > 0 ? data : [
@@ -254,74 +251,7 @@ export default function EnhancedMapView({ data = [], onDataSelect }: EnhancedMap
             <ZoomControl />
           </MapContainer>
         ) : (
-          <div className="h-full w-full">
-            <CesiumViewer
-              ref={(e) => { cesiumViewerRef.current = e?.cesiumElement || null; }}
-              full
-              animation={false}
-              timeline={false}
-              geocoder={false}
-              homeButton={false}
-              sceneModePicker={false}
-              baseLayerPicker={false}
-              navigationHelpButton={false}
-              fullscreenButton={false}
-              vrButton={false}
-            >
-              {mapData.map((point) => {
-                const position = Cartesian3.fromDegrees(
-                  point.longitude,
-                  point.latitude,
-                  point.altitude || 100
-                );
-                
-                const color = {
-                  'document': Color.BLUE,
-                  'locality': Color.GREEN,
-                  'event': Color.ORANGE,
-                  'research-site': Color.PURPLE
-                }[point.type] || Color.GRAY;
-                
-                return (
-                  <Entity
-                    key={point.id}
-                    position={position}
-                    point={{
-                      pixelSize: 10,
-                      color: color,
-                      outlineColor: Color.WHITE,
-                      outlineWidth: 2
-                    }}
-                    label={{
-                      text: point.name,
-                      font: '12px sans-serif',
-                      fillColor: Color.WHITE,
-                      outlineColor: Color.BLACK,
-                      outlineWidth: 2,
-                      style: LabelStyle.FILL_AND_OUTLINE,
-                      verticalOrigin: VerticalOrigin.BOTTOM,
-                      pixelOffset: new Cartesian2(0, -15)
-                    }}
-                    description={`
-                      <div style="font-family: sans-serif;">
-                        <h3>${point.name}</h3>
-                        <p><strong>Type:</strong> ${point.type}</p>
-                        ${point.description ? `<p>${point.description}</p>` : ''}
-                        ${point.metadata ? `
-                          <div style="margin-top: 10px;">
-                            ${Object.entries(point.metadata).map(([key, value]) => 
-                              `<p><strong>${key}:</strong> ${Array.isArray(value) ? value.join(', ') : value}</p>`
-                            ).join('')}
-                          </div>
-                        ` : ''}
-                      </div>
-                    `}
-                    onClick={() => handlePointClick(point)}
-                  />
-                );
-              })}
-            </CesiumViewer>
-          </div>
+          <SimpleCesiumView data={mapData} />
         )}
       </div>
 
