@@ -32,7 +32,9 @@ export default function CleanResizableDashboard({
   const [notepadContent, setNotepadContent] = useState<string>('# Research Notes\n\n## Key Findings\n- \n\n## Questions\n- \n\n## Next Steps\n- ');
   const [whiteboardElements, setWhiteboardElements] = useState<Array<{ id: string; type: 'text' | 'rectangle' | 'circle' | 'sticky'; content: string; x: number; y: number; width?: number; height?: number; color?: string }>>([]);
   const [showViewMenu, setShowViewMenu] = useState(false);
+  const [showFileMenu, setShowFileMenu] = useState(false);
   const viewMenuRef = useRef<HTMLDivElement>(null);
+  const fileMenuRef = useRef<HTMLDivElement>(null);
 
   // Initialize session on component mount
   useEffect(() => {
@@ -48,6 +50,21 @@ export default function CleanResizableDashboard({
       setWhiteboardElements(session.workspaceData.story.whiteboardElements);
     };
     initSession();
+  }, []);
+
+  // Handle click outside for menus
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (viewMenuRef.current && !viewMenuRef.current.contains(event.target as Node)) {
+        setShowViewMenu(false);
+      }
+      if (fileMenuRef.current && !fileMenuRef.current.contains(event.target as Node)) {
+        setShowFileMenu(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   // Auto-save workspace mode changes
@@ -114,6 +131,32 @@ export default function CleanResizableDashboard({
     } else if (action.startsWith('walkthrough:')) {
       const walkthrough = action.replace('walkthrough:', '');
       console.log('Open walkthrough:', walkthrough);
+    }
+  };
+
+  // Handle file menu actions
+  const handleFileMenuAction = (action: string) => {
+    setShowFileMenu(false);
+    if (action === 'new-text-file') {
+      const fileName = 'untitled.txt';
+      const path = `/${workspaceMode}/${fileName}`;
+      handleFileSelect({ name: fileName, path });
+    } else if (action === 'new-window') {
+      // Open welcome screen in new window context
+      setOpenFiles([]);
+      setActiveFile('');
+    } else if (action === 'open-file') {
+      // Could trigger file browser
+      console.log('Open file dialog');
+    } else if (action === 'open-folder') {
+      // Could trigger folder browser
+      console.log('Open folder dialog');
+    } else if (action === 'open-workspace') {
+      // Could trigger workspace browser
+      console.log('Open workspace dialog');
+    } else if (action === 'open-recent') {
+      // Could show recent files submenu
+      console.log('Open recent files');
     }
   };
 
@@ -318,7 +361,115 @@ Select different files from the explorer to view their specific content.`;
       <div className="h-8 bg-[#2d2d2d] flex items-center justify-between px-4 text-xs border-b border-[#3e3e3e]">
         <div className="flex items-center space-x-4">
           <span className="font-semibold">Hampton Roads Research Platform</span>
-          <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">File</span>
+          <div className="relative" ref={fileMenuRef}>
+            <span 
+              className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer"
+              onClick={() => setShowFileMenu(!showFileMenu)}
+            >
+              File
+            </span>
+            {showFileMenu && (
+              <div className="absolute top-full left-0 mt-1 bg-[#252526] border border-[#3e3e3e] rounded shadow-lg z-50 w-64">
+                <div className="py-1">
+                  <div 
+                    className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center"
+                    onClick={() => handleFileMenuAction('new-text-file')}
+                  >
+                    <span>New Text File</span>
+                    <span className="text-gray-400 text-xs">Ctrl+N</span>
+                  </div>
+                  <div 
+                    className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center"
+                    onClick={() => handleFileMenuAction('new-window')}
+                  >
+                    <span>New Window</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+N</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm text-gray-400">
+                    New Window with Profile
+                  </div>
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  <div 
+                    className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center"
+                    onClick={() => handleFileMenuAction('open-file')}
+                  >
+                    <span>Open File...</span>
+                    <span className="text-gray-400 text-xs">Ctrl+O</span>
+                  </div>
+                  <div 
+                    className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center"
+                    onClick={() => handleFileMenuAction('open-folder')}
+                  >
+                    <span>Open Folder...</span>
+                    <span className="text-gray-400 text-xs">Ctrl+K Ctrl+O</span>
+                  </div>
+                  <div 
+                    className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm"
+                    onClick={() => handleFileMenuAction('open-workspace')}
+                  >
+                    Open Workspace from File...
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Open Recent →
+                  </div>
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Add Folder to Workspace...
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Save Workspace As...
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Duplicate Workspace
+                  </div>
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Save</span>
+                    <span className="text-gray-400 text-xs">Ctrl+S</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Save As...</span>
+                    <span className="text-gray-400 text-xs">Ctrl+Shift+S</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Save All</span>
+                    <span className="text-gray-400 text-xs">Ctrl+K S</span>
+                  </div>
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Share →
+                  </div>
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Auto Save
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Preferences →
+                  </div>
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Revert File
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Close Editor</span>
+                    <span className="text-gray-400 text-xs">Ctrl+F4</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Close Folder</span>
+                    <span className="text-gray-400 text-xs">Ctrl+K F</span>
+                  </div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
+                    <span>Close Window</span>
+                    <span className="text-gray-400 text-xs">Alt+F4</span>
+                  </div>
+                  <div className="border-t border-[#3e3e3e] my-1"></div>
+                  <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm">
+                    Exit
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
           <div className="relative" ref={viewMenuRef}>
             <span 
               className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer"
