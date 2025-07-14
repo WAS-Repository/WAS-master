@@ -22,7 +22,7 @@ interface WorkspaceData {
 interface SessionState {
   sessionId: string;
   userId: string;
-  currentWorkspaceMode: 'research' | 'story' | 'developer';
+  currentWorkspaceMode: 'research' | 'story' | 'developer' | 'geographic';
   workspaceData: WorkspaceData;
   wasRepositories: any[];
   lastSaved: Date;
@@ -93,7 +93,7 @@ class SessionPersistenceService {
   }
 
   // Update workspace mode
-  async setWorkspaceMode(mode: 'research' | 'story' | 'developer'): Promise<void> {
+  async setWorkspaceMode(mode: 'research' | 'story' | 'developer' | 'geographic'): Promise<void> {
     if (this.currentSession) {
       this.currentSession.currentWorkspaceMode = mode;
       await this.saveSession();

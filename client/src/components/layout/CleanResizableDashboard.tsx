@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Terminal, MessageSquare, FileText, Maximize2, Search, BookOpen, Palette, Code } from 'lucide-react';
+import { Terminal, MessageSquare, FileText, Maximize2, Search, BookOpen, Palette, Code, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import UbuntuFileExplorer from './UbuntuFileExplorer';
@@ -9,10 +9,11 @@ import StoryWhiteboard from './StoryWhiteboard';
 import TheiaIDE from './TheiaIDE';
 import WasVersionControl from './WasVersionControl';
 import WelcomeScreen from './WelcomeScreen';
+import GeographicSearch from './GeographicSearch';
 import { sessionPersistence } from '@/lib/sessionPersistence';
 import { visualizationManager, availableVisualizations } from '@/lib/visualizations';
 
-type WorkspaceMode = 'research' | 'story' | 'developer';
+type WorkspaceMode = 'research' | 'story' | 'developer' | 'geographic';
 
 interface ResizableDashboardProps {
   onOpenVisualization?: (type: string) => void;
@@ -515,6 +516,14 @@ Select different files from the explorer to view their specific content.`;
                     Developer Mode
                     {workspaceMode === 'developer' && <span className="ml-auto text-green-400">●</span>}
                   </div>
+                  <div 
+                    className={`px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex items-center ${workspaceMode === 'geographic' ? 'bg-[#094771]' : ''}`}
+                    onClick={() => { handleWorkspaceModeChange('geographic'); setShowViewMenu(false); }}
+                  >
+                    <MapPin size={14} className="mr-2" />
+                    Geographic Mode
+                    {workspaceMode === 'geographic' && <span className="ml-auto text-orange-400">●</span>}
+                  </div>
                   
                   <div className="border-t border-[#3e3e3e] my-1"></div>
                   
@@ -605,6 +614,7 @@ Select different files from the explorer to view their specific content.`;
             {workspaceMode === 'research' && <><Search size={12} className="mr-1" />Research</>}
             {workspaceMode === 'story' && <><Palette size={12} className="mr-1" />Story</>}
             {workspaceMode === 'developer' && <><Code size={12} className="mr-1" />Developer</>}
+            {workspaceMode === 'geographic' && <><MapPin size={12} className="mr-1" />Geographic</>}
           </div>
         </div>
       </div>
@@ -626,7 +636,7 @@ Select different files from the explorer to view their specific content.`;
         <PanelResizeHandle className="w-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-col-resize" />
 
         {/* Main Content Area */}
-        <Panel defaultSize={workspaceMode === 'research' ? 50 : workspaceMode === 'story' ? 60 : 75} minSize={40} id="main-content">
+        <Panel defaultSize={workspaceMode === 'research' ? 50 : workspaceMode === 'story' ? 60 : workspaceMode === 'geographic' ? 50 : 75} minSize={40} id="main-content">
           {workspaceMode === 'developer' ? (
             /* Developer Mode - Theia IDE or Welcome Screen */
             openFiles.length > 0 || activeFile ? (
@@ -642,6 +652,12 @@ Select different files from the explorer to view their specific content.`;
                 onAction={handleWelcomeAction}
               />
             )
+          ) : workspaceMode === 'geographic' ? (
+            /* Geographic Mode - Location-based Search and Data */
+            <GeographicSearch 
+              onLocationSelect={(location) => console.log('Location selected:', location)}
+              onDataSelect={(data) => console.log('Data selected:', data)}
+            />
           ) : (
             /* Research and Story Modes - Simplified Layout */
             <PanelGroup direction="vertical" className="h-full" id="basic-panels">
@@ -775,7 +791,7 @@ Select different files from the explorer to view their specific content.`;
         </Panel>
 
         {/* Right Panel - Mode-specific content */}
-        {(workspaceMode === 'research' || workspaceMode === 'story' || hasVisualizationPanels) && (
+        {(workspaceMode === 'research' || workspaceMode === 'story' || workspaceMode === 'geographic' || hasVisualizationPanels) && (
           <>
             <PanelResizeHandle className="w-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-col-resize" />
             
@@ -803,6 +819,42 @@ Select different files from the explorer to view their specific content.`;
                   elements={whiteboardElements}
                   onChange={handleWhiteboardChange}
                 />
+              )}
+              {workspaceMode === 'geographic' && (
+                <div className="h-full bg-[#1e1e1e] border-l border-[#3e3e3e]">
+                  <div className="p-4 border-b border-[#3e3e3e]">
+                    <h3 className="text-sm font-semibold text-white mb-2">Location Map</h3>
+                    <div className="bg-[#2d2d2d] h-48 rounded border border-[#3e3e3e] flex items-center justify-center">
+                      <div className="text-center text-gray-400">
+                        <MapPin size={32} className="mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Interactive map will appear here</p>
+                        <p className="text-xs">when location data is selected</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4 border-b border-[#3e3e3e]">
+                    <h3 className="text-sm font-semibold text-white mb-2">Location Details</h3>
+                    <div className="space-y-2 text-sm text-gray-300">
+                      <div>
+                        <span className="text-gray-400">Coordinates:</span> Not selected
+                      </div>
+                      <div>
+                        <span className="text-gray-400">Region:</span> Hampton Roads
+                      </div>
+                      <div>
+                        <span className="text-gray-400">Data Sources:</span> 4 available
+                      </div>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="text-sm font-semibold text-white mb-2">Recent Searches</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="text-gray-300 hover:text-white cursor-pointer">Sea level rise Norfolk</div>
+                      <div className="text-gray-300 hover:text-white cursor-pointer">Virginia Beach erosion</div>
+                      <div className="text-gray-300 hover:text-white cursor-pointer">Chesapeake Bay data</div>
+                    </div>
+                  </div>
+                </div>
               )}
               {workspaceMode === 'developer' && hasVisualizationPanels && (
                 <VisualizationPanel 

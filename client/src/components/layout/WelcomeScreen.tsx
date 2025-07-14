@@ -1,9 +1,9 @@
 import React from 'react';
-import { FileText, Search, Palette, Code, FolderOpen, Database, BookOpen, Plus, Github, Settings, Lightbulb } from 'lucide-react';
+import { FileText, Search, Palette, Code, FolderOpen, Database, BookOpen, Plus, Github, Settings, Lightbulb, MapPin, Navigation, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface WelcomeScreenProps {
-  workspaceMode: 'research' | 'story' | 'developer';
+  workspaceMode: 'research' | 'story' | 'developer' | 'geographic';
   onAction: (action: string) => void;
 }
 
@@ -84,6 +84,31 @@ export default function WelcomeScreen({ workspaceMode, onAction }: WelcomeScreen
             { name: 'research-dashboard', path: '/dev/research-dashboard' }
           ]
         };
+      
+      case 'geographic':
+        return {
+          title: 'Hampton Roads Geographic Platform',
+          subtitle: 'Location-Based Data & Research Mode',
+          icon: <MapPin size={48} className="text-orange-400" />,
+          color: 'text-orange-400',
+          startActions: [
+            { id: 'search-location', icon: <Search size={16} />, label: 'Search Location Data', desc: 'Find research and data by geographic location' },
+            { id: 'browse-map', icon: <Navigation size={16} />, label: 'Browse Interactive Map', desc: 'Explore data through map interface' },
+            { id: 'open-gis', icon: <Globe size={16} />, label: 'Open GIS Data', desc: 'Access geographic information system data' },
+            { id: 'location-analysis', icon: <Database size={16} />, label: 'Location Analysis', desc: 'Analyze location-based research data' }
+          ],
+          walkthroughs: [
+            { id: 'geographic-basics', icon: <MapPin size={16} />, label: 'Geographic Research Basics', badge: 'New', desc: 'Learn location-based research fundamentals' },
+            { id: 'gis-tools', icon: <Globe size={16} />, label: 'GIS Tools & Analysis', desc: 'Use geographic information system tools' },
+            { id: 'spatial-data', icon: <Navigation size={16} />, label: 'Spatial Data Integration', badge: 'Updated', desc: 'Work with spatial datasets and coordinates' }
+          ],
+          recent: [
+            { name: 'hampton-roads-localities.geojson', path: '/geographic/hampton-roads-localities.geojson' },
+            { name: 'coastal-erosion-map.kml', path: '/geographic/coastal-erosion-map.kml' },
+            { name: 'Norfolk Sea Level Data', path: '/geographic/norfolk-sea-level' },
+            { name: 'Virginia Beach Infrastructure', path: '/geographic/vb-infrastructure' }
+          ]
+        };
     }
   };
 
@@ -98,6 +123,7 @@ export default function WelcomeScreen({ workspaceMode, onAction }: WelcomeScreen
             {workspaceMode === 'research' && <Search size={14} />}
             {workspaceMode === 'story' && <Palette size={14} />}
             {workspaceMode === 'developer' && <Code size={14} />}
+            {workspaceMode === 'geographic' && <MapPin size={14} />}
           </div>
           Welcome
         </div>
