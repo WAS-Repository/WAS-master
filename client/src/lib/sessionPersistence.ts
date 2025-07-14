@@ -31,7 +31,7 @@ interface SessionState {
 class SessionPersistenceService {
   private currentSession: SessionState | null = null;
   private autoSaveInterval: number | null = null;
-  private readonly STORAGE_KEY = 'hampton-roads-session';
+  private readonly STORAGE_KEY = 'world-archive-session';
   private readonly AUTO_SAVE_INTERVAL = 30000; // 30 seconds
 
   constructor() {

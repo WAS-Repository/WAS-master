@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a document visualization and exploration application that allows users to explore research papers, patents, and engineering documents through different visual interfaces: a knowledge graph view, a map view, and a document viewer. 
+This project is the World Archive System, a document visualization and exploration application that allows users to explore research papers, patents, and engineering documents through different visual interfaces: a knowledge graph view, a map view, and a document viewer. 
 
 The application is built using a full-stack JavaScript/TypeScript architecture with:
 - **Frontend**: React with Vite, utilizing shadcn/ui components
@@ -145,6 +145,7 @@ For local development, the server runs in development mode with:
 - Implemented VS Code-style welcome screen that adapts to current workspace mode (Research/Story/Developer) with mode-specific actions, recent files, and walkthroughs - displays when no files are open.
 - Revamped View menu to match VS Code structure with workspace mode switcher, appearance options, panel controls, and visualization shortcuts - consolidated workspace modes into organized menu.
 - Added Geographic Mode with location-based data search, interactive map interface, and GIS data access capabilities for spatial research and analysis.
+- Rebranded entire system from "Hampton Roads Research Platform" to "World Archive System" with updated branding throughout the application.
 
 ## Notes for Implementation
 

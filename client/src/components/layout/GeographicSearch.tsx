@@ -26,56 +26,56 @@ interface SearchResult {
 const sampleResults: SearchResult[] = [
   {
     id: '1',
-    title: 'Hampton Roads Sea Level Rise Impact Study',
-    location: 'Norfolk, VA',
+    title: 'Global Sea Level Rise Impact Study',
+    location: 'Miami, FL',
     type: 'research',
-    coordinates: [-76.2859, 36.8468],
+    coordinates: [-80.1918, 25.7617],
     relevance: 0.95,
-    snippet: 'Comprehensive analysis of sea level rise impacts on Hampton Roads infrastructure and communities...',
+    snippet: 'Comprehensive analysis of sea level rise impacts on coastal infrastructure and communities worldwide...',
     metadata: {
-      source: 'Virginia Institute of Marine Science',
+      source: 'International Climate Research Institute',
       date: '2023-08-15',
       category: 'Climate Science'
     }
   },
   {
     id: '2',
-    title: 'Portsmouth Naval Shipyard Environmental Assessment',
-    location: 'Portsmouth, VA',
+    title: 'Coastal Port Environmental Assessment',
+    location: 'San Francisco, CA',
     type: 'document',
-    coordinates: [-76.2983, 36.8354],
+    coordinates: [-122.4194, 37.7749],
     relevance: 0.87,
-    snippet: 'Environmental impact assessment for naval shipyard operations and surrounding ecosystem...',
+    snippet: 'Environmental impact assessment for major port operations and surrounding marine ecosystem...',
     metadata: {
-      source: 'US Navy Environmental Office',
+      source: 'Pacific Environmental Research Center',
       date: '2023-11-02',
       category: 'Environmental'
     }
   },
   {
     id: '3',
-    title: 'Virginia Beach Coastal Erosion Data',
-    location: 'Virginia Beach, VA',
+    title: 'Atlantic Coast Erosion Data',
+    location: 'Boston, MA',
     type: 'dataset',
-    coordinates: [-75.9780, 36.8529],
+    coordinates: [-71.0589, 42.3601],
     relevance: 0.82,
-    snippet: 'Historical coastal erosion measurements and predictive modeling data for Virginia Beach coastline...',
+    snippet: 'Historical coastal erosion measurements and predictive modeling data for Atlantic coastline...',
     metadata: {
-      source: 'Virginia Coastal Program',
+      source: 'National Coastal Research Program',
       date: '2024-01-10',
       category: 'Coastal Management'
     }
   },
   {
     id: '4',
-    title: 'Chesapeake Bay Bridge-Tunnel Traffic Analysis',
-    location: 'Cape Charles, VA',
+    title: 'International Bridge Infrastructure Analysis',
+    location: 'New York, NY',
     type: 'infrastructure',
-    coordinates: [-75.9413, 37.2707],
+    coordinates: [-74.0060, 40.7128],
     relevance: 0.78,
-    snippet: 'Traffic flow analysis and infrastructure assessment for the Chesapeake Bay Bridge-Tunnel system...',
+    snippet: 'Traffic flow analysis and infrastructure assessment for major bridge systems worldwide...',
     metadata: {
-      source: 'Virginia Department of Transportation',
+      source: 'Global Transportation Research Institute',
       date: '2023-12-05',
       category: 'Transportation'
     }
@@ -142,14 +142,14 @@ export default function GeographicSearch({ onLocationSelect, onDataSelect }: Geo
     }
   };
 
-  const hamptonRoadsLocations = [
-    'Norfolk, VA',
-    'Virginia Beach, VA',
-    'Portsmouth, VA',
-    'Chesapeake, VA',
-    'Newport News, VA',
-    'Hampton, VA',
-    'Suffolk, VA'
+  const globalLocations = [
+    'Miami, FL',
+    'San Francisco, CA',
+    'Boston, MA',
+    'New York, NY',
+    'Seattle, WA',
+    'Los Angeles, CA',
+    'Chicago, IL'
   ];
 
   return (
@@ -189,7 +189,7 @@ export default function GeographicSearch({ onLocationSelect, onDataSelect }: Geo
 
         {/* Location Quick Filters */}
         <div className="flex flex-wrap gap-2 mb-3">
-          {hamptonRoadsLocations.map(location => (
+          {globalLocations.map(location => (
             <Button
               key={location}
               variant="outline"

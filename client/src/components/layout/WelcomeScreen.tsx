@@ -12,7 +12,7 @@ export default function WelcomeScreen({ workspaceMode, onAction }: WelcomeScreen
     switch (workspaceMode) {
       case 'research':
         return {
-          title: 'Hampton Roads Research Platform',
+          title: 'World Archive System',
           subtitle: 'Research & Analysis Mode',
           icon: <Search size={48} className="text-blue-400" />,
           color: 'text-blue-400',
@@ -30,14 +30,14 @@ export default function WelcomeScreen({ workspaceMode, onAction }: WelcomeScreen
           recent: [
             { name: 'coastal-erosion-study.md', path: '/research/coastal-erosion-study.md' },
             { name: 'sea-level-analysis.md', path: '/research/sea-level-analysis.md' },
-            { name: 'Hampton Roads Climate Data', path: '/datasets/hampton-roads-climate' },
+            { name: 'Global Climate Data', path: '/datasets/global-climate' },
             { name: 'NOAA Sea Level Research', path: '/sources/noaa-sea-level' }
           ]
         };
       
       case 'story':
         return {
-          title: 'Hampton Roads Story Platform',
+          title: 'World Archive System',
           subtitle: 'Visual Storytelling Mode',
           icon: <Palette size={48} className="text-purple-400" />,
           color: 'text-purple-400',
@@ -53,7 +53,7 @@ export default function WelcomeScreen({ workspaceMode, onAction }: WelcomeScreen
             { id: 'media-integration', icon: <Database size={16} />, label: 'Media Integration Guide', badge: 'Updated', desc: 'Integrate research data into visual stories' }
           ],
           recent: [
-            { name: 'hampton-roads-narrative.md', path: '/stories/hampton-roads-narrative.md' },
+            { name: 'global-narrative.md', path: '/stories/global-narrative.md' },
             { name: 'community-impact-story.md', path: '/stories/community-impact-story.md' },
             { name: 'Climate Change Visualization', path: '/stories/climate-viz' },
             { name: 'Coastal Communities Story', path: '/stories/coastal-communities' }
@@ -62,7 +62,7 @@ export default function WelcomeScreen({ workspaceMode, onAction }: WelcomeScreen
       
       case 'developer':
         return {
-          title: 'Hampton Roads Dev Platform',
+          title: 'World Archive System',
           subtitle: 'Development & Coding Mode',
           icon: <Code size={48} className="text-green-400" />,
           color: 'text-green-400',
@@ -80,14 +80,14 @@ export default function WelcomeScreen({ workspaceMode, onAction }: WelcomeScreen
           recent: [
             { name: 'data-analysis.py', path: '/dev/data-analysis.py' },
             { name: 'visualization.js', path: '/dev/visualization.js' },
-            { name: 'hampton-roads-api', path: '/dev/hampton-roads-api' },
+            { name: 'world-archive-api', path: '/dev/world-archive-api' },
             { name: 'research-dashboard', path: '/dev/research-dashboard' }
           ]
         };
       
       case 'geographic':
         return {
-          title: 'Hampton Roads Geographic Platform',
+          title: 'World Archive System',
           subtitle: 'Location-Based Data & Research Mode',
           icon: <MapPin size={48} className="text-orange-400" />,
           color: 'text-orange-400',
@@ -103,10 +103,10 @@ export default function WelcomeScreen({ workspaceMode, onAction }: WelcomeScreen
             { id: 'spatial-data', icon: <Navigation size={16} />, label: 'Spatial Data Integration', badge: 'Updated', desc: 'Work with spatial datasets and coordinates' }
           ],
           recent: [
-            { name: 'hampton-roads-localities.geojson', path: '/geographic/hampton-roads-localities.geojson' },
+            { name: 'global-localities.geojson', path: '/geographic/global-localities.geojson' },
             { name: 'coastal-erosion-map.kml', path: '/geographic/coastal-erosion-map.kml' },
-            { name: 'Norfolk Sea Level Data', path: '/geographic/norfolk-sea-level' },
-            { name: 'Virginia Beach Infrastructure', path: '/geographic/vb-infrastructure' }
+            { name: 'Regional Sea Level Data', path: '/geographic/regional-sea-level' },
+            { name: 'Coastal Infrastructure', path: '/geographic/coastal-infrastructure' }
           ]
         };
     }
