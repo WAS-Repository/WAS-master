@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Search, MapPin, Filter, Globe, Layers, Pin, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import EnhancedMapView from '../visualization/EnhancedMapView';
 
 interface GeographicSearchProps {
   onLocationSelect?: (location: any) => void;
@@ -153,9 +154,11 @@ export default function GeographicSearch({ onLocationSelect, onDataSelect }: Geo
   ];
 
   return (
-    <div className="h-full bg-[#1e1e1e] text-white flex flex-col">
-      {/* Header */}
-      <div className="p-4 border-b border-[#3e3e3e]">
+    <div className="h-full bg-[#1e1e1e] text-white flex">
+      {/* Left Panel - Search and Results */}
+      <div className="w-1/3 border-r border-[#3e3e3e] flex flex-col">
+        {/* Header */}
+        <div className="p-4 border-b border-[#3e3e3e]">
         <div className="flex items-center mb-3">
           <MapPin size={18} className="mr-2 text-orange-400" />
           <h2 className="text-lg font-semibold">Geographic Research</h2>
@@ -298,6 +301,23 @@ export default function GeographicSearch({ onLocationSelect, onDataSelect }: Geo
             </div>
           </div>
         )}
+      </div>
+      </div>
+      
+      {/* Right Panel - Map View */}
+      <div className="flex-1">
+        <EnhancedMapView 
+          data={searchResults.map(result => ({
+            id: result.id,
+            name: result.title,
+            latitude: result.coordinates[1],
+            longitude: result.coordinates[0],
+            type: result.type as any,
+            description: result.snippet,
+            metadata: result.metadata
+          }))}
+          onDataSelect={onDataSelect}
+        />
       </div>
     </div>
   );

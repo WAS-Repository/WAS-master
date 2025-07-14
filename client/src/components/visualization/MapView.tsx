@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Button } from '@/components/ui/button';
@@ -122,106 +122,17 @@ function MapBoundsHandler() {
 }
 
 export default function MapView() {
-  const isMobile = useIsMobile();
-  const [mapCenter, setMapCenter] = useState<[number, number]>([36.8508, -76.2859]); // Norfolk as default center
-  const [selectedLocality, setSelectedLocality] = useState<string | null>(null);
-  const [showList, setShowList] = useState(!isMobile);
-  const geoJSONRef = useRef<any>(null);
-
-  // Fetch GeoJSON data with React Query
-  const { data: geoJSONData, isLoading, error } = useQuery({
-    queryKey: ['/api/geojson'],
-    queryFn: async () => {
-      const res = await apiRequest('/api/geojson');
-      return res.json();
-    }
-  });
-
-  // Handle display on mobile
-  useEffect(() => {
-    if (isMobile) {
-      setShowList(false);
-    } else {
-      setShowList(true);
-    }
-  }, [isMobile]);
-
-  // Handle locality selection
-  const handleLocalitySelect = (name: string, position: [number, number]) => {
-    setSelectedLocality(name);
-    setMapCenter(position);
-    if (isMobile) {
-      setShowList(false);
-    }
-  };
-
-  // Determine tile URL based on theme (dark/light) with better contrast and road data
-  // Using OpenStreetMap with higher contrast for better accessibility
-  const tileUrl = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-
+  // Import and use the enhanced map view that supports both 2D and 3D
+  const EnhancedMapView = React.lazy(() => import('./EnhancedMapView'));
+  
   return (
-    <div className="h-full flex flex-col md:flex-row relative">
-      {/* Map Container */}
-      <div className="flex-grow">
-        {isLoading ? (
-          <div className="h-full flex items-center justify-center bg-slate-900">
-            <Loader2 className="h-8 w-8 animate-spin text-slate-400" />
-            <span className="ml-2 text-slate-400">Loading map data...</span>
-          </div>
-        ) : (
-          <MapContainer 
-            center={mapCenter} 
-            zoom={9} 
-            style={{ height: '100%', width: '100%' }}
-            attributionControl={false}
-            zoomControl={!isMobile}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-              url={tileUrl}
-            />
-            
-            {/* GeoJSON Layer */}
-            {geoJSONData && (
-              <GeoJSON 
-                data={geoJSONData} 
-                style={geoJSONStyle}
-                ref={geoJSONRef}
-              />
-            )}
-            
-            {/* Location Markers */}
-            {locationMarkers.map((marker) => (
-              <Marker 
-                key={marker.name}
-                position={marker.position}
-                eventHandlers={{
-                  click: () => {
-                    setSelectedLocality(marker.name);
-                  }
-                }}
-              >
-                <Popup>
-                  <div className="text-slate-900">
-                    <h3 className="font-medium">{marker.name}</h3>
-                    <p className="text-xs mt-1">{marker.documents} documents available</p>
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {marker.types.map(type => (
-                        <span key={type} className="inline-block px-2 py-0.5 bg-slate-200 text-slate-800 rounded text-[10px]">
-                          {type}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            ))}
-            
-            <MapCenterHandler center={mapCenter} />
-            <MapBoundsHandler />
-          </MapContainer>
-        )}
+    <React.Suspense fallback={
+      <div className="h-full flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <span className="ml-2 text-muted-foreground">Loading map...</span>
       </div>
-    </div>
+    }>
+      <EnhancedMapView />
+    </React.Suspense>
   );
 }
