@@ -257,7 +257,7 @@ export default function IDEWorkspace() {
   };
 
   return (
-    <div className="h-full flex flex-col border border-border-color rounded overflow-hidden">
+    <div className="h-full flex flex-col border border-border-color overflow-hidden">
       {/* Workspace Toolbar */}
       <div className="bg-bg-dark p-1 flex items-center justify-between border-b border-border-color">
         <div className="flex items-center gap-2">
@@ -314,7 +314,7 @@ export default function IDEWorkspace() {
                             {tab.icon}
                             <span>{tab.title}</span>
                             <button
-                              className="ml-1 h-3 w-3 rounded-full hover:bg-destructive hover:text-destructive-foreground flex items-center justify-center"
+                              className="ml-1 h-3 w-3 hover:bg-destructive hover:text-destructive-foreground flex items-center justify-center"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 removeTab(group.id, tab.id);
@@ -330,12 +330,12 @@ export default function IDEWorkspace() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-5 w-5 p-0 rounded-full"
+                            className="h-5 w-5 p-0"
                           >
                             <Plus size={12} />
                           </Button>
                           
-                          <div className="absolute hidden group-hover:flex top-full left-0 mt-1 bg-background border border-border-color rounded p-1 shadow-md flex-col z-10">
+                          <div className="absolute hidden group-hover:flex top-full left-0 mt-1 bg-background border border-border-color p-1 shadow-md flex-col z-10">
                             <Button 
                               variant="ghost" 
                               size="sm" 

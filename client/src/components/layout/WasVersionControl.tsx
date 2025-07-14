@@ -10,7 +10,9 @@ import {
   Plus,
   Check,
   AlertCircle,
-  Download
+  Download,
+  FileText,
+  Folder
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { wasVC, WasCommit, WasRepository } from '@/lib/wasVersionControl';
@@ -114,18 +116,18 @@ export default function WasVersionControl({ currentDocument, documentContent, on
 
       <div className="flex-1 overflow-auto p-3 space-y-4">
         {/* Session Info */}
-        <div className="bg-[#252526] rounded p-3 border border-[#3e3e3e]">
+        <div className="bg-[#252526] p-3 border border-[#3e3e3e]">
           <div className="text-xs font-semibold mb-2">Current Session</div>
           <div className="space-y-1 text-xs text-gray-300">
-            <div>📊 {sessionStats.totalCommits} commits</div>
-            <div>📁 {sessionStats.totalRepositories} repositories</div>
-            <div>⏳ {sessionStats.pendingChanges} pending changes</div>
+            <div><GitCommit size={12} className="inline mr-2" />{sessionStats.totalCommits} commits</div>
+            <div><Folder size={12} className="inline mr-2" />{sessionStats.totalRepositories} repositories</div>
+            <div><Clock size={12} className="inline mr-2" />{sessionStats.pendingChanges} pending changes</div>
           </div>
         </div>
 
         {/* Pending Changes */}
         {pendingChanges.size > 0 && (
-          <div className="bg-[#252526] rounded p-3 border border-[#3e3e3e]">
+          <div className="bg-[#252526] p-3 border border-[#3e3e3e]">
             <div className="text-xs font-semibold mb-2 flex items-center">
               <AlertCircle size={12} className="mr-1 text-yellow-400" />
               Pending Changes
@@ -133,7 +135,7 @@ export default function WasVersionControl({ currentDocument, documentContent, on
             <div className="space-y-1">
               {Array.from(pendingChanges.entries()).map(([path, content]) => (
                 <div key={path} className="text-xs text-gray-300 truncate">
-                  📄 {path.split('/').pop()}
+                  <FileText size={12} className="inline mr-2" />{path.split('/').pop()}
                 </div>
               ))}
             </div>
@@ -142,7 +144,7 @@ export default function WasVersionControl({ currentDocument, documentContent, on
 
         {/* Commit Interface */}
         {currentDocument && !pendingCommit && (
-          <div className="bg-[#252526] rounded p-3 border border-[#3e3e3e]">
+          <div className="bg-[#252526] p-3 border border-[#3e3e3e]">
             <div className="text-xs font-semibold mb-3">Commit Changes</div>
             
             <div className="space-y-2">
@@ -151,14 +153,14 @@ export default function WasVersionControl({ currentDocument, documentContent, on
                 placeholder="Your email address"
                 value={userEmail}
                 onChange={(e) => setUserEmail(e.target.value)}
-                className="w-full bg-[#3c3c3c] text-white text-xs p-2 rounded border border-[#3e3e3e]"
+                className="w-full bg-[#3c3c3c] text-white text-xs p-2 border border-[#3e3e3e]"
               />
               
               <textarea
                 placeholder="Commit message..."
                 value={commitMessage}
                 onChange={(e) => setCommitMessage(e.target.value)}
-                className="w-full bg-[#3c3c3c] text-white text-xs p-2 rounded border border-[#3e3e3e] h-16 resize-none"
+                className="w-full bg-[#3c3c3c] text-white text-xs p-2 border border-[#3e3e3e] h-16 resize-none"
               />
               
               <Button 
@@ -176,7 +178,7 @@ export default function WasVersionControl({ currentDocument, documentContent, on
 
         {/* Email Verification */}
         {pendingCommit && (
-          <div className="bg-[#252526] rounded p-3 border border-yellow-500">
+          <div className="bg-[#252526] p-3 border border-yellow-500">
             <div className="text-xs font-semibold mb-2 flex items-center">
               <Mail size={12} className="mr-1 text-yellow-400" />
               Email Verification Required
@@ -192,7 +194,7 @@ export default function WasVersionControl({ currentDocument, documentContent, on
                 placeholder="Enter verification code"
                 value={verificationInput}
                 onChange={(e) => setVerificationInput(e.target.value)}
-                className="w-full bg-[#3c3c3c] text-white text-xs p-2 rounded border border-[#3e3e3e]"
+                className="w-full bg-[#3c3c3c] text-white text-xs p-2 border border-[#3e3e3e]"
               />
               
               <Button 
@@ -210,7 +212,7 @@ export default function WasVersionControl({ currentDocument, documentContent, on
 
         {/* Document History */}
         {showHistory && currentDocument && (
-          <div className="bg-[#252526] rounded p-3 border border-[#3e3e3e]">
+          <div className="bg-[#252526] p-3 border border-[#3e3e3e]">
             <div className="text-xs font-semibold mb-3">Document History</div>
             
             {documentHistory.length > 0 ? (
@@ -218,7 +220,7 @@ export default function WasVersionControl({ currentDocument, documentContent, on
                 {documentHistory.map((commit) => (
                   <div 
                     key={commit.id}
-                    className="p-2 bg-[#3c3c3c] rounded hover:bg-[#404040] cursor-pointer transition-colors"
+                    className="p-2 bg-[#3c3c3c] hover:bg-[#404040] cursor-pointer transition-colors border border-[#3e3e3e]"
                     onClick={() => handleLoadVersion(commit.id)}
                   >
                     <div className="flex items-start justify-between">
@@ -259,7 +261,7 @@ export default function WasVersionControl({ currentDocument, documentContent, on
         )}
 
         {/* Session Actions */}
-        <div className="bg-[#252526] rounded p-3 border border-[#3e3e3e]">
+        <div className="bg-[#252526] p-3 border border-[#3e3e3e]">
           <div className="text-xs font-semibold mb-2">Session Actions</div>
           <Button 
             size="sm" 

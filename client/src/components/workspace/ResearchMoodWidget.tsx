@@ -387,7 +387,7 @@ export default function ResearchMoodWidget({ onMoodChange, className = '' }: Res
               </Select>
             </div>
             
-            <div className="bg-secondary/20 rounded-md p-3 text-sm">
+            <div className="bg-secondary/20 p-3 text-sm border border-border-color">
               <div className="flex items-start gap-2">
                 {currentMood.icon}
                 <div>

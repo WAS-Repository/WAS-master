@@ -364,13 +364,13 @@ Select different files from the explorer to view their specific content.`;
           <span className="font-semibold">World Archive System</span>
           <div className="relative" ref={fileMenuRef}>
             <span 
-              className="hover:bg-[var(--color-hover)] px-2 py-1 rounded cursor-pointer"
+              className="hover:bg-[var(--color-hover)] px-2 py-1 cursor-pointer"
               onClick={() => setShowFileMenu(!showFileMenu)}
             >
               File
             </span>
             {showFileMenu && (
-              <div className="absolute top-full left-0 mt-1 bg-[var(--color-surface)] border border-[var(--color-border)] rounded shadow-lg z-50 w-64">
+              <div className="absolute top-full left-0 mt-1 bg-[var(--color-surface)] border border-[var(--color-border)] shadow-lg z-50 w-64">
                 <div className="py-1">
                   <div 
                     className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center"
@@ -473,13 +473,13 @@ Select different files from the explorer to view their specific content.`;
           </div>
           <div className="relative" ref={viewMenuRef}>
             <span 
-              className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer"
+              className="hover:bg-[#3e3e3e] px-2 py-1 cursor-pointer"
               onClick={() => setShowViewMenu(!showViewMenu)}
             >
               View
             </span>
             {showViewMenu && (
-              <div className="absolute top-full left-0 mt-1 bg-[#252526] border border-[#3e3e3e] rounded shadow-lg z-50 w-64">
+              <div className="absolute top-full left-0 mt-1 bg-[#252526] border border-[#3e3e3e] shadow-lg z-50 w-64">
                 <div className="py-1">
                   <div className="px-3 py-2 hover:bg-[#3e3e3e] cursor-pointer text-sm flex justify-between items-center">
                     <span>Command Palette...</span>
@@ -605,7 +605,7 @@ Select different files from the explorer to view their specific content.`;
               </div>
             )}
           </div>
-          <span className="hover:bg-[#3e3e3e] px-2 py-1 rounded cursor-pointer">Terminal</span>
+          <span className="hover:bg-[#3e3e3e] px-2 py-1 cursor-pointer">Terminal</span>
         </div>
         
         {/* Current Workspace Mode Indicator */}
@@ -678,7 +678,7 @@ Select different files from the explorer to view their specific content.`;
                           <FileText size={14} className="mr-2" />
                           <span className="truncate max-w-[120px]">{file.name}</span>
                           <span 
-                            className="ml-2 text-gray-400 hover:text-white hover:bg-[#3e3e3e] rounded px-1" 
+                            className="ml-2 text-gray-400 hover:text-white hover:bg-[#3e3e3e] px-1" 
                             onClick={(e) => { e.stopPropagation(); closeFile(file.path); }}
                             title="Close"
                           >
@@ -731,7 +731,7 @@ Select different files from the explorer to view their specific content.`;
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'shell' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-primary)]'}`} 
+                        className={`h-6 px-2 py-0 text-xs ${terminalMode === 'shell' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-primary)]'}`} 
                         onClick={() => switchMode('shell')}
                       >
                         <Terminal size={12} className="mr-1" />
@@ -740,7 +740,7 @@ Select different files from the explorer to view their specific content.`;
                       <Button 
                         variant="ghost" 
                         size="sm" 
-                        className={`h-6 px-2 py-0 rounded-sm text-xs ${terminalMode === 'agent' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-primary)]'}`}
+                        className={`h-6 px-2 py-0 text-xs ${terminalMode === 'agent' ? 'bg-[var(--color-primary)]' : 'hover:bg-[var(--color-primary)]'}`}
                         onClick={() => switchMode('agent')}
                       >
                         <MessageSquare size={12} className="mr-1" />
@@ -824,7 +824,7 @@ Select different files from the explorer to view their specific content.`;
                 <div className="h-full bg-[#1e1e1e] border-l border-[#3e3e3e]">
                   <div className="p-4 border-b border-[#3e3e3e]">
                     <h3 className="text-sm font-semibold text-white mb-2">Location Map</h3>
-                    <div className="bg-[#2d2d2d] h-48 rounded border border-[#3e3e3e] flex items-center justify-center">
+                    <div className="bg-[#2d2d2d] h-48 border border-[#3e3e3e] flex items-center justify-center">
                       <div className="text-center text-gray-400">
                         <MapPin size={32} className="mx-auto mb-2 opacity-50" />
                         <p className="text-sm">Interactive map will appear here</p>
