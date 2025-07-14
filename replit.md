@@ -135,6 +135,15 @@ For local development, the server runs in development mode with:
 - Auto-restarting for the backend
 - In-memory database if PostgreSQL isn't available
 
+## Recent Changes
+
+- Fixed session persistence with instant auto-saving across all workspace modes, preserving drawings, notes, and terminal states in real-time.
+- Created comprehensive D3.js visualization system with interactive View menu listing 15+ visualizations organized by categories (Coastal, Environmental, Infrastructure, Demographic, Economic).
+- Transformed research notes into rich text editor with Google Docs-like capabilities including formatting toolbar, text alignment, lists, colors, and export options.
+- Added research sources section with document management, folder creation, file compression capabilities, and sample datasets for handling large research data.
+- Enhanced file explorer with drag-and-drop capabilities and established master/workspace relationship where workspace modes show subset file trees from the master explorer.
+- Implemented VS Code-style welcome screen that adapts to current workspace mode (Research/Story/Developer) with mode-specific actions, recent files, and walkthroughs - displays when no files are open.
+
 ## Notes for Implementation
 
 When implementing new features or making changes:

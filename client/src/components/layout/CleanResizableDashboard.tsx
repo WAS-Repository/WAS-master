@@ -8,6 +8,7 @@ import ResearchNotepad from './ResearchNotepad';
 import StoryWhiteboard from './StoryWhiteboard';
 import TheiaIDE from './TheiaIDE';
 import WasVersionControl from './WasVersionControl';
+import WelcomeScreen from './WelcomeScreen';
 import { sessionPersistence } from '@/lib/sessionPersistence';
 import { visualizationManager, availableVisualizations } from '@/lib/visualizations';
 
@@ -93,6 +94,27 @@ export default function CleanResizableDashboard({
       setOpenFiles(prev => [...prev, newFile]);
     }
     setActiveFile(file.path);
+  };
+
+  // Handle welcome screen actions
+  const handleWelcomeAction = (action: string) => {
+    if (action.startsWith('open-recent:')) {
+      const path = action.replace('open-recent:', '');
+      const fileName = path.split('/').pop() || 'untitled';
+      handleFileSelect({ name: fileName, path });
+    } else if (action === 'new-file' || action === 'new-research' || action === 'new-story') {
+      const fileName = workspaceMode === 'research' ? 'new-research.md' : 
+                     workspaceMode === 'story' ? 'new-story.md' : 
+                     'new-file.txt';
+      const path = `/${workspaceMode}/${fileName}`;
+      handleFileSelect({ name: fileName, path });
+    } else if (action === 'open-dataset' || action === 'import-media' || action === 'open-template') {
+      // These could trigger file browser or other actions
+      console.log('Action:', action);
+    } else if (action.startsWith('walkthrough:')) {
+      const walkthrough = action.replace('walkthrough:', '');
+      console.log('Open walkthrough:', walkthrough);
+    }
   };
 
   // Close file tab
@@ -454,13 +476,20 @@ Select different files from the explorer to view their specific content.`;
         {/* Main Content Area */}
         <Panel defaultSize={workspaceMode === 'research' ? 50 : workspaceMode === 'story' ? 60 : 75} minSize={40} id="main-content">
           {workspaceMode === 'developer' ? (
-            /* Developer Mode - Theia IDE */
-            <TheiaIDE 
-              openFiles={openFiles}
-              activeFile={activeFile}
-              onFileSelect={handleFileSelect}
-              onFileClose={closeFile}
-            />
+            /* Developer Mode - Theia IDE or Welcome Screen */
+            openFiles.length > 0 || activeFile ? (
+              <TheiaIDE 
+                openFiles={openFiles}
+                activeFile={activeFile}
+                onFileSelect={handleFileSelect}
+                onFileClose={closeFile}
+              />
+            ) : (
+              <WelcomeScreen 
+                workspaceMode={workspaceMode} 
+                onAction={handleWelcomeAction}
+              />
+            )
           ) : (
             /* Research and Story Modes - Simplified Layout */
             <PanelGroup direction="vertical" className="h-full" id="basic-panels">
@@ -508,23 +537,10 @@ Select different files from the explorer to view their specific content.`;
                         </pre>
                       </div>
                     ) : (
-                      <div className="flex items-center justify-center h-full text-center">
-                        <div>
-                          {workspaceMode === 'research' && <Search size={48} className="mx-auto mb-4 text-blue-400" />}
-                          {workspaceMode === 'story' && <Palette size={48} className="mx-auto mb-4 text-purple-400" />}
-                          <h2 className="text-lg mb-4">
-                            {workspaceMode === 'research' && 'Research Mode'}
-                            {workspaceMode === 'story' && 'Story Mode'}
-                          </h2>
-                          <p className="text-sm text-gray-400 mb-8">
-                            {workspaceMode === 'research' && 'Document analysis with research notepad'}
-                            {workspaceMode === 'story' && 'Visual storytelling with interactive whiteboard'}
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            💡 Use the {workspaceMode === 'research' ? 'notepad' : 'whiteboard'} panel to enhance your workflow!
-                          </p>
-                        </div>
-                      </div>
+                      <WelcomeScreen 
+                        workspaceMode={workspaceMode} 
+                        onAction={handleWelcomeAction}
+                      />
                     )}
                   </div>
                 </div>
