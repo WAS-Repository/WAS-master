@@ -152,6 +152,9 @@ For local development, the server runs in development mode with:
 - Revamped View menu to match VS Code structure with workspace mode switcher, appearance options, panel controls, and visualization shortcuts - consolidated workspace modes into organized menu.
 - Added Geographic Mode with location-based data search, interactive map interface, and GIS data access capabilities for spatial research and analysis.
 - Rebranded entire system from "Hampton Roads Research Platform" to "World Archive System" with updated branding throughout the application.
+- **[2025-01-19] Implemented 3D Temporal Space Archive visualization using Three.js, enabling time-based navigation through document evolution with interactive 3D node-based representation.**
+- **[2025-01-19] Added toggle functionality in Geographic Mode to switch between 2D map view (Leaflet) and 3D temporal view (Three.js/React Three Fiber).**
+- **[2025-01-19] Installed and integrated Three.js, @react-three/fiber, and @react-three/drei for advanced 3D visualizations and temporal data exploration.**
 
 ## Notes for Implementation
 

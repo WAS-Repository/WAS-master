@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, MapPin, Filter, Globe, Layers, Pin, Navigation } from 'lucide-react';
+import { Search, MapPin, Filter, Globe, Layers, Pin, Navigation, Box, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import EnhancedMapView from '../visualization/EnhancedMapView';
+import ThreeDTemporalViewSimple from '../visualization/ThreeDTemporalViewSimple';
 
 interface GeographicSearchProps {
   onLocationSelect?: (location: any) => void;
@@ -89,6 +90,7 @@ export default function GeographicSearch({ onLocationSelect, onDataSelect }: Geo
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'map' | '3d'>('map');
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = async (query: string) => {
@@ -304,20 +306,75 @@ export default function GeographicSearch({ onLocationSelect, onDataSelect }: Geo
       </div>
       </div>
       
-      {/* Right Panel - Map View */}
-      <div className="flex-1">
-        <EnhancedMapView 
-          data={searchResults.map(result => ({
-            id: result.id,
-            name: result.title,
-            latitude: result.coordinates[1],
-            longitude: result.coordinates[0],
-            type: result.type as any,
-            description: result.snippet,
-            metadata: result.metadata
-          }))}
-          onDataSelect={onDataSelect}
-        />
+      {/* Right Panel - Map/3D View */}
+      <div className="flex-1 flex flex-col">
+        {/* View Toggle */}
+        <div className="border-b border-[#3e3e3e] p-3 flex items-center justify-between bg-[#1e1e1e]">
+          <div className="flex items-center space-x-2">
+            <Globe size={16} className="text-gray-400" />
+            <span className="text-sm text-gray-300">Visualization Mode</span>
+          </div>
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setViewMode('map')}
+              className={`text-xs ${
+                viewMode === 'map'
+                  ? 'bg-[#007acc] border-[#007acc] text-white'
+                  : 'bg-[#2d2d2d] border-[#3e3e3e] hover:bg-[#3e3e3e]'
+              }`}
+            >
+              <MapPin size={14} className="mr-1" />
+              Map View
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setViewMode('3d')}
+              className={`text-xs ${
+                viewMode === '3d'
+                  ? 'bg-[#007acc] border-[#007acc] text-white'
+                  : 'bg-[#2d2d2d] border-[#3e3e3e] hover:bg-[#3e3e3e]'
+              }`}
+            >
+              <Box size={14} className="mr-1" />
+              3D Temporal
+            </Button>
+          </div>
+        </div>
+        
+        {/* View Content */}
+        <div className="flex-1">
+          {viewMode === 'map' ? (
+            <EnhancedMapView 
+              data={searchResults.map(result => ({
+                id: result.id,
+                name: result.title,
+                latitude: result.coordinates[1],
+                longitude: result.coordinates[0],
+                type: result.type as any,
+                description: result.snippet,
+                metadata: result.metadata
+              }))}
+              onDataSelect={onDataSelect}
+            />
+          ) : (
+            <ThreeDTemporalViewSimple 
+              onNodeSelect={(node) => {
+                if (onDataSelect) {
+                  onDataSelect({
+                    id: node.id,
+                    title: node.title,
+                    type: node.type,
+                    metadata: node.metadata,
+                    timestamp: node.timestamp
+                  });
+                }
+              }}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
