@@ -279,23 +279,43 @@ export default function ThreeDTemporalViewSimple({ onNodeSelect }: ThreeDTempora
   const [selectedNode, setSelectedNode] = useState<DocumentNode | null>(null);
   const [renderError, setRenderError] = useState(false);
   
-  // Protect against wallet extensions
+  // Check for wallet extension conflicts
   useEffect(() => {
-    // Store original globals
-    const originalEthereum = (window as any).ethereum;
-    const originalWeb3 = (window as any).web3;
+    // Instead of deleting, we'll check if wallet extensions are interfering
+    const hasWalletExtension = typeof window !== 'undefined' && (
+      (window as any).ethereum || 
+      (window as any).web3 ||
+      (window as any).tronWeb ||
+      (window as any).solana
+    );
     
-    // Clean environment for Three.js
-    if (typeof window !== 'undefined') {
-      delete (window as any).ethereum;
-      delete (window as any).web3;
+    if (hasWalletExtension) {
+      console.warn('Wallet extension detected. This may interfere with 3D rendering.');
+    }
+    
+    // Handle WebGL context loss
+    const handleContextLost = (e: Event) => {
+      e.preventDefault();
+      console.error('WebGL context lost');
+      setRenderError(true);
+    };
+    
+    const handleContextRestored = () => {
+      console.log('WebGL context restored');
+      setRenderError(false);
+    };
+    
+    // Add listeners for WebGL context events
+    const canvas = document.querySelector('canvas');
+    if (canvas) {
+      canvas.addEventListener('webglcontextlost', handleContextLost);
+      canvas.addEventListener('webglcontextrestored', handleContextRestored);
     }
     
     return () => {
-      // Restore on cleanup
-      if (typeof window !== 'undefined') {
-        if (originalEthereum) (window as any).ethereum = originalEthereum;
-        if (originalWeb3) (window as any).web3 = originalWeb3;
+      if (canvas) {
+        canvas.removeEventListener('webglcontextlost', handleContextLost);
+        canvas.removeEventListener('webglcontextrestored', handleContextRestored);
       }
     };
   }, []);

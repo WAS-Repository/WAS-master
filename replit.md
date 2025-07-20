@@ -163,6 +163,8 @@ For local development, the server runs in development mode with:
 - **[2025-01-20] Added dynamic time-of-day lighting, cloud layers, atmosphere effects, and interactive telemetry controls to the 3D globe visualization.**
 - **[2025-01-20] Fixed wallet extension conflict by creating SafeGlobeView component that isolates 3D visualization in iframe to prevent crypto wallet extensions from interfering with WebGL context.**
 - **[2025-01-20] Added error boundaries and WebGL context protection to ThreeDTemporalViewSimple component to handle wallet extension conflicts and WebGL context errors.**
+- **[2025-01-20] Created SafeTemporalView component using iframe isolation to prevent wallet extension interference with 3D temporal visualization.**
+- **[2025-01-20] Fixed "Cannot delete property 'ethereum' of #<Window>" error by removing delete operations and implementing proper WebGL context handling.**
 
 ## Notes for Implementation
 

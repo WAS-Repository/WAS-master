@@ -3,7 +3,7 @@ import { Search, MapPin, Filter, Globe, Layers, Pin, Navigation, Box, Clock } fr
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import EnhancedMapView from '../visualization/EnhancedMapView';
-import ThreeDTemporalViewSimple from '../visualization/ThreeDTemporalViewSimple';
+import SafeTemporalView from '../visualization/SafeTemporalView';
 
 interface GeographicSearchProps {
   onLocationSelect?: (location: any) => void;
@@ -360,7 +360,7 @@ export default function GeographicSearch({ onLocationSelect, onDataSelect }: Geo
               onDataSelect={onDataSelect}
             />
           ) : (
-            <ThreeDTemporalViewSimple 
+            <SafeTemporalView 
               onNodeSelect={(node) => {
                 if (onDataSelect) {
                   onDataSelect({
