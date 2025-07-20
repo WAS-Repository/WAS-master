@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Folder, File, ChevronRight, ChevronDown, Search, FolderPlus, Upload, Archive, Download, Trash2, MoreHorizontal, FileText, Database, Image, Move, Copy } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,6 +23,7 @@ interface ResearchSource {
   description?: string;
   tags?: string[];
   selected?: boolean;
+  metadata?: any; // Added for backend file metadata
 }
 
 interface UbuntuFileExplorerProps {
@@ -132,6 +133,123 @@ export default function UbuntuFileExplorer({
       ]
     }
   ]);
+
+  // Add state for uploaded files from backend
+  const [uploadedFiles, setUploadedFiles] = useState<ResearchSource[]>([]);
+  const [isLoadingFiles, setIsLoadingFiles] = useState(false);
+
+  // Load uploaded files from backend
+  useEffect(() => {
+    const loadUploadedFiles = async () => {
+      setIsLoadingFiles(true);
+      try {
+        const response = await fetch('/api/files');
+        if (response.ok) {
+          const files = await response.json();
+          const formattedFiles: ResearchSource[] = files.map((file: any) => ({
+            id: file.id.toString(),
+            name: file.title,
+            type: 'file',
+            size: file.fileSize || 'Unknown',
+            dateModified: new Date(file.publishedDate || Date.now()).toISOString().split('T')[0],
+            path: `/uploads/${file.metadata?.filename || file.title}`,
+            description: `Uploaded: ${file.title}`,
+            tags: ['uploaded', file.fileFormat?.split('/')[1] || 'file'],
+            metadata: file.metadata
+          }));
+          setUploadedFiles(formattedFiles);
+        }
+      } catch (error) {
+        console.error('Failed to load uploaded files:', error);
+      } finally {
+        setIsLoadingFiles(false);
+      }
+    };
+
+    loadUploadedFiles();
+  }, []);
+
+  // Enhanced file upload handler
+  const handleFileUpload = async (files: FileList) => {
+    const formData = new FormData();
+    Array.from(files).forEach(file => {
+      formData.append('files', file);
+    });
+
+    try {
+      const response = await fetch('/api/upload/multiple', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('Files uploaded successfully:', result);
+        
+        // Refresh uploaded files list
+        const refreshResponse = await fetch('/api/files');
+        if (refreshResponse.ok) {
+          const files = await refreshResponse.json();
+          const formattedFiles: ResearchSource[] = files.map((file: any) => ({
+            id: file.id.toString(),
+            name: file.title,
+            type: 'file',
+            size: file.fileSize || 'Unknown',
+            dateModified: new Date(file.publishedDate || Date.now()).toISOString().split('T')[0],
+            path: `/uploads/${file.metadata?.filename || file.title}`,
+            description: `Uploaded: ${file.title}`,
+            tags: ['uploaded', file.fileFormat?.split('/')[1] || 'file'],
+            metadata: file.metadata
+          }));
+          setUploadedFiles(formattedFiles);
+        }
+      } else {
+        console.error('Upload failed:', await response.text());
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+    }
+  };
+
+  // File deletion handler
+  const handleFileDelete = async (fileId: string) => {
+    try {
+      const response = await fetch(`/api/files/${fileId}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        setUploadedFiles(prev => prev.filter(file => file.id !== fileId));
+      } else {
+        console.error('Delete failed:', await response.text());
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+    }
+  };
+
+  // File download handler
+  const handleFileDownload = async (file: ResearchSource) => {
+    if (file.metadata?.filename) {
+      try {
+        const response = await fetch(`/api/files/${file.metadata.filename}`);
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = file.name;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        }
+      } catch (error) {
+        console.error('Download error:', error);
+      }
+    }
+  };
+
   const [fileSystem, setFileSystem] = useState<FileSystemItem[]>([
     {
       name: 'Documents',
@@ -450,17 +568,7 @@ export default function UbuntuFileExplorer({
                     input.onchange = (e) => {
                       const files = (e.target as HTMLInputElement).files;
                       if (files) {
-                        const newFiles: ResearchSource[] = Array.from(files).map(file => ({
-                          id: Date.now().toString() + Math.random(),
-                          name: file.name,
-                          type: 'file',
-                          size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
-                          dateModified: new Date().toISOString().split('T')[0],
-                          path: `/sources/uploads/${file.name}`,
-                          description: `Uploaded file: ${file.name}`,
-                          tags: ['uploaded']
-                        }));
-                        setResearchSources(prev => [...prev, ...newFiles]);
+                        handleFileUpload(files);
                       }
                     };
                     input.click();
@@ -546,6 +654,17 @@ export default function UbuntuFileExplorer({
                       <Button variant="ghost" size="sm" className="h-4 w-4 p-0" title="Download">
                         <Download size={10} />
                       </Button>
+                      {item.metadata?.id && (
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="h-4 w-4 p-0 text-red-400 hover:text-red-300" 
+                          title="Delete"
+                          onClick={() => handleFileDelete(item.metadata.id)}
+                        >
+                          <Trash2 size={10} />
+                        </Button>
+                      )}
                     </div>
                   </div>
                   {item.children && item.expanded && (
@@ -587,6 +706,90 @@ export default function UbuntuFileExplorer({
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+
+          {/* Uploaded Files Section */}
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs font-semibold text-green-400">
+                📁 UPLOADED FILES
+                {isLoadingFiles && <span className="text-gray-500 ml-2">(Loading...)</span>}
+              </div>
+              <div className="flex items-center space-x-1">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="h-5 w-5 p-0 text-gray-400 hover:text-white"
+                  onClick={() => {
+                    const input = document.createElement('input');
+                    input.type = 'file';
+                    input.multiple = true;
+                    input.onchange = (e) => {
+                      const files = (e.target as HTMLInputElement).files;
+                      if (files) {
+                        handleFileUpload(files);
+                      }
+                    };
+                    input.click();
+                  }}
+                  title="Upload More Files"
+                >
+                  <Upload size={12} />
+                </Button>
+              </div>
+            </div>
+            
+            <div className="ml-2 border-l border-[#3e3e3e] pl-2">
+              {uploadedFiles.length === 0 ? (
+                <div className="text-xs text-gray-500 p-2 text-center">
+                  No uploaded files yet
+                </div>
+              ) : (
+                uploadedFiles.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`flex items-center justify-between py-1 px-2 hover:bg-[#2a2d2e] rounded cursor-pointer group`}
+                    onClick={() => onFileSelect(item)}
+                  >
+                    <div className="flex items-center flex-1">
+                      <div className="flex items-center mr-2">
+                        <File size={14} className="text-green-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-xs text-white">{item.name}</div>
+                        <div className="text-xs text-gray-500">{item.size}</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-4 w-4 p-0" 
+                        title="Download"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleFileDownload(item);
+                        }}
+                      >
+                        <Download size={10} />
+                      </Button>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="h-4 w-4 p-0 text-red-400 hover:text-red-300" 
+                        title="Delete"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleFileDelete(item.id);
+                        }}
+                      >
+                        <Trash2 size={10} />
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 

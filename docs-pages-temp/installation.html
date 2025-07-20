@@ -1,0 +1,368 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Installation Guide &mdash; World Archive System 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/custom.css?v=d5ee5d31" />
+
+  
+    <link rel="canonical" href="https://josiahbelfon.github.io/world-archive-system/installation.html" />
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quick Start Guide" href="quickstart.html" />
+    <link rel="prev" title="World Archive System Documentation" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search"  style="background: #2980B9" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            World Archive System
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Getting Started</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#system-requirements">System Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installation-methods">Installation Methods</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#quick-install">Quick Install</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#docker-installation">Docker Installation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#development-installation">Development Installation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#environment-variables">Environment Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#database-setup">Database Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#file-storage-setup">File Storage Setup</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#verification">Verification</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#common-issues">Common Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#getting-started">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#basic-workflow">Basic Workflow</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#document-management">Document Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#research-mode">Research Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#story-mode">Story Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#developer-mode">Developer Mode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#geographic-mode">Geographic Mode</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#advanced-features">Advanced Features</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#data-source-integration">Data Source Integration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#api-usage">API Usage</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="quickstart.html#common-issues">Common Issues</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu"  style="background: #2980B9" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">World Archive System</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content style-external-links">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Installation Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="installation-guide">
+<h1>Installation Guide<a class="headerlink" href="#installation-guide" title="Link to this heading"></a></h1>
+<p>This guide will help you install and set up the World Archive System (WAS) for your environment.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Link to this heading"></a></h2>
+<p>Before installing WAS, ensure you have the following:</p>
+<ul class="simple">
+<li><p>Python 3.8 or higher</p></li>
+<li><p>Node.js 16 or higher (for frontend components)</p></li>
+<li><p>PostgreSQL 12 or higher (for database)</p></li>
+<li><p>Git</p></li>
+</ul>
+</section>
+<section id="system-requirements">
+<h2>System Requirements<a class="headerlink" href="#system-requirements" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Minimum RAM</strong>: 4GB</p></li>
+<li><p><strong>Recommended RAM</strong>: 8GB or higher</p></li>
+<li><p><strong>Storage</strong>: 10GB available space</p></li>
+<li><p><strong>Network</strong>: Internet connection for package downloads</p></li>
+</ul>
+</section>
+<section id="installation-methods">
+<h2>Installation Methods<a class="headerlink" href="#installation-methods" title="Link to this heading"></a></h2>
+<section id="quick-install">
+<h3>Quick Install<a class="headerlink" href="#quick-install" title="Link to this heading"></a></h3>
+<p>For a quick installation with default settings:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/josiahbelfon/world-archive-system.git
+<span class="nb">cd</span><span class="w"> </span>world-archive-system
+
+<span class="c1"># Install Python dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+
+<span class="c1"># Install Node.js dependencies</span>
+npm<span class="w"> </span>install
+
+<span class="c1"># Set up the database</span>
+python<span class="w"> </span>scripts/setup_database.py
+
+<span class="c1"># Start the application</span>
+python<span class="w"> </span>server/index.py
+</pre></div>
+</div>
+</section>
+<section id="docker-installation">
+<h3>Docker Installation<a class="headerlink" href="#docker-installation" title="Link to this heading"></a></h3>
+<p>For containerized deployment:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/josiahbelfon/world-archive-system.git
+<span class="nb">cd</span><span class="w"> </span>world-archive-system
+
+<span class="c1"># Build the Docker image</span>
+docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>world-archive-system<span class="w"> </span>.
+
+<span class="c1"># Run the container</span>
+docker<span class="w"> </span>run<span class="w"> </span>-p<span class="w"> </span><span class="m">5000</span>:5000<span class="w"> </span>world-archive-system
+</pre></div>
+</div>
+</section>
+<section id="development-installation">
+<h3>Development Installation<a class="headerlink" href="#development-installation" title="Link to this heading"></a></h3>
+<p>For development and contribution:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clone the repository</span>
+git<span class="w"> </span>clone<span class="w"> </span>https://github.com/josiahbelfon/world-archive-system.git
+<span class="nb">cd</span><span class="w"> </span>world-archive-system
+
+<span class="c1"># Create virtual environment</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate<span class="w">  </span><span class="c1"># On Windows: venv\Scripts\activate</span>
+
+<span class="c1"># Install development dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements-dev.txt
+
+<span class="c1"># Install pre-commit hooks</span>
+pre-commit<span class="w"> </span>install
+
+<span class="c1"># Set up development database</span>
+python<span class="w"> </span>scripts/setup_dev_database.py
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h2>
+<section id="environment-variables">
+<h3>Environment Variables<a class="headerlink" href="#environment-variables" title="Link to this heading"></a></h3>
+<p>Create a <cite>.env</cite> file in the project root:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Database Configuration</span>
+<span class="nv">DATABASE_URL</span><span class="o">=</span>postgresql://username:password@localhost:5432/was_db
+
+<span class="c1"># Application Settings</span>
+<span class="nv">WAS_ENV</span><span class="o">=</span>development
+<span class="nv">WAS_DEBUG</span><span class="o">=</span><span class="nb">true</span>
+<span class="nv">WAS_SECRET_KEY</span><span class="o">=</span>your-secret-key-here
+
+<span class="c1"># API Keys (optional)</span>
+<span class="nv">OPENAI_API_KEY</span><span class="o">=</span>your-openai-key
+<span class="nv">GOOGLE_MAPS_API_KEY</span><span class="o">=</span>your-google-maps-key
+
+<span class="c1"># File Storage</span>
+<span class="nv">UPLOAD_DIR</span><span class="o">=</span>./uploads
+<span class="nv">MAX_FILE_SIZE</span><span class="o">=</span><span class="m">52428800</span><span class="w">  </span><span class="c1"># 50MB in bytes</span>
+</pre></div>
+</div>
+</section>
+<section id="database-setup">
+<h3>Database Setup<a class="headerlink" href="#database-setup" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Create a PostgreSQL database:</p>
+<div class="highlight-sql notranslate"><div class="highlight"><pre><span></span><span class="k">CREATE</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">was_db</span><span class="p">;</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">was_user</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="s1">&#39;your_password&#39;</span><span class="p">;</span>
+<span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">DATABASE</span><span class="w"> </span><span class="n">was_db</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">was_user</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p>Run database migrations:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/migrate_database.py
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="file-storage-setup">
+<h3>File Storage Setup<a class="headerlink" href="#file-storage-setup" title="Link to this heading"></a></h3>
+<ol class="arabic">
+<li><p>Create upload directories:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mkdir<span class="w"> </span>-p<span class="w"> </span>uploads/documents
+mkdir<span class="w"> </span>-p<span class="w"> </span>uploads/temp
+mkdir<span class="w"> </span>-p<span class="w"> </span>uploads/backups
+</pre></div>
+</div>
+</li>
+<li><p>Set proper permissions:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>uploads/
+chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>uploads/documents/
+chmod<span class="w"> </span><span class="m">755</span><span class="w"> </span>uploads/temp/
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+</section>
+<section id="verification">
+<h2>Verification<a class="headerlink" href="#verification" title="Link to this heading"></a></h2>
+<p>After installation, verify that WAS is running correctly:</p>
+<ol class="arabic">
+<li><p><strong>Check the application status</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>curl<span class="w"> </span>http://localhost:5000/api/health
+</pre></div>
+</div>
+</li>
+<li><p><strong>Test the web interface</strong>:</p>
+<p>Open your browser and navigate to <cite>http://localhost:5000</cite></p>
+</li>
+<li><p><strong>Verify database connection</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>scripts/test_database.py
+</pre></div>
+</div>
+</li>
+</ol>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<section id="common-issues">
+<h3>Common Issues<a class="headerlink" href="#common-issues" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt><strong>Database Connection Error</strong></dt><dd><ul class="simple">
+<li><p>Verify PostgreSQL is running</p></li>
+<li><p>Check database credentials in <cite>.env</cite></p></li>
+<li><p>Ensure database exists and user has proper permissions</p></li>
+</ul>
+</dd>
+<dt><strong>Port Already in Use</strong></dt><dd><ul class="simple">
+<li><p>Change the port in <cite>server/index.py</cite></p></li>
+<li><p>Or kill the process using the port: <cite>lsof -ti:5000 | xargs kill</cite></p></li>
+</ul>
+</dd>
+<dt><strong>File Upload Errors</strong></dt><dd><ul class="simple">
+<li><p>Check upload directory permissions</p></li>
+<li><p>Verify disk space availability</p></li>
+<li><p>Check file size limits</p></li>
+</ul>
+</dd>
+<dt><strong>Node.js Dependencies</strong></dt><dd><ul class="simple">
+<li><p>Clear npm cache: <cite>npm cache clean –force</cite></p></li>
+<li><p>Delete node_modules and reinstall: <cite>rm -rf node_modules &amp;&amp; npm install</cite></p></li>
+</ul>
+</dd>
+</dl>
+</section>
+</section>
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>
+<p>If you encounter issues during installation:</p>
+<ul class="simple">
+<li><p>Check the <cite>troubleshooting</cite> section above</p></li>
+<li><p>Review the <cite>logs</cite> directory for error messages</p></li>
+<li><p>Open an issue on <a class="reference external" href="https://github.com/josiahbelfon/world-archive-system/issues">GitHub</a></p></li>
+<li><p>Join our <a class="reference external" href="https://discord.gg/world-archive-system">Discord community</a></p></li>
+</ul>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<p>After successful installation:</p>
+<ol class="arabic simple">
+<li><p>Read the <a class="reference internal" href="quickstart.html"><span class="doc">Quick Start Guide</span></a> guide</p></li>
+<li><p>Explore the <span class="xref std std-doc">user_guide/index</span> for detailed usage</p></li>
+<li><p>Check out the <span class="xref std std-doc">api/index</span> for API documentation</p></li>
+<li><p>Review <span class="xref std std-doc">deployment</span> for production deployment</p></li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="World Archive System Documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="quickstart.html" class="btn btn-neutral float-right" title="Quick Start Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Josiah Olivier Belfon-Valentine.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

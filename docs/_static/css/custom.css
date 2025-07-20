@@ -1,0 +1,161 @@
+/* Custom CSS for World Archive System Documentation */
+
+/* Custom color scheme */
+:root {
+    --was-primary: #2980B9;
+    --was-secondary: #3498DB;
+    --was-accent: #E74C3C;
+    --was-dark: #2C3E50;
+    --was-light: #ECF0F1;
+}
+
+/* Header styling */
+.wy-side-nav-search {
+    background-color: var(--was-primary);
+}
+
+.wy-side-nav-search input[type=text] {
+    border-color: var(--was-secondary);
+}
+
+/* Navigation styling */
+.wy-nav-side {
+    background-color: var(--was-dark);
+}
+
+.wy-nav-side a {
+    color: var(--was-light);
+}
+
+.wy-nav-side a:hover {
+    background-color: var(--was-secondary);
+}
+
+/* Content styling */
+.wy-nav-content {
+    background-color: #ffffff;
+}
+
+.wy-nav-content-wrap {
+    background-color: #ffffff;
+}
+
+/* Code blocks */
+.highlight {
+    background-color: var(--was-light);
+    border-left: 4px solid var(--was-primary);
+}
+
+/* Links */
+a {
+    color: var(--was-primary);
+}
+
+a:hover {
+    color: var(--was-secondary);
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: var(--was-primary);
+    border-color: var(--was-primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--was-secondary);
+    border-color: var(--was-secondary);
+}
+
+/* Custom banner styling */
+.was-banner {
+    background: linear-gradient(135deg, var(--was-primary) 0%, var(--was-secondary) 100%);
+    color: white;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.was-banner h1 {
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.was-banner p {
+    color: var(--was-light);
+    font-size: 1.1rem;
+}
+
+/* Feature cards */
+.feature-card {
+    background: white;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.feature-card h3 {
+    color: var(--was-primary);
+    margin-bottom: 1rem;
+}
+
+/* Architecture diagram styling */
+.architecture-diagram {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Use case styling */
+.use-case {
+    background: var(--was-light);
+    border-left: 4px solid var(--was-primary);
+    padding: 1rem;
+    margin: 1rem 0;
+    border-radius: 0 4px 4px 0;
+}
+
+.use-case h4 {
+    color: var(--was-primary);
+    margin-bottom: 0.5rem;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .was-banner {
+        padding: 1rem;
+    }
+    
+    .feature-card {
+        margin: 0.5rem 0;
+        padding: 1rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .wy-nav-content {
+        background-color: #1a1a1a;
+        color: #ffffff;
+    }
+    
+    .feature-card {
+        background: #2d2d2d;
+        border-color: #404040;
+        color: #ffffff;
+    }
+    
+    .use-case {
+        background: #2d2d2d;
+        color: #ffffff;
+    }
+} 

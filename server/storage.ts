@@ -2,7 +2,10 @@ import {
   Document, InsertDocument, 
   DocumentLocality, InsertDocumentLocality,
   DocumentRelationship, InsertDocumentRelationship,
-  SearchQuery, InsertSearchQuery
+  SearchQuery, InsertSearchQuery,
+  UserSession, InsertUserSession,
+  SessionDocument, InsertSessionDocument,
+  WasCommitHistory, InsertWasCommitHistory
 } from "@shared/schema";
 
 export interface IStorage {
@@ -41,20 +44,32 @@ export class MemStorage implements IStorage {
   private documentLocalities: Map<number, DocumentLocality>;
   private documentRelationships: Map<number, DocumentRelationship>;
   private searchQueries: Map<number, SearchQuery>;
+  private userSessions: Map<string, UserSession>;
+  private sessionDocuments: Map<string, SessionDocument>;
+  private wasCommits: Map<string, WasCommitHistory>;
   private currentDocumentId: number;
   private currentDocumentLocalityId: number;
   private currentDocumentRelationshipId: number;
   private currentSearchQueryId: number;
+  private currentSessionId: number;
+  private currentSessionDocumentId: number;
+  private currentWasCommitId: number;
 
   constructor() {
     this.documents = new Map();
     this.documentLocalities = new Map();
     this.documentRelationships = new Map();
     this.searchQueries = new Map();
+    this.userSessions = new Map();
+    this.sessionDocuments = new Map();
+    this.wasCommits = new Map();
     this.currentDocumentId = 1;
     this.currentDocumentLocalityId = 1;
     this.currentDocumentRelationshipId = 1;
     this.currentSearchQueryId = 1;
+    this.currentSessionId = 1;
+    this.currentSessionDocumentId = 1;
+    this.currentWasCommitId = 1;
   }
 
   // Document operations
@@ -158,6 +173,69 @@ export class MemStorage implements IStorage {
     return Array.from(this.searchQueries.values())
       .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
       .slice(0, limit);
+  }
+
+  // Session persistence operations
+  async createOrUpdateSession(session: InsertUserSession): Promise<UserSession> {
+    const existingSession = Array.from(this.userSessions.values())
+      .find(s => s.userId === session.userId);
+    
+    if (existingSession) {
+      const updatedSession = { ...existingSession, ...session, lastAccessed: new Date() };
+      this.userSessions.set(existingSession.sessionId, updatedSession);
+      return updatedSession;
+    } else {
+      const sessionId = `session-${this.currentSessionId++}`;
+      const newSession = { 
+        ...session, 
+        id: this.currentSessionId - 1,
+        sessionId,
+        lastAccessed: new Date(),
+        createdAt: new Date()
+      } as UserSession;
+      this.userSessions.set(sessionId, newSession);
+      return newSession;
+    }
+  }
+
+  async getLatestSession(userId: string): Promise<UserSession | undefined> {
+    return Array.from(this.userSessions.values())
+      .filter(s => s.userId === userId)
+      .sort((a, b) => b.lastAccessed.getTime() - a.lastAccessed.getTime())[0];
+  }
+
+  async saveSessionDocument(doc: InsertSessionDocument): Promise<SessionDocument> {
+    const id = this.currentSessionDocumentId++;
+    const key = `${doc.sessionId}-${doc.documentPath}-${doc.workspaceMode}`;
+    const newDocument = { 
+      ...doc, 
+      id, 
+      lastModified: new Date() 
+    } as SessionDocument;
+    this.sessionDocuments.set(key, newDocument);
+    return newDocument;
+  }
+
+  async getSessionDocument(sessionId: string, documentPath: string, workspaceMode: string): Promise<SessionDocument | undefined> {
+    const key = `${sessionId}-${documentPath}-${workspaceMode}`;
+    return this.sessionDocuments.get(key);
+  }
+
+  async saveWasCommit(commit: InsertWasCommitHistory): Promise<WasCommitHistory> {
+    const id = this.currentWasCommitId++;
+    const newCommit = { 
+      ...commit, 
+      id, 
+      timestamp: new Date() 
+    } as WasCommitHistory;
+    this.wasCommits.set(commit.commitId, newCommit);
+    return newCommit;
+  }
+
+  async getWasCommits(sessionId: string): Promise<WasCommitHistory[]> {
+    return Array.from(this.wasCommits.values())
+      .filter(c => c.sessionId === sessionId)
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
   }
 }
 
