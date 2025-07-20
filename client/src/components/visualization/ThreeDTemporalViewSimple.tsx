@@ -214,11 +214,91 @@ function Scene({ nodes, currentTime, onNodeSelect }: {
   );
 }
 
+// Error boundary for Three.js components
+class ThreeErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean; error?: Error }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: any) {
+    console.log('Three.js component error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
+// Canvas wrapper to isolate WebGL context
+function CanvasWrapper({ children }: { children: React.ReactNode }) {
+  const [hasWebGL, setHasWebGL] = useState(true);
+  
+  useEffect(() => {
+    // Check WebGL support
+    try {
+      const canvas = document.createElement('canvas');
+      const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+      if (!gl) {
+        setHasWebGL(false);
+      }
+    } catch (e) {
+      setHasWebGL(false);
+    }
+  }, []);
+  
+  if (!hasWebGL) {
+    return (
+      <div className="h-full flex items-center justify-center bg-black">
+        <div className="text-center">
+          <Box className="h-16 w-16 mx-auto mb-4 text-gray-500" />
+          <p className="text-gray-400 mb-2">WebGL not available</p>
+          <p className="text-xs text-gray-500">Please use a WebGL-enabled browser</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return <>{children}</>;
+}
+
 export default function ThreeDTemporalViewSimple({ onNodeSelect }: ThreeDTemporalViewProps) {
   const [nodes] = useState(() => generateSampleData());
   const [isPlaying, setIsPlaying] = useState(false);
   const [timeRange, setTimeRange] = useState([0]);
   const [selectedNode, setSelectedNode] = useState<DocumentNode | null>(null);
+  const [renderError, setRenderError] = useState(false);
+  
+  // Protect against wallet extensions
+  useEffect(() => {
+    // Store original globals
+    const originalEthereum = (window as any).ethereum;
+    const originalWeb3 = (window as any).web3;
+    
+    // Clean environment for Three.js
+    if (typeof window !== 'undefined') {
+      delete (window as any).ethereum;
+      delete (window as any).web3;
+    }
+    
+    return () => {
+      // Restore on cleanup
+      if (typeof window !== 'undefined') {
+        if (originalEthereum) (window as any).ethereum = originalEthereum;
+        if (originalWeb3) (window as any).web3 = originalWeb3;
+      }
+    };
+  }, []);
   
   // Calculate time bounds
   const timeBounds = useMemo(() => {
@@ -263,16 +343,53 @@ export default function ThreeDTemporalViewSimple({ onNodeSelect }: ThreeDTempora
     <div className="w-full h-full flex flex-col bg-black">
       {/* 3D Canvas */}
       <div className="flex-1 relative">
-        <Canvas
-          camera={{ position: [15, 10, 15], fov: 60 }}
-          className="w-full h-full"
+        <ThreeErrorBoundary
+          fallback={
+            <div className="h-full flex items-center justify-center bg-black">
+              <div className="text-center">
+                <Box className="h-16 w-16 mx-auto mb-4 text-gray-500" />
+                <p className="text-gray-400 mb-2">3D visualization error</p>
+                <p className="text-xs text-gray-500">Please refresh the page or disable browser extensions</p>
+              </div>
+            </div>
+          }
         >
-          <Scene 
-            nodes={nodes} 
-            currentTime={currentTime}
-            onNodeSelect={handleNodeSelect}
-          />
-        </Canvas>
+          <CanvasWrapper>
+            {!renderError ? (
+              <Canvas
+                camera={{ position: [15, 10, 15], fov: 60 }}
+                className="w-full h-full"
+                onCreated={({ gl }) => {
+                  try {
+                    // Test WebGL context
+                    gl.getContext();
+                  } catch (e) {
+                    console.error('WebGL context error:', e);
+                    setRenderError(true);
+                  }
+                }}
+                onError={(error) => {
+                  console.error('Canvas error:', error);
+                  setRenderError(true);
+                }}
+              >
+                <Scene 
+                  nodes={nodes} 
+                  currentTime={currentTime}
+                  onNodeSelect={handleNodeSelect}
+                />
+              </Canvas>
+            ) : (
+              <div className="h-full flex items-center justify-center bg-black">
+                <div className="text-center">
+                  <Box className="h-16 w-16 mx-auto mb-4 text-gray-500" />
+                  <p className="text-gray-400 mb-2">WebGL rendering failed</p>
+                  <p className="text-xs text-gray-500">Try disabling wallet extensions</p>
+                </div>
+              </div>
+            )}
+          </CanvasWrapper>
+        </ThreeErrorBoundary>
         
         {/* Overlay info */}
         <div className="absolute top-4 left-4 bg-background/80 backdrop-blur border border-border p-4 max-w-xs">

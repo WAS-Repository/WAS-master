@@ -162,6 +162,7 @@ For local development, the server runs in development mode with:
 - **[2025-01-20] Implemented immersive navigable globe with telemetry layers including air traffic, maritime vessels, telecom networks, and health data visualizations.**
 - **[2025-01-20] Added dynamic time-of-day lighting, cloud layers, atmosphere effects, and interactive telemetry controls to the 3D globe visualization.**
 - **[2025-01-20] Fixed wallet extension conflict by creating SafeGlobeView component that isolates 3D visualization in iframe to prevent crypto wallet extensions from interfering with WebGL context.**
+- **[2025-01-20] Added error boundaries and WebGL context protection to ThreeDTemporalViewSimple component to handle wallet extension conflicts and WebGL context errors.**
 
 ## Notes for Implementation
 
