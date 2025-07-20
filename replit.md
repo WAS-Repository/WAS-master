@@ -158,6 +158,9 @@ For local development, the server runs in development mode with:
 - **[2025-01-20] Implemented comprehensive version tracking system across all workspace modes using Zustand for state management.**
 - **[2025-01-20] Created VersionControlPanel component with Git-like functionality including branches, commits, staging, and history visualization.**
 - **[2025-01-20] Integrated version control into Research, Story, Developer, and Geographic modes with workspace-specific tracking.**
+- **[2025-01-20] Replaced Cesium-based 3D view with custom ImmersiveGlobeView component using Three.js/React Three Fiber for Google Earth-like experience.**
+- **[2025-01-20] Implemented immersive navigable globe with telemetry layers including air traffic, maritime vessels, telecom networks, and health data visualizations.**
+- **[2025-01-20] Added dynamic time-of-day lighting, cloud layers, atmosphere effects, and interactive telemetry controls to the 3D globe visualization.**
 
 ## Notes for Implementation
 

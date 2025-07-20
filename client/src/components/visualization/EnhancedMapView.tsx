@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Globe, Map, Layers, Plus, Minus } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
-import SimpleCesiumView from './SimpleCesiumView';
+import ImmersiveGlobeView from './ImmersiveGlobeView';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'cesium/Build/Cesium/Widgets/widgets.css';
@@ -251,7 +251,7 @@ export default function EnhancedMapView({ data = [], onDataSelect }: EnhancedMap
             <ZoomControl />
           </MapContainer>
         ) : (
-          <SimpleCesiumView data={mapData} />
+          <ImmersiveGlobeView data={mapData} onDataSelect={handlePointClick} />
         )}
       </div>
 
