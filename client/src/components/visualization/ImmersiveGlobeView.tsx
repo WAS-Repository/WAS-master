@@ -689,11 +689,38 @@ function latLonToVector3(lat: number, lon: number, radius: number): THREE.Vector
   return new THREE.Vector3(x, y, z);
 }
 
+// Error boundary to catch wallet extension conflicts
+class GlobeErrorBoundary extends React.Component<
+  { children: React.ReactNode; fallback: React.ReactNode },
+  { hasError: boolean }
+> {
+  constructor(props: any) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: any, errorInfo: any) {
+    console.log('Globe visualization error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+    return this.props.children;
+  }
+}
+
 export default function ImmersiveGlobeView({ data = [], onDataSelect }: ImmersiveGlobeViewProps) {
   const [autoRotate, setAutoRotate] = useState(true);
   const [timeOfDay, setTimeOfDay] = useState(12); // 24-hour format
   const [showClouds, setShowClouds] = useState(true);
   const [selectedLayer, setSelectedLayer] = useState<string>('overview');
+  const [renderError, setRenderError] = useState(false);
   const [telemetryLayers, setTelemetryLayers] = useState<TelemetryLayer[]>([
     { id: 'flights', name: 'Air Traffic', icon: <Plane size={14} />, color: '#3B82F6', visible: true, type: 'flights' },
     { id: 'vessels', name: 'Maritime', icon: <Ship size={14} />, color: '#10B981', visible: false, type: 'vessels' },
@@ -703,6 +730,27 @@ export default function ImmersiveGlobeView({ data = [], onDataSelect }: Immersiv
     { id: 'economy', name: 'Economy', icon: <TrendingUp size={14} />, color: '#06B6D4', visible: false, type: 'economy' },
     { id: 'weather', name: 'Weather', icon: <Cloud size={14} />, color: '#6B7280', visible: false, type: 'weather' },
   ]);
+
+  // Isolate from wallet extensions
+  useEffect(() => {
+    // Create a clean environment for the 3D visualization
+    const originalEthereum = (window as any).ethereum;
+    const originalWeb3 = (window as any).web3;
+    
+    // Temporarily remove wallet globals to prevent conflicts
+    if (typeof window !== 'undefined') {
+      delete (window as any).ethereum;
+      delete (window as any).web3;
+    }
+    
+    return () => {
+      // Restore wallet globals on cleanup
+      if (typeof window !== 'undefined') {
+        if (originalEthereum) (window as any).ethereum = originalEthereum;
+        if (originalWeb3) (window as any).web3 = originalWeb3;
+      }
+    };
+  }, []);
 
   const toggleLayer = (layerId: string) => {
     setTelemetryLayers(prev => 
@@ -770,39 +818,72 @@ export default function ImmersiveGlobeView({ data = [], onDataSelect }: Immersiv
 
       {/* Main globe view */}
       <div className="flex-1 relative">
-        <Canvas camera={{ position: [0, 0, 3], fov: 45 }}>
-          <CameraController autoRotate={autoRotate} />
-          
-          {/* Lighting based on time of day */}
-          <ambientLight intensity={0.2} />
-          <directionalLight 
-            position={[
-              Math.cos((timeOfDay / 24) * Math.PI * 2) * 5,
-              2,
-              Math.sin((timeOfDay / 24) * Math.PI * 2) * 5
-            ]} 
-            intensity={0.8}
-            castShadow
-          />
-          
-          {/* Earth and telemetry layers */}
-          <Earth telemetryLayers={telemetryLayers} showClouds={showClouds} />
-          
-          {/* Data points */}
-          {data.map((point) => {
-            const position = latLonToVector3(point.latitude, point.longitude, 1.02);
-            return (
-              <mesh
-                key={point.id}
-                position={position}
-                onClick={() => onDataSelect?.(point)}
-              >
-                <sphereGeometry args={[0.01, 8, 8]} />
-                <meshBasicMaterial color="#00ff00" />
-              </mesh>
-            );
-          })}
-        </Canvas>
+        <GlobeErrorBoundary
+          fallback={
+            <div className="h-full flex items-center justify-center bg-[#0a0a0a]">
+              <div className="text-center">
+                <Globe size={48} className="mx-auto mb-4 text-gray-500" />
+                <p className="text-gray-400 mb-2">3D Globe visualization unavailable</p>
+                <p className="text-xs text-gray-500">Please disable wallet extensions and refresh</p>
+              </div>
+            </div>
+          }
+        >
+          {!renderError ? (
+            <Canvas 
+              camera={{ position: [0, 0, 3], fov: 45 }}
+              onCreated={({ gl }) => {
+                // Additional WebGL context protection
+                try {
+                  gl.getContext();
+                } catch (e) {
+                  setRenderError(true);
+                }
+              }}
+              onError={() => setRenderError(true)}
+            >
+              <CameraController autoRotate={autoRotate} />
+              
+              {/* Lighting based on time of day */}
+              <ambientLight intensity={0.2} />
+              <directionalLight 
+                position={[
+                  Math.cos((timeOfDay / 24) * Math.PI * 2) * 5,
+                  2,
+                  Math.sin((timeOfDay / 24) * Math.PI * 2) * 5
+                ]} 
+                intensity={0.8}
+                castShadow
+              />
+              
+              {/* Earth and telemetry layers */}
+              <Earth telemetryLayers={telemetryLayers} showClouds={showClouds} />
+              
+              {/* Data points */}
+              {data.map((point) => {
+                const position = latLonToVector3(point.latitude, point.longitude, 1.02);
+                return (
+                  <mesh
+                    key={point.id}
+                    position={position}
+                    onClick={() => onDataSelect?.(point)}
+                  >
+                    <sphereGeometry args={[0.01, 8, 8]} />
+                    <meshBasicMaterial color="#00ff00" />
+                  </mesh>
+                );
+              })}
+            </Canvas>
+          ) : (
+            <div className="h-full flex items-center justify-center bg-[#0a0a0a]">
+              <div className="text-center">
+                <Globe size={48} className="mx-auto mb-4 text-gray-500" />
+                <p className="text-gray-400 mb-2">3D Globe rendering error</p>
+                <p className="text-xs text-gray-500">Try refreshing the page</p>
+              </div>
+            </div>
+          )}
+        </GlobeErrorBoundary>
 
         {/* Layer toggles */}
         <div className="absolute top-4 right-4 bg-[#1a1a1a] border border-[#3e3e3e] p-3 w-48">

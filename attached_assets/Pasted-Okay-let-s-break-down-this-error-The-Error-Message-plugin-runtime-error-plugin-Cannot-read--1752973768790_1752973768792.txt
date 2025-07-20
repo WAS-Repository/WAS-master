@@ -1,0 +1,82 @@
+Okay, let's break down this error.
+
+The Error Message:
+[plugin:runtime-error-plugin] Cannot read properties of undefined (reading 'isTrust')
+at Hl.setEthereumWallet (chrome-extension://egjidjbpglichdcondbcbdnbeeppgdph/inpage.js:2283:61059)
+at Hl.<anonymous> (chrome-extension://egjidjbpglichdcondbcbdnbeeppgdph/inpage.js:2283:61242)
+at Generator.next (<anonymous>)
+at ke (chrome-extension://egjidjbpglichdcondbcbdnbeeppgdph/inpage.js:2283:57898
+Click outside, press Esc key, or fix the code to dismiss.
+You can also disable this overlay by setting server.hmr.overlay to false in vite.config.js.
+What This Error Means:
+Cannot read properties of undefined (reading 'isTrust'): This is the core problem. It means your code (or, more accurately, the code from a Chrome extension) is trying to access a property called isTrust from a variable or object that currently holds the value undefined. You can't read properties from something that doesn't exist.
+
+at Hl.setEthereumWallet: This tells you the specific function where the error occurred within the Hl object. The name setEthereumWallet strongly suggests this is related to setting up or interacting with an Ethereum wallet.
+
+chrome-extension://egjidjbpglichdcondbcbdnbeeppgdph/inpage.js: This is the most crucial piece of information. It indicates that the error is not directly in your application's code, but within a script injected by a Chrome browser extension, specifically inpage.js. The long string of characters (egjidjbpglichdcondbcbdnbeeppgdph) is the unique ID of the extension. This looks very much like a typical Web3 wallet extension (like MetaMask, Frame, Rabby, or Trust Wallet's in-browser equivalent) injecting its window.ethereum object into the page.
+
+vite.config.js: The last line tells you this error overlay is from Vite, which is your development server.
+
+Common Causes & Troubleshooting Steps:
+Given that the error is coming from a Chrome extension and relates to setEthereumWallet and isTrust, it's almost certainly an issue with how your application is interacting with a Web3 wallet or how the wallet extension itself is behaving.
+
+Here's a prioritized list of steps to debug this:
+
+I. Wallet/Extension-Related (Most Likely Culprits):
+
+Check if
+your Ethereum Wallet Extension is Installed and Active:
+
+Do you have MetaMask, Rabby, CoinBase Wallet, Trust Wallet, etc., installed in Chrome?
+Is it enabled, not paused or disabled? (Check your Chrome extensions list).
+If you have multiple wallet extensions, they can sometimes conflict. Try disabling all but one, and see if the error persists.
+Refresh and Reconnect Your Wallet:
+
+Hard Refresh: Try a hard refresh of your page (Ctrl+Shift+R or Cmd+Shift+R).
+Disconnect and Reconnect: In your wallet extension, try disconnecting from the current site and then reconnecting or signing in again.
+Update Your Wallet Extension:
+
+Browser extensions can have bugs, especially with new browser versions or specific dApp interactions. Go to chrome://extensions/, enable "Developer mode," and click "Update" (usually a button near the top right or under the ... menu).
+Clear Browser Cache and Site Data:
+
+Sometimes old or corrupted cached data can cause issues. Clear your browser's cache and cookies, especially for the site you're developing. This often helps with Web3 interactions.
+Check for Other Conflicting Extensions:
+
+Ad-blockers, privacy extensions, or other security-related extensions can sometimes interfere with how Web3 wallet extensions inject scripts or interact with the page. Try disabling other extensions one by one to see if one is causing the conflict.
+Try a Different Browser or Incognito/Private Window:
+
+If the issue persists, try running your application in a fresh browser profile, or an Incognito/Private window (which usually runs with extensions disabled by default unless explicitly allowed). If it works there, it points to a browser-specific setting or extension issue.
+II. Your Application Code (How you interact with the wallet):
+
+Even though the error is in the extension's code, your application's code is likely triggering it by calling a wallet-related function when the wallet isn't ready or hasn't provided its expected interface.
+
+Ensure window.ethereum is Available (or handling its absence):
+
+Your setEthereumWallet function (or whatever calls it) is likely expecting something from the global window.ethereum object, which is injected by the wallet extension.
+You must always check if window.ethereum exists before trying to use it.
+Example (Conceptual):
+if (typeof window.ethereum !== 'undefined') {
+    console.log('MetaMask (or other wallet) is installed!');
+    // Your code that calls setEthereumWallet or similar logic
+    // Hl.setEthereumWallet(window.ethereum); // Or whatever interaction
+} else {
+    console.log('MetaMask (or other wallet) is NOT installed or active.');
+    // Handle the case where the wallet is not available.
+    // (e.g., display a message to the user, disable Web3 features)
+}
+Make sure wherever setEthereumWallet is invoked, it's operating on a valid, non-undefined wallet provider object. The isTrust property might be a specific check that fails if the injected window.ethereum object isn't from a "Trust Wallet" or if a property expected from the wallet is missing or undefined.
+Asynchronous Initialization:
+
+Wallet injection (window.ethereum) can be asynchronous. Ensure your code waits for the wallet to be fully initialized before attempting to interact with it. Libraries like ethers.js or web3.js typically handle this, but if you're doing custom logic, you might be calling setEthereumWallet too soon.
+Check Your Wallet Connection Logic:
+
+Is your application attempting to call a function (like setEthereumWallet) that assumes a wallet is connected and active, when it might not be? Ensure your logic correctly handles the various states of wallet connection (disconnected, connecting, connected to wrong network, etc.).
+III. Development Environment (Vite):
+
+Vite Overlay (Hiding, not Fixing):
+The message You can also disable this overlay by setting server.hmr.overlay to false in vite.config.js. is just about hiding the error display, not resolving the underlying problem. Only use this if you confirm the error is not affecting functionality and you just don't want to see the overlay during development.
+In Summary:
+
+The error Cannot read properties of undefined (reading 'isTrust') originating from a Chrome extension's inpage.js when setting an Ethereum wallet indicates that the wallet extension is trying to access isTrust on an object that is undefined. This usually means the wallet isn't properly installed, active, or your application is trying to use it before it has fully initialized or provided the expected properties.
+
+Start by troubleshooting your wallet extension and browser environment, then check your application's wallet integration logic for robust window.ethereum checks.
