@@ -10,8 +10,10 @@ import TheiaIDE from './TheiaIDE';
 import WasVersionControl from './WasVersionControl';
 import WelcomeScreen from './WelcomeScreen';
 import GeographicSearch from './GeographicSearch';
+import { VersionControlPanel } from '@/components/version-control/VersionControlPanel';
 import { sessionPersistence } from '@/lib/sessionPersistence';
 import { visualizationManager, availableVisualizations } from '@/lib/visualizations';
+import { useVersionControl, trackFileChange } from '@/lib/versionControl';
 
 type WorkspaceMode = 'research' | 'story' | 'developer' | 'geographic';
 
@@ -34,6 +36,7 @@ export default function CleanResizableDashboard({
   const [whiteboardElements, setWhiteboardElements] = useState<Array<{ id: string; type: 'text' | 'rectangle' | 'circle' | 'sticky'; content: string; x: number; y: number; width?: number; height?: number; color?: string }>>([]);
   const [showViewMenu, setShowViewMenu] = useState(false);
   const [showFileMenu, setShowFileMenu] = useState(false);
+  const [previousNotepadContent, setPreviousNotepadContent] = useState<string>('');
   const viewMenuRef = useRef<HTMLDivElement>(null);
   const fileMenuRef = useRef<HTMLDivElement>(null);
 
@@ -791,7 +794,7 @@ Select different files from the explorer to view their specific content.`;
         </Panel>
 
         {/* Right Panel - Mode-specific content */}
-        {(workspaceMode === 'research' || workspaceMode === 'story' || workspaceMode === 'geographic' || hasVisualizationPanels) && (
+        {(workspaceMode === 'research' || workspaceMode === 'story' || workspaceMode === 'geographic' || workspaceMode === 'developer' || hasVisualizationPanels) && (
           <>
             <PanelResizeHandle className="w-1 bg-[var(--color-divider)] hover:bg-[var(--color-accent)] transition-colors cursor-col-resize" />
             
@@ -806,61 +809,69 @@ Select different files from the explorer to view their specific content.`;
                   </Panel>
                   <PanelResizeHandle className="h-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-row-resize" />
                   <Panel defaultSize={50} minSize={30}>
-                    <WasVersionControl 
-                      currentDocument={activeFile}
-                      documentContent={notepadContent}
-                      onDocumentLoad={setNotepadContent}
+                    <VersionControlPanel 
+                      workspaceMode={workspaceMode}
+                      onVersionSelect={(version) => {
+                        console.log('Version selected:', version);
+                      }}
                     />
                   </Panel>
                 </PanelGroup>
               )}
               {workspaceMode === 'story' && (
-                <StoryWhiteboard 
-                  elements={whiteboardElements}
-                  onChange={handleWhiteboardChange}
-                />
+                <PanelGroup direction="vertical">
+                  <Panel defaultSize={70} minSize={50}>
+                    <StoryWhiteboard 
+                      elements={whiteboardElements}
+                      onChange={handleWhiteboardChange}
+                    />
+                  </Panel>
+                  <PanelResizeHandle className="h-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-row-resize" />
+                  <Panel defaultSize={30} minSize={20}>
+                    <VersionControlPanel 
+                      workspaceMode={workspaceMode}
+                      onVersionSelect={(version) => {
+                        console.log('Version selected:', version);
+                      }}
+                    />
+                  </Panel>
+                </PanelGroup>
               )}
               {workspaceMode === 'geographic' && (
-                <div className="h-full bg-[#1e1e1e] border-l border-[#3e3e3e]">
-                  <div className="p-4 border-b border-[#3e3e3e]">
-                    <h3 className="text-sm font-semibold text-white mb-2">Location Map</h3>
-                    <div className="bg-[#2d2d2d] h-48 border border-[#3e3e3e] flex items-center justify-center">
-                      <div className="text-center text-gray-400">
-                        <MapPin size={32} className="mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">Interactive map will appear here</p>
-                        <p className="text-xs">when location data is selected</p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4 border-b border-[#3e3e3e]">
-                    <h3 className="text-sm font-semibold text-white mb-2">Location Details</h3>
-                    <div className="space-y-2 text-sm text-gray-300">
-                      <div>
-                        <span className="text-gray-400">Coordinates:</span> Not selected
-                      </div>
-                      <div>
-                        <span className="text-gray-400">Region:</span> Global
-                      </div>
-                      <div>
-                        <span className="text-gray-400">Data Sources:</span> 4 available
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-sm font-semibold text-white mb-2">Recent Searches</h3>
-                    <div className="space-y-2 text-sm">
-                      <div className="text-gray-300 hover:text-white cursor-pointer">Sea level rise Miami</div>
-                      <div className="text-gray-300 hover:text-white cursor-pointer">Pacific coast erosion</div>
-                      <div className="text-gray-300 hover:text-white cursor-pointer">Global climate data</div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              {workspaceMode === 'developer' && hasVisualizationPanels && (
-                <VisualizationPanel 
-                  panels={visualizationPanels} 
-                  onClose={onCloseVisualization || (() => {})} 
+                <VersionControlPanel 
+                  workspaceMode={workspaceMode}
+                  onVersionSelect={(version) => {
+                    console.log('Version selected:', version);
+                  }}
                 />
+              )}
+              {workspaceMode === 'developer' && (
+                hasVisualizationPanels ? (
+                  <PanelGroup direction="vertical">
+                    <Panel defaultSize={70} minSize={50}>
+                      <VisualizationPanel 
+                        panels={visualizationPanels} 
+                        onClose={onCloseVisualization || (() => {})} 
+                      />
+                    </Panel>
+                    <PanelResizeHandle className="h-1 bg-[#3e3e3e] hover:bg-[#007acc] transition-colors cursor-row-resize" />
+                    <Panel defaultSize={30} minSize={20}>
+                      <VersionControlPanel 
+                        workspaceMode={workspaceMode}
+                        onVersionSelect={(version) => {
+                          console.log('Version selected:', version);
+                        }}
+                      />
+                    </Panel>
+                  </PanelGroup>
+                ) : (
+                  <VersionControlPanel 
+                    workspaceMode={workspaceMode}
+                    onVersionSelect={(version) => {
+                      console.log('Version selected:', version);
+                    }}
+                  />
+                )
               )}
             </Panel>
           </>
