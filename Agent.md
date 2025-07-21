@@ -1,4 +1,4 @@
-# Replit Configuration Guide
+# Agent Configuration Guide
 
 ## Overview
 
